@@ -2,13 +2,10 @@
  * 👑 NEXTY MINI — Luxury Owner Command
  * ─────────────────────────────────────
  * Professional luxury owner info with cyberpunk image.
- * 
- * Usage in index.js:
- *   owner: require('./commands/owner'),
- *   case 'owner': await commands.owner(this.sock, from, msg); break;
  */
 
 const settings = require('../settings');
+const os = require('os');   // ✅ YE LINE ADD KIYA
 
 // ═══════════════════════════════════════════════════════════
 //  MAIN OWNER COMMAND
@@ -99,14 +96,12 @@ async function ownerCommand(sock, from, msg) {
                 caption: ownerText 
             }, { quoted: msg });
         } catch (imgErr) {
-            // Fallback: settings.startimage
             try {
                 return await sock.sendMessage(from, { 
                     image: { url: settings.startimage }, 
                     caption: ownerText 
                 }, { quoted: msg });
             } catch (e) {
-                // Final fallback: text only
                 return await sock.sendMessage(from, { text: ownerText }, { quoted: msg });
             }
         }
