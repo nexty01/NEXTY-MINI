@@ -1,0 +1,14 @@
+[build]
+builder = "NIXPACKS"
+
+[deploy]
+startCommand = "npm start"
+
+[build.nixpacksPlan.phases.setup]
+nixPkgs = ["nodejs_20", "npm-9_x", "yarn"]
+
+[build.nixpacksPlan.phases.install]
+cmds = ["npm install"]
+
+[build.nixpacksPlan.phases.build]
+cmds = []

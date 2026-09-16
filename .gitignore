@@ -1,0 +1,26 @@
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+
+# Runtime/session data
+session/
+auth/
+auth_info_baileys/
+*.session
+*.sqlite
+
+# Dependencies and generated files
+node_modules/
+logs/
+*.log
+npm-debug.log*
+.DS_Store
+
+# Local media/output
+media/
+tmp/
+.env
+*.pem
+id_rsa
+.DS_Store
