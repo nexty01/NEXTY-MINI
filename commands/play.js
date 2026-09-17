@@ -12,6 +12,7 @@ const yts = require('yt-search');
 // ═══ RapidAPI Config ═══
 const RAPIDAPI_KEY = '0b29c845famshdce32905d95a2a9p138924jsn6e73c4d0c621';
 const RAPIDAPI_HOST = 'youtube-mp36.p.rapidapi.com';
+
 async function playCommand(sock, chatId, message, q) {
     try {
         await sock.sendMessage(chatId, { react: { text: '🎵', key: message.key } });
@@ -63,6 +64,16 @@ async function playCommand(sock, chatId, message, q) {
             videoAuthor = video.author?.name || 'Unknown';
         }
 
+        // ─── Extract Video ID ───
+        const videoIdMatch = videoUrl.match(/(?:v=|\/)([0-9A-Za-z_-]{11})/);
+        const videoId = videoIdMatch ? videoIdMatch[1] : null;
+
+        if (!videoId) {
+            throw new Error('Could not extract YouTube video ID');
+        }
+
+        console.log(`[play] 📹 Video ID: ${videoId}`);
+
         // ─── Info Card ───
         await sock.sendMessage(chatId, {
             image: { url: videoThumb || 'https://i.postimg.cc/y6GV9P3H/file-000000004c307206bc366893b817568c-(1).png' },
@@ -81,13 +92,13 @@ async function playCommand(sock, chatId, message, q) {
                      `╰━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╯`
         }, { quoted: message });
 
-        // ═══ RapidAPI Call ═══
+        // ═══ RapidAPI Call — YouTube MP3 Download ═══
         console.log('[play] 🚀 Calling RapidAPI...');
 
         const { data } = await axios.get(
-            `https://${RAPIDAPI_HOST}/download/mp3`,
+            `https://${RAPIDAPI_HOST}/dl`,
             {
-                params: { url: videoUrl },
+                params: { id: videoId },
                 headers: {
                     'x-rapidapi-key': RAPIDAPI_KEY,
                     'x-rapidapi-host': RAPIDAPI_HOST,
@@ -97,13 +108,18 @@ async function playCommand(sock, chatId, message, q) {
             }
         );
 
-        console.log('[play] ✅ RapidAPI response:', JSON.stringify(data).substring(0, 200));
+        console.log('[play] ✅ RapidAPI response:', JSON.stringify(data).substring(0, 300));
+
+        // ═══ Check Status ═══
+        if (data?.status !== 'ok' && data?.status !== 'processing') {
+            throw new Error(data?.msg || 'API returned error');
+        }
 
         // ═══ Extract Download URL ═══
         const downloadUrl = data?.link;
 
         if (!downloadUrl) {
-            throw new Error(data?.msg || 'No download URL received');
+            throw new Error('No download link in response');
         }
 
         console.log('[play] ✅ Download URL:', downloadUrl.substring(0, 100));
@@ -155,7 +171,7 @@ async function playCommand(sock, chatId, message, q) {
         if (err.response?.status === 401) errorMsg = 'Invalid RapidAPI key.';
         else if (err.response?.status === 403) errorMsg = 'Access forbidden.';
         else if (err.response?.status === 429) errorMsg = 'Rate limit hit. Wait.';
-        else if (err.response?.status === 404) errorMsg = 'URL not found.';
+        else if (err.response?.status === 404) errorMsg = 'Video not found.';
         else if (err.response?.status === 500) errorMsg = 'API server error.';
 
         try {
