@@ -1,8 +1,7 @@
 /**
- * 🎵 NEXTY MINI — Play Command (Cobalt API)
- * ──────────────────────────────────────────
+ * 🎵 NEXTY MINI — Play Command (RapidAPI)
+ * ────────────────────────────────────────
  * Search & download YouTube audio (MP3).
- * Powered by self-hosted Cobalt API.
  * 
  * Usage: .play <song name or YouTube URL>
  */
@@ -10,8 +9,9 @@
 const axios = require('axios');
 const yts = require('yt-search');
 
-// ═══ Cobalt API Config ═══
-const COBALT_URL = 'https://cobalt-tools-production-82e7.up.railway.app/';
+// ═══ RapidAPI Config ═══
+const RAPIDAPI_KEY = '0b29c845famshdce32905d95a2a9p138924jsn6e73c4d0c621'; // ← Nayi key yahan
+const RAPIDAPI_HOST = 'youtube-mp310.p.rapidapi.com';
 
 async function playCommand(sock, chatId, message, q) {
     try {
@@ -74,7 +74,7 @@ async function playCommand(sock, chatId, message, q) {
                      `│ ▸ *Title*  : ${videoTitle.substring(0, 45)}${videoTitle.length > 45 ? '...' : ''}\n` +
                      `${videoDuration ? `│ ▸ *Duration* : ${videoDuration}\n` : ''}` +
                      `${videoAuthor ? `│ ▸ *Author*   : ${videoAuthor}\n` : ''}` +
-                     `│ ▸ *Engine* : Cobalt API\n` +
+                     `│ ▸ *Engine* : RapidAPI\n` +
                      `╰──────────────────────────────────\n\n` +
                      `⏳ _Please wait, downloading audio..._\n\n` +
                      `╭━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╮\n` +
@@ -82,59 +82,44 @@ async function playCommand(sock, chatId, message, q) {
                      `╰━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╯`
         }, { quoted: message });
 
-        // ═══ Cobalt API Call — Audio ═══
-        console.log('[play] 🚀 Calling Cobalt API...');
+        // ═══ RapidAPI Call ═══
+        console.log('[play] 🚀 Calling RapidAPI...');
 
-        const { data } = await axios.post(
-            COBALT_URL,
+        const { data } = await axios.get(
+            `https://${RAPIDAPI_HOST}/download/mp3`,
             {
-                url: videoUrl,
-                downloadMode: 'audio',
-                audioFormat: 'mp3'
-            },
-            {
+                params: { url: videoUrl },
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
+                    'x-rapidapi-key': RAPIDAPI_KEY,
+                    'x-rapidapi-host': RAPIDAPI_HOST,
+                    'Content-Type': 'application/json'
                 },
-                timeout: 180000
+                timeout: 120000
             }
         );
 
-        console.log('[play] ✅ Cobalt response:', JSON.stringify(data).substring(0, 300));
+        console.log('[play] ✅ RapidAPI response:', JSON.stringify(data).substring(0, 200));
 
-        // ═══ Extract Tunnel URL ═══
-        let tunnelUrl = null;
+        // ═══ Extract Download URL ═══
+        const downloadUrl = data?.link;
 
-        if (data?.status === 'redirect' || data?.status === 'tunnel') {
-            tunnelUrl = data.url;
-        } else if (data?.status === 'picker' && data.picker?.length > 0) {
-            tunnelUrl = data.picker[0].url;
-        } else if (data?.url) {
-            tunnelUrl = data.url;
+        if (!downloadUrl) {
+            throw new Error(data?.msg || 'No download URL received');
         }
 
-        if (!tunnelUrl) {
-            throw new Error(data?.error?.code || 'No download URL received');
-        }
+        console.log('[play] ✅ Download URL:', downloadUrl.substring(0, 100));
 
-        console.log('[play] ✅ Tunnel URL:', tunnelUrl.substring(0, 100));
-
-        // ═══════════════════════════════════════════════════════
-        //  DOWNLOAD AUDIO AS BUFFER (Tunnel expiry fix)
-        // ═══════════════════════════════════════════════════════
+        // ═══ Download Audio Buffer ═══
         console.log('[play] 📥 Downloading audio to buffer...');
 
-        const audioResponse = await axios.get(tunnelUrl, {
+        const audioResponse = await axios.get(downloadUrl, {
             responseType: 'arraybuffer',
-            timeout: 120000,
+            timeout: 60000,
             headers: {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
                 'Accept': '*/*'
             },
-            maxContentLength: 200 * 1024 * 1024,
-            maxBodyLength: 200 * 1024 * 1024,
-            // Disable automatic JSON parse for binary
+            maxContentLength: 100 * 1024 * 1024,
             transformResponse: [(d) => d]
         });
 
@@ -142,57 +127,24 @@ async function playCommand(sock, chatId, message, q) {
 
         console.log('[play] ✅ Downloaded:', audioBuffer.length, 'bytes');
 
-        // ═══ Verify Audio Buffer ═══
-        if (!audioBuffer || audioBuffer.length === 0) {
-            throw new Error('Empty audio file received (0 bytes)');
-        }
-
-        // Minimum size check (audio should be > 10 KB)
-        if (audioBuffer.length < 10240) {
+        if (!audioBuffer || audioBuffer.length < 10240) {
             throw new Error(`Audio file too small: ${audioBuffer.length} bytes`);
         }
 
-        // ═══ Detect Audio Format ═══
-        let mimetype = 'audio/mpeg';
-        let ext = '.mp3';
-
-        const firstBytes = audioBuffer.slice(0, 12).toString('hex').toLowerCase();
-
-        if (firstBytes.startsWith('494433') || firstBytes.startsWith('fffb') || firstBytes.startsWith('fff3')) {
-            mimetype = 'audio/mpeg';  // MP3
-            ext = '.mp3';
-        } else if (firstBytes.startsWith('4f676753')) {
-            mimetype = 'audio/ogg';   // OGG
-            ext = '.ogg';
-        } else if (firstBytes.startsWith('52494646')) {
-            mimetype = 'audio/wav';   // WAV
-            ext = '.wav';
-        } else if (audioBuffer.slice(4, 8).toString('ascii') === 'ftyp') {
-            mimetype = 'audio/mp4';   // M4A
-            ext = '.m4a';
-        }
-
-        console.log('[play] 🎵 Detected format:', mimetype, ext);
-
-        // ═══ Send Audio Buffer ═══
-        const safeTitle = (data.filename || videoTitle || 'NEXTY_MINI_Audio')
-            .replace(/\.mp3$/i, '')
+        // ═══ Send Audio ═══
+        const safeTitle = (videoTitle || 'NEXTY_MINI_Audio')
             .replace(/[^\w\s\-\.\(\)]/g, '')
             .substring(0, 60)
             .trim();
-
-        const fileName = `${safeTitle}${ext}`;
-
-        console.log('[play] 📤 Sending audio:', fileName);
+        const fileName = `${safeTitle}.mp3`;
 
         await sock.sendMessage(chatId, {
             audio: audioBuffer,
-            mimetype: mimetype,
+            mimetype: 'audio/mpeg',
             fileName: fileName,
             ptt: false
         }, { quoted: message });
 
-        // ═══ Success reaction ═══
         await sock.sendMessage(chatId, { react: { text: '✅', key: message.key } });
 
         console.log('[play] ✅ Sent successfully');
@@ -201,14 +153,11 @@ async function playCommand(sock, chatId, message, q) {
         console.error('[play] ❌ Error:', err.message);
 
         let errorMsg = err.message;
-
-        if (err.response?.status === 401) errorMsg = 'Invalid API key.';
-        else if (err.response?.status === 422) errorMsg = 'Audio format not supported.';
-        else if (err.response?.status === 429) errorMsg = 'Rate limit. Wait 1 min.';
-        else if (err.response?.status === 500) errorMsg = 'Cobalt server error. Try again.';
-        else if (err.response?.status === 404) errorMsg = 'Tunnel URL expired. Try again.';
-        else if (err.code === 'ECONNABORTED') errorMsg = 'Download timeout. Try again.';
-        else if (err.code === 'ERR_FR_MAX_CONTENT_LENGTH_EXCEEDED') errorMsg = 'File too large.';
+        if (err.response?.status === 401) errorMsg = 'Invalid RapidAPI key.';
+        else if (err.response?.status === 403) errorMsg = 'Access forbidden.';
+        else if (err.response?.status === 429) errorMsg = 'Rate limit hit. Wait.';
+        else if (err.response?.status === 404) errorMsg = 'URL not found.';
+        else if (err.response?.status === 500) errorMsg = 'API server error.';
 
         try {
             await sock.sendMessage(chatId, { 
