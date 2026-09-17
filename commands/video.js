@@ -89,7 +89,7 @@ async function videoCommand(sock, from, msg, q) {
                      `${videoDuration ? `│ ▸ *Duration* : ${videoDuration}\n` : ''}` +
                      `${videoViews ? `│ ▸ *Views*    : ${videoViews}\n` : ''}` +
                      `${videoAuthor ? `│ ▸ *Author*   : ${videoAuthor}\n` : ''}` +
-                     `│ ▸ *Engine* : Tornado API\n` +
+                     `│ ▸ *Engine* : NEXTY API\n` +
                      `╰──────────────────────────────────\n\n` +
                      `⏳ _Please wait, downloading..._\n\n` +
                      `╭━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╮\n` +
@@ -205,7 +205,7 @@ async function videoCommand(sock, from, msg, q) {
             `┃  🎬 *NEXTY MINI VIDEO* 🎬      ┃\n` +
             `╰━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╯\n\n` +
             `✅ *Downloaded Successfully*\n` +
-            `▸ Engine: Tornado API\n` +
+            `▸ Engine: NEXTY API\n` +
             `▸ Type: Video 🎬\n` +
             `▸ Quality: 720p HD\n` +
             `${videoTitle ? `▸ Title: ${videoTitle.substring(0, 50)}${videoTitle.length > 50 ? '...' : ''}\n` : ''}` +
