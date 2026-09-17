@@ -1,17 +1,10 @@
-/**
- * 📸 NEXTY MINI — Instagram Downloader (yt-dlp + Cookies)
- */
+const axios = require('axios');
 
-const { exec } = require('child_process');
-const fs = require('fs');
-const path = require('path');
-const os = require('os');
-const { promisify } = require('util');
-const execAsync = promisify(exec);
+const FASTSAVER_API_KEY = process.env.FASTSAVER_API_KEY;
+const FASTSAVER_BASE_URL = 'https://api.fastsaver.io/v1';
 
 async function instaCommand(sock, from, msg, q) {
     try {
-        // ─── Get URL ───
         let url = q;
         if (!url) {
             const messageContent = msg.message?.ephemeralMessage?.message 
@@ -27,8 +20,12 @@ async function instaCommand(sock, from, msg, q) {
 
         if (!url || !url.includes('instagram.com')) {
             return await sock.sendMessage(from, { 
-                text: `❌ *Please provide an Instagram URL.*\n\n*Example:*\n▸ .ig https://www.instagram.com/reel/xxx`
+                text: `❌ *Please provide an Instagram URL.*`
             }, { quoted: msg });
+        }
+
+        if (!FASTSAVER_API_KEY) {
+            throw new Error('FASTSAVER_API_KEY not set in Railway variables.');
         }
 
         await sock.sendMessage(from, { react: { text: '⏳', key: msg.key } });
@@ -38,114 +35,91 @@ async function instaCommand(sock, from, msg, q) {
                   `┃  📸 *NEXTY MINI IG DL* 📸      ┃\n` +
                   `╰━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╯\n\n` +
                   `╭─「 🔄 *PROCESSING* 」──────────\n` +
-                  `│ ▸ Engine: yt-dlp\n` +
-                  `│ ▸ Cookies: ✅ Loaded\n` +
+                  `│ ▸ Engine: FastSaver API\n` +
+                  `│ ▸ 9 platforms supported\n` +
                   `│ ▸ Please wait...\n` +
                   `╰──────────────────────────────────\n\n` +
                   `> _Downloading from Instagram_ ⏳`
         }, { quoted: msg });
 
-        // ─── Cookies setup ───
-        let cookiesPath = null;
-        const cookiesB64 = process.env.IG_COOKIES_BASE64;
-
-        if (cookiesB64) {
-            cookiesPath = path.join(os.tmpdir(), `ig_cookies_${Date.now()}.txt`);
-            try {
-                fs.writeFileSync(cookiesPath, Buffer.from(cookiesB64, 'base64').toString('utf-8'));
-                console.log('[insta] Cookies loaded from env');
-            } catch (e) {
-                console.error('[insta] Decode failed:', e.message);
-                cookiesPath = null;
+        const { data } = await axios.get(
+            `${FASTSAVER_BASE_URL}/fetch`,
+            {
+                params: { url: url },
+                headers: { 'X-Api-Key': FASTSAVER_API_KEY },
+                timeout: 90000
             }
-        } else if (fs.existsSync(path.join(__dirname, '..', 'cookies.txt'))) {
-            cookiesPath = path.join(__dirname, '..', 'cookies.txt');
-            console.log('[insta] Using local cookies.txt');
+        );
+
+        if (data.ok === false) {
+            throw new Error(data.reason || 'API returned error');
         }
 
-        // ─── yt-dlp command ───
-        const tempDir = os.tmpdir();
-        const timestamp = Date.now();
-        const outputTemplate = path.join(tempDir, `ig_${timestamp}_%(title)s.%(ext)s`);
-
-        let ytDlpCmd = `yt-dlp --no-playlist --no-warnings --no-check-certificate`;
-        
-        if (cookiesPath && fs.existsSync(cookiesPath)) {
-            ytDlpCmd += ` --cookies "${cookiesPath}"`;
-        }
-        
-        ytDlpCmd += ` -o "${outputTemplate}" "${url}"`;
-
-        console.log('[insta] Running yt-dlp...');
-
-        try {
-            await execAsync(ytDlpCmd, {
-                timeout: 120000,
-                maxBuffer: 50 * 1024 * 1024
-            });
-        } catch (execErr) {
-            console.error('[insta] yt-dlp failed:', execErr.message);
-            throw new Error('Download failed. Try another link.');
+        if (!data.download_url) {
+            throw new Error('No download URL in response');
         }
 
-        // ─── Find files ───
-        const files = fs.readdirSync(tempDir)
-            .filter(f => f.startsWith(`ig_${timestamp}_`))
-            .map(f => path.join(tempDir, f));
+        const downloadUrl = data.download_url;
+        const mediaType = data.type || 'video';
+        const caption = data.caption || '';
 
-        if (files.length === 0) {
-            throw new Error('No files downloaded.');
+        const mediaResponse = await axios.get(downloadUrl, {
+            responseType: 'arraybuffer',
+            timeout: 120000,
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+                'Accept': '*/*'
+            },
+            maxContentLength: 200 * 1024 * 1024
+        });
+
+        const mediaBuffer = Buffer.from(mediaResponse.data);
+
+        if (mediaBuffer.length === 0) {
+            throw new Error('Empty media file');
         }
 
-        console.log(`[insta] Found ${files.length} file(s)`);
+        const botCaption = `╭━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╮\n` +
+                          `┃  📸 *NEXTY MINI IG* 📸         ┃\n` +
+                          `╰━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╯\n\n` +
+                          `✅ *Downloaded Successfully*\n` +
+                          `▸ Engine: FastSaver API\n` +
+                          `▸ Type: ${mediaType === 'video' ? 'Video 🎬' : 'Photo 🖼️'}\n` +
+                          `${data.duration ? `▸ Duration: ${data.duration}s\n` : ''}` +
+                          `${data.width ? `▸ Resolution: ${data.width}x${data.height}\n` : ''}` +
+                          `\n> 👀 *POWERED BY NEXTY MINI*`;
 
-        // ─── Send files ───
-        for (let i = 0; i < files.length; i++) {
-            const filePath = files[i];
-            const fileBuffer = fs.readFileSync(filePath);
-            const ext = path.extname(filePath).toLowerCase();
-            const isVideo = ['.mp4', '.mkv', '.webm', '.mov'].includes(ext);
-
-            const caption = `╭━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╮\n` +
-                            `┃  📸 *NEXTY MINI IG* 📸         ┃\n` +
-                            `╰━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╯\n\n` +
-                            `✅ *Downloaded Successfully*\n` +
-                            `▸ Engine: yt-dlp\n` +
-                            `▸ Type: ${isVideo ? 'Video 🎬' : 'Photo 🖼️'}\n` +
-                            `▸ Item: ${i + 1}/${files.length}\n\n` +
-                            `> 👀 *POWERED BY NEXTY MINI*`;
-
-            try {
-                if (isVideo) {
-                    await sock.sendMessage(from, {
-                        video: fileBuffer,
-                        mimetype: 'video/mp4',
-                        caption
-                    }, { quoted: msg });
-                } else {
-                    await sock.sendMessage(from, {
-                        image: fileBuffer,
-                        caption
-                    }, { quoted: msg });
-                }
-            } catch (sendErr) {
-                console.error(`[insta] Send error:`, sendErr.message);
-            }
-
-            try { fs.unlinkSync(filePath); } catch (e) {}
-        }
-
-        if (cookiesPath && cookiesPath.includes(os.tmpdir())) {
-            try { fs.unlinkSync(cookiesPath); } catch (e) {}
+        if (mediaType === 'video') {
+            await sock.sendMessage(from, {
+                video: mediaBuffer,
+                mimetype: 'video/mp4',
+                caption: botCaption
+            }, { quoted: msg });
+        } else {
+            await sock.sendMessage(from, {
+                image: mediaBuffer,
+                caption: botCaption
+            }, { quoted: msg });
         }
 
         await sock.sendMessage(from, { react: { text: '✅', key: msg.key } });
 
     } catch (err) {
-        console.error('[insta] Error:', err.message);
+        console.error('[insta] ❌ Error:', err.message);
+        
+        let errorMsg = err.message;
+        
+        if (err.response) {
+            if (err.response.status === 401) errorMsg = 'Invalid API key.';
+            else if (err.response.status === 429) errorMsg = 'Rate limit. Wait 1 min.';
+            else if (err.response.status === 402) errorMsg = 'Out of credits.';
+            else if (err.response.status === 400) errorMsg = err.response.data?.reason || 'Private or deleted post.';
+            else if (err.response.status === 422) errorMsg = 'Invalid Instagram URL.';
+        }
+
         try {
             await sock.sendMessage(from, { 
-                text: `❌ *Instagram Download Error*\n\n\`${err.message}\`\n\n_Please try another link._` 
+                text: `❌ *Instagram Download Error*\n\n\`${errorMsg}\`` 
             }, { quoted: msg });
             await sock.sendMessage(from, { react: { text: '❌', key: msg.key } });
         } catch (e) {}
