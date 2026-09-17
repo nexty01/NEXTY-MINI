@@ -1,6 +1,6 @@
 /**
- * 🎵 NEXTY MINI — Play Command (RapidAPI)
- * ────────────────────────────────────────
+ * 🎵 NEXTY MINI — Play Command (Tornado API)
+ * ──────────────────────────────────────────
  * Search & download YouTube audio (MP3).
  * 
  * Usage: .play <song name or YouTube URL>
@@ -9,9 +9,10 @@
 const axios = require('axios');
 const yts = require('yt-search');
 
-// ═══ RapidAPI Config ═══
-const RAPIDAPI_KEY = '0b29c845famshdce32905d95a2a9p138924jsn6e73c4d0c621';
-const RAPIDAPI_HOST = 'youtube-mp36.p.rapidapi.com';
+// ═══ Tornado API Config ═══
+const TORNADO_API_KEY = 'sk_tornadoapi_trial_LH58MaBxJ7Gh5LUskXp7Tp0kZCCTyeXZPS5lhbJOK10m5ge__mwir6Vv5sfuUdn1nAQRGbLcITmn2txGu2hDFg';
+const TORNADO_API_URL = 'https://api.tornadoapi.io/jobs';
+const R2_BASE_URL = 'https://r2.tornadoapi.io';
 
 async function playCommand(sock, chatId, message, q) {
     try {
@@ -41,7 +42,7 @@ async function playCommand(sock, chatId, message, q) {
         console.log(`[play] 🔍 Searching: ${query}`);
 
         const ytRegex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\//i;
-        let videoUrl, videoTitle, videoThumb, videoDuration, videoAuthor, videoId = null;
+        let videoUrl, videoTitle, videoThumb, videoDuration, videoAuthor;
 
         if (ytRegex.test(query)) {
             videoUrl = query;
@@ -62,33 +63,7 @@ async function playCommand(sock, chatId, message, q) {
             videoThumb = video.thumbnail;
             videoDuration = video.timestamp;
             videoAuthor = video.author?.name || 'Unknown';
-            videoId = video.videoId || null;
         }
-
-        // ─── Extract Video ID (Robust) ───
-        if (!videoId) {
-            const patterns = [
-                /(?:youtube\.com\/watch\?v=)([^#\&\?]{11})/,
-                /(?:youtu\.be\/)([^#\&\?]{11})/,
-                /(?:youtube\.com\/embed\/)([^#\&\?]{11})/,
-                /(?:youtube\.com\/shorts\/)([^#\&\?]{11})/,
-                /(?:v=)([^#\&\?]{11})/
-            ];
-            
-            for (const pattern of patterns) {
-                const match = videoUrl.match(pattern);
-                if (match && match[1] && match[1].length === 11) {
-                    videoId = match[1];
-                    break;
-                }
-            }
-        }
-
-        if (!videoId) {
-            throw new Error('Could not extract YouTube video ID');
-        }
-
-        console.log(`[play] 📹 Video ID: ${videoId}`);
 
         // ─── Info Card ───
         await sock.sendMessage(chatId, {
@@ -100,7 +75,7 @@ async function playCommand(sock, chatId, message, q) {
                      `│ ▸ *Title*  : ${videoTitle.substring(0, 45)}${videoTitle.length > 45 ? '...' : ''}\n` +
                      `${videoDuration ? `│ ▸ *Duration* : ${videoDuration}\n` : ''}` +
                      `${videoAuthor ? `│ ▸ *Author*   : ${videoAuthor}\n` : ''}` +
-                     `│ ▸ *Engine* : RapidAPI\n` +
+                     `│ ▸ *Engine* : Tornado API\n` +
                      `╰──────────────────────────────────\n\n` +
                      `⏳ _Please wait, downloading audio..._\n\n` +
                      `╭━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╮\n` +
@@ -108,107 +83,88 @@ async function playCommand(sock, chatId, message, q) {
                      `╰━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╯`
         }, { quoted: message });
 
-        // ═══ RapidAPI Call — Get Download URL ═══
-        console.log('[play] 🚀 Calling RapidAPI...');
+        // ═══ Tornado API Call ═══
+        console.log('[play] 🚀 Calling Tornado API...');
 
-        const rapidAPIHeaders = {
-            'x-rapidapi-key': RAPIDAPI_KEY,
-            'x-rapidapi-host': RAPIDAPI_HOST,
-            'Content-Type': 'application/json'
-        };
-
-        const { data } = await axios.get(
-            `https://${RAPIDAPI_HOST}/dl`,
+        const { data } = await axios.post(
+            TORNADO_API_URL,
             {
-                params: { id: videoId },
-                headers: rapidAPIHeaders,
-                timeout: 120000
+                url: videoUrl,
+                format: 'mp3'
+            },
+            {
+                headers: {
+                    'x-api-key': TORNADO_API_KEY,
+                    'Content-Type': 'application/json'
+                },
+                timeout: 180000
             }
         );
 
-        console.log('[play] ✅ RapidAPI response:', JSON.stringify(data).substring(0, 250));
+        console.log('[play] ✅ Tornado response:', JSON.stringify(data).substring(0, 200));
 
-        if (data?.status !== 'ok' && data?.status !== 'processing') {
-            throw new Error(data?.msg || 'API returned error');
-        }
+        // ═══ Extract Download URL ═══
+        let downloadUrl = null;
 
-        let downloadUrl = data?.link;
+        if (data?.jobs?.[0]?.status === 'Completed') {
+            const job = data.jobs[0];
+            if (job.s3_url) downloadUrl = job.s3_url;
+            else if (job.s3_key) downloadUrl = `${R2_BASE_URL}/${job.s3_key}`;
+        } else if (data?.s3_url) {
+            downloadUrl = data.s3_url;
+        } else if (data?.job_id || data?.id) {
+            const jobId = data.job_id || data.id;
+            console.log('[play] ⏳ Polling job:', jobId);
 
-        if (!downloadUrl) {
-            throw new Error('No download link in response');
-        }
-
-        console.log('[play] ✅ Initial URL received');
-
-        // ═══════════════════════════════════════════════════════
-        //  DOWNLOAD AUDIO WITH RETRY (123tokyo URL expires fast)
-        // ═══════════════════════════════════════════════════════
-        console.log('[play] 📥 Downloading audio with retry...');
-
-        let audioBuffer = null;
-        let attempts = 0;
-        const maxAttempts = 5;
-
-        while (attempts < maxAttempts && !audioBuffer) {
-            attempts++;
-            try {
-                console.log(`[play] 📥 Attempt ${attempts}/${maxAttempts}...`);
-
-                const audioResponse = await axios.get(downloadUrl, {
-                    responseType: 'arraybuffer',
-                    timeout: 30000,
-                    headers: {
-                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-                        'Accept': '*/*',
-                        'Accept-Language': 'en-US,en;q=0.9',
-                        'Referer': 'https://www.youtube.com/',
-                        'Origin': 'https://www.youtube.com'
-                    },
-                    maxContentLength: 100 * 1024 * 1024,
-                    maxRedirects: 5,
-                    transformResponse: [(d) => d]
-                });
-
-                const buf = Buffer.from(audioResponse.data);
-
-                if (buf && buf.length > 10240) {
-                    audioBuffer = buf;
-                    console.log(`[play] ✅ Downloaded: ${buf.length} bytes`);
-                    break;
-                } else {
-                    console.log(`[play] ⚠️ Attempt ${attempts}: ${buf?.length || 0} bytes`);
-                }
-            } catch (err) {
-                console.log(`[play] ❌ Attempt ${attempts} failed: ${err.message}`);
-            }
-
-            // If not last attempt, get fresh URL and retry
-            if (!audioBuffer && attempts < maxAttempts) {
+            for (let i = 0; i < 40; i++) {
+                await new Promise(r => setTimeout(r, 3000));
                 try {
-                    console.log('[play] 🔄 Getting fresh URL...');
-                    const { data: retryData } = await axios.get(
-                        `https://${RAPIDAPI_HOST}/dl`,
-                        {
-                            params: { id: videoId },
-                            headers: rapidAPIHeaders,
-                            timeout: 60000
-                        }
+                    const jobRes = await axios.get(
+                        `https://api.tornadoapi.io/jobs/${jobId}`,
+                        { headers: { 'x-api-key': TORNADO_API_KEY } }
                     );
-
-                    if (retryData?.link) {
-                        downloadUrl = retryData.link;
-                        console.log('[play] ✅ Fresh URL received');
+                    
+                    if (jobRes.data?.jobs?.[0]?.status === 'Completed') {
+                        const j = jobRes.data.jobs[0];
+                        downloadUrl = j.s3_url || `${R2_BASE_URL}/${j.s3_key}`;
+                        console.log('[play] ✅ Job completed');
+                        break;
+                    }
+                    if (jobRes.data?.jobs?.[0]?.status === 'Failed') {
+                        throw new Error('Tornado job failed');
                     }
                 } catch (e) {
-                    console.log('[play] ⚠️ Fresh URL failed:', e.message);
+                    if (e.message === 'Tornado job failed') throw e;
                 }
-
-                await new Promise(r => setTimeout(r, 1500));
             }
         }
 
-        if (!audioBuffer) {
-            throw new Error('Download failed after all retries');
+        if (!downloadUrl) {
+            throw new Error('No download URL received');
+        }
+
+        console.log('[play] ✅ Download URL:', downloadUrl.substring(0, 80));
+
+        // ═══ Download Audio Buffer ═══
+        console.log('[play] 📥 Downloading audio to buffer...');
+
+        const audioResponse = await axios.get(downloadUrl, {
+            responseType: 'arraybuffer',
+            timeout: 120000,
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+                'Accept': '*/*'
+            },
+            maxContentLength: 200 * 1024 * 1024,
+            transformResponse: [(d) => d]
+        });
+
+        const audioBuffer = Buffer.from(audioResponse.data);
+
+        console.log('[play] ✅ Downloaded:', audioBuffer.length, 'bytes');
+
+        if (!audioBuffer || audioBuffer.length < 10240) {
+            throw new Error(`Audio file too small: ${audioBuffer.length} bytes`);
         }
 
         // ═══ Send Audio ═══
@@ -230,14 +186,13 @@ async function playCommand(sock, chatId, message, q) {
         console.log('[play] ✅ Sent successfully');
 
     } catch (err) {
-        console.error('[play] ❌ Main error:', err.message);
+        console.error('[play] ❌ Error:', err.message);
 
         let errorMsg = err.message;
-        if (err.response?.status === 401) errorMsg = 'Invalid RapidAPI key.';
-        else if (err.response?.status === 403) errorMsg = 'Access forbidden.';
-        else if (err.response?.status === 429) errorMsg = 'Rate limit hit. Wait.';
-        else if (err.response?.status === 404) errorMsg = 'Video not found.';
-        else if (err.response?.status === 500) errorMsg = 'API server error.';
+        if (err.response?.status === 401) errorMsg = 'Invalid Tornado API key.';
+        else if (err.response?.status === 422) errorMsg = 'Format not supported.';
+        else if (err.response?.status === 429) errorMsg = 'Rate limit. Wait.';
+        else if (err.response?.status === 402) errorMsg = 'Out of trial credits.';
 
         try {
             await sock.sendMessage(chatId, { 
