@@ -1,11 +1,5 @@
 /**
- * 📸 NEXTY MINI — Instagram Downloader (yt-dlp)
- * ─────────────────────────────────────────────
- * Uses yt-dlp binary for 100% reliable downloads.
- * FREE forever. No API key. No rate limits.
- * 
- * Usage: .ig <instagram URL>
- *        .insta <instagram URL>
+ * 📸 NEXTY MINI — Instagram Downloader (yt-dlp + Cookies)
  */
 
 const { exec } = require('child_process');
@@ -31,52 +25,67 @@ async function instaCommand(sock, from, msg, q) {
             url = text.replace(/^\.(ig|insta|instagram)\s+/i, '').trim();
         }
 
-        // ─── Validate URL ───
         if (!url || !url.includes('instagram.com')) {
             return await sock.sendMessage(from, { 
-                text: `❌ *Please provide an Instagram URL.*\n\n` +
-                      `*Examples:*\n` +
-                      `▸ .ig https://www.instagram.com/reel/xxx\n` +
-                      `▸ .insta https://www.instagram.com/p/xxx`
+                text: `❌ *Please provide an Instagram URL.*\n\n*Example:*\n▸ .ig https://www.instagram.com/reel/xxx`
             }, { quoted: msg });
         }
 
-        // ─── Loading reaction ───
         await sock.sendMessage(from, { react: { text: '⏳', key: msg.key } });
 
-        // ─── Processing message ───
         await sock.sendMessage(from, {
             text: `╭━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╮\n` +
                   `┃  📸 *NEXTY MINI IG DL* 📸      ┃\n` +
                   `╰━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╯\n\n` +
                   `╭─「 🔄 *PROCESSING* 」──────────\n` +
-                  `│ ▸ Using yt-dlp engine\n` +
-                  `│ ▸ 100% reliable\n` +
+                  `│ ▸ Engine: yt-dlp\n` +
+                  `│ ▸ Cookies: ✅ Loaded\n` +
                   `│ ▸ Please wait...\n` +
                   `╰──────────────────────────────────\n\n` +
                   `> _Downloading from Instagram_ ⏳`
         }, { quoted: msg });
 
-        // ─── Temp path ───
+        // ─── Cookies setup ───
+        let cookiesPath = null;
+        const cookiesB64 = process.env.IG_COOKIES_BASE64;
+
+        if (cookiesB64) {
+            cookiesPath = path.join(os.tmpdir(), `ig_cookies_${Date.now()}.txt`);
+            try {
+                fs.writeFileSync(cookiesPath, Buffer.from(cookiesB64, 'base64').toString('utf-8'));
+                console.log('[insta] Cookies loaded from env');
+            } catch (e) {
+                console.error('[insta] Decode failed:', e.message);
+                cookiesPath = null;
+            }
+        } else if (fs.existsSync(path.join(__dirname, '..', 'cookies.txt'))) {
+            cookiesPath = path.join(__dirname, '..', 'cookies.txt');
+            console.log('[insta] Using local cookies.txt');
+        }
+
+        // ─── yt-dlp command ───
         const tempDir = os.tmpdir();
         const timestamp = Date.now();
         const outputTemplate = path.join(tempDir, `ig_${timestamp}_%(title)s.%(ext)s`);
 
-        // ─── yt-dlp command ───
-        const ytDlpCmd = `yt-dlp --no-playlist --no-warnings --user-agent "Mozilla/5.0 (Windows NT 10.0; Win64; x64)" -o "${outputTemplate}" "${url}"`;
+        let ytDlpCmd = `yt-dlp --no-playlist --no-warnings --no-check-certificate`;
+        
+        if (cookiesPath && fs.existsSync(cookiesPath)) {
+            ytDlpCmd += ` --cookies "${cookiesPath}"`;
+        }
+        
+        ytDlpCmd += ` -o "${outputTemplate}" "${url}"`;
 
-        console.log('[insta] Running:', ytDlpCmd);
+        console.log('[insta] Running yt-dlp...');
 
         try {
-            const { stdout, stderr } = await execAsync(ytDlpCmd, {
-                timeout: 90000,
+            await execAsync(ytDlpCmd, {
+                timeout: 120000,
                 maxBuffer: 50 * 1024 * 1024
             });
-            console.log('[insta] yt-dlp stdout:', stdout);
-            if (stderr) console.log('[insta] stderr:', stderr);
         } catch (execErr) {
             console.error('[insta] yt-dlp failed:', execErr.message);
-            throw new Error('yt-dlp failed. Instagram may require login for this post.');
+            throw new Error('Download failed. Try another link.');
         }
 
         // ─── Find files ───
@@ -85,12 +94,12 @@ async function instaCommand(sock, from, msg, q) {
             .map(f => path.join(tempDir, f));
 
         if (files.length === 0) {
-            throw new Error('No files downloaded. Try a public post.');
+            throw new Error('No files downloaded.');
         }
 
         console.log(`[insta] Found ${files.length} file(s)`);
 
-        // ─── Send each file ───
+        // ─── Send files ───
         for (let i = 0; i < files.length; i++) {
             const filePath = files[i];
             const fileBuffer = fs.readFileSync(filePath);
@@ -120,14 +129,16 @@ async function instaCommand(sock, from, msg, q) {
                     }, { quoted: msg });
                 }
             } catch (sendErr) {
-                console.error(`[insta] Send item ${i + 1} failed:`, sendErr.message);
+                console.error(`[insta] Send error:`, sendErr.message);
             }
 
-            // Cleanup
             try { fs.unlinkSync(filePath); } catch (e) {}
         }
 
-        // ─── Success reaction ───
+        if (cookiesPath && cookiesPath.includes(os.tmpdir())) {
+            try { fs.unlinkSync(cookiesPath); } catch (e) {}
+        }
+
         await sock.sendMessage(from, { react: { text: '✅', key: msg.key } });
 
     } catch (err) {
