@@ -953,7 +953,7 @@ class BotSession {
                                         }
 
                                         // ===== MEDIA & DOWNLOAD =====
-                                        case 'song': await commands.song(this.sock, from, msg); break;
+                                        case 'play': await commands.play(this.sock, from, msg); break;
                                         case 'video': await commands.video(this.sock, from, msg); break;
                                         case 'insta': case 'ig': await commands.insta(this.sock, from, msg, q); break;
                                         case 'tiktok': case 'tt': await commands.tiktok(this.sock, from, msg, q); break;
