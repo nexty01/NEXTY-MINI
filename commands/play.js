@@ -10,9 +10,8 @@ const axios = require('axios');
 const yts = require('yt-search');
 
 // ═══ RapidAPI Config ═══
-const RAPIDAPI_KEY = '0b29c845famshdce32905d95a2a9p138924jsn6e73c4d0c621'; // ← Nayi key yahan
-const RAPIDAPI_HOST = 'youtube-mp310.p.rapidapi.com';
-
+const RAPIDAPI_KEY = '0b29c845famshdce32905d95a2a9p138924jsn6e73c4d0c621';
+const RAPIDAPI_HOST = 'youtube-mp36.p.rapidapi.com';
 async function playCommand(sock, chatId, message, q) {
     try {
         await sock.sendMessage(chatId, { react: { text: '🎵', key: message.key } });
