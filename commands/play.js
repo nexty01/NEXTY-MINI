@@ -101,7 +101,7 @@ async function playCommand(sock, chatId, message, q) {
             }
         );
 
-        console.log('[play] ✅ Cobalt response:', JSON.stringify(data).substring(0, 200));
+        console.log('[play] ✅ Cobalt response:', JSON.stringify(data).substring(0, 300));
 
         // ═══ Extract Tunnel URL ═══
         let tunnelUrl = null;
@@ -118,10 +118,10 @@ async function playCommand(sock, chatId, message, q) {
             throw new Error(data?.error?.code || 'No download URL received');
         }
 
-        console.log('[play] ✅ Tunnel URL received');
+        console.log('[play] ✅ Tunnel URL:', tunnelUrl.substring(0, 100));
 
         // ═══════════════════════════════════════════════════════
-        //  DOWNLOAD AUDIO AS BUFFER FIRST (Tunnel expiry fix)
+        //  DOWNLOAD AUDIO AS BUFFER (Tunnel expiry fix)
         // ═══════════════════════════════════════════════════════
         console.log('[play] 📥 Downloading audio to buffer...');
 
@@ -132,26 +132,62 @@ async function playCommand(sock, chatId, message, q) {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
                 'Accept': '*/*'
             },
-            maxContentLength: 100 * 1024 * 1024,
-            maxBodyLength: 100 * 1024 * 1024
+            maxContentLength: 200 * 1024 * 1024,
+            maxBodyLength: 200 * 1024 * 1024,
+            // Disable automatic JSON parse for binary
+            transformResponse: [(d) => d]
         });
 
         const audioBuffer = Buffer.from(audioResponse.data);
 
+        console.log('[play] ✅ Downloaded:', audioBuffer.length, 'bytes');
+
+        // ═══ Verify Audio Buffer ═══
         if (!audioBuffer || audioBuffer.length === 0) {
-            throw new Error('Empty audio file received');
+            throw new Error('Empty audio file received (0 bytes)');
         }
 
-        console.log('[play] ✅ Downloaded', audioBuffer.length, 'bytes');
+        // Minimum size check (audio should be > 10 KB)
+        if (audioBuffer.length < 10240) {
+            throw new Error(`Audio file too small: ${audioBuffer.length} bytes`);
+        }
+
+        // ═══ Detect Audio Format ═══
+        let mimetype = 'audio/mpeg';
+        let ext = '.mp3';
+
+        const firstBytes = audioBuffer.slice(0, 12).toString('hex').toLowerCase();
+
+        if (firstBytes.startsWith('494433') || firstBytes.startsWith('fffb') || firstBytes.startsWith('fff3')) {
+            mimetype = 'audio/mpeg';  // MP3
+            ext = '.mp3';
+        } else if (firstBytes.startsWith('4f676753')) {
+            mimetype = 'audio/ogg';   // OGG
+            ext = '.ogg';
+        } else if (firstBytes.startsWith('52494646')) {
+            mimetype = 'audio/wav';   // WAV
+            ext = '.wav';
+        } else if (audioBuffer.slice(4, 8).toString('ascii') === 'ftyp') {
+            mimetype = 'audio/mp4';   // M4A
+            ext = '.m4a';
+        }
+
+        console.log('[play] 🎵 Detected format:', mimetype, ext);
 
         // ═══ Send Audio Buffer ═══
-        const fileName = (data.filename || videoTitle || 'audio')
+        const safeTitle = (data.filename || videoTitle || 'NEXTY_MINI_Audio')
+            .replace(/\.mp3$/i, '')
             .replace(/[^\w\s\-\.\(\)]/g, '')
-            .substring(0, 80) + '.mp3';
+            .substring(0, 60)
+            .trim();
+
+        const fileName = `${safeTitle}${ext}`;
+
+        console.log('[play] 📤 Sending audio:', fileName);
 
         await sock.sendMessage(chatId, {
             audio: audioBuffer,
-            mimetype: 'audio/mpeg',
+            mimetype: mimetype,
             fileName: fileName,
             ptt: false
         }, { quoted: message });
@@ -165,11 +201,14 @@ async function playCommand(sock, chatId, message, q) {
         console.error('[play] ❌ Error:', err.message);
 
         let errorMsg = err.message;
+
         if (err.response?.status === 401) errorMsg = 'Invalid API key.';
         else if (err.response?.status === 422) errorMsg = 'Audio format not supported.';
         else if (err.response?.status === 429) errorMsg = 'Rate limit. Wait 1 min.';
         else if (err.response?.status === 500) errorMsg = 'Cobalt server error. Try again.';
+        else if (err.response?.status === 404) errorMsg = 'Tunnel URL expired. Try again.';
         else if (err.code === 'ECONNABORTED') errorMsg = 'Download timeout. Try again.';
+        else if (err.code === 'ERR_FR_MAX_CONTENT_LENGTH_EXCEEDED') errorMsg = 'File too large.';
 
         try {
             await sock.sendMessage(chatId, { 
