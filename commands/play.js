@@ -101,39 +101,65 @@ async function playCommand(sock, chatId, message, q) {
             }
         );
 
-        console.log('[play] ✅ Response:', JSON.stringify(data).substring(0, 200));
+        console.log('[play] ✅ Cobalt response:', JSON.stringify(data).substring(0, 200));
 
-        // ═══ Check Response ═══
-        let downloadUrl = null;
+        // ═══ Extract Tunnel URL ═══
+        let tunnelUrl = null;
 
         if (data?.status === 'redirect' || data?.status === 'tunnel') {
-            downloadUrl = data.url;
-        } else if (data?.status === 'picker') {
-            // Multiple items — pick first audio
-            if (data.picker && data.picker.length > 0) {
-                downloadUrl = data.picker[0].url;
-            }
+            tunnelUrl = data.url;
+        } else if (data?.status === 'picker' && data.picker?.length > 0) {
+            tunnelUrl = data.picker[0].url;
         } else if (data?.url) {
-            downloadUrl = data.url;
+            tunnelUrl = data.url;
         }
 
-        if (!downloadUrl) {
+        if (!tunnelUrl) {
             throw new Error(data?.error?.code || 'No download URL received');
         }
 
-        console.log('[play] ✅ Download URL:', downloadUrl.substring(0, 80));
+        console.log('[play] ✅ Tunnel URL received');
 
-        // ═══ Send Audio ═══
-        const fileName = (data.filename || videoTitle || 'audio').replace(/[^\w\s\-\.\(\)]/g, '').substring(0, 80) + '.mp3';
+        // ═══════════════════════════════════════════════════════
+        //  DOWNLOAD AUDIO AS BUFFER FIRST (Tunnel expiry fix)
+        // ═══════════════════════════════════════════════════════
+        console.log('[play] 📥 Downloading audio to buffer...');
+
+        const audioResponse = await axios.get(tunnelUrl, {
+            responseType: 'arraybuffer',
+            timeout: 120000,
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                'Accept': '*/*'
+            },
+            maxContentLength: 100 * 1024 * 1024,
+            maxBodyLength: 100 * 1024 * 1024
+        });
+
+        const audioBuffer = Buffer.from(audioResponse.data);
+
+        if (!audioBuffer || audioBuffer.length === 0) {
+            throw new Error('Empty audio file received');
+        }
+
+        console.log('[play] ✅ Downloaded', audioBuffer.length, 'bytes');
+
+        // ═══ Send Audio Buffer ═══
+        const fileName = (data.filename || videoTitle || 'audio')
+            .replace(/[^\w\s\-\.\(\)]/g, '')
+            .substring(0, 80) + '.mp3';
 
         await sock.sendMessage(chatId, {
-            audio: { url: downloadUrl },
+            audio: audioBuffer,
             mimetype: 'audio/mpeg',
             fileName: fileName,
             ptt: false
         }, { quoted: message });
 
+        // ═══ Success reaction ═══
         await sock.sendMessage(chatId, { react: { text: '✅', key: message.key } });
+
+        console.log('[play] ✅ Sent successfully');
 
     } catch (err) {
         console.error('[play] ❌ Error:', err.message);
@@ -143,6 +169,7 @@ async function playCommand(sock, chatId, message, q) {
         else if (err.response?.status === 422) errorMsg = 'Audio format not supported.';
         else if (err.response?.status === 429) errorMsg = 'Rate limit. Wait 1 min.';
         else if (err.response?.status === 500) errorMsg = 'Cobalt server error. Try again.';
+        else if (err.code === 'ECONNABORTED') errorMsg = 'Download timeout. Try again.';
 
         try {
             await sock.sendMessage(chatId, { 
