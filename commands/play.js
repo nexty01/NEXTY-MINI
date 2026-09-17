@@ -89,7 +89,7 @@ async function playCommand(sock, from, msg, q) {
                      `${videoDuration ? `│ ▸ *Duration* : ${videoDuration}\n` : ''}` +
                      `${videoViews ? `│ ▸ *Views*    : ${videoViews}\n` : ''}` +
                      `${videoAuthor ? `│ ▸ *Author*   : ${videoAuthor}\n` : ''}` +
-                     `│ ▸ *Engine* : Tornado API\n` +
+                     `│ ▸ *Engine* : NEXTY API \n` +
                      `╰──────────────────────────────────\n\n` +
                      `⏳ _Please wait, downloading..._\n\n` +
                      `╭━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╮\n` +
@@ -204,7 +204,7 @@ async function playCommand(sock, from, msg, q) {
             `┃  🎵 *NEXTY MINI MUSIC* 🎵      ┃\n` +
             `╰━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╯\n\n` +
             `✅ *Downloaded Successfully*\n` +
-            `▸ Engine: Tornado API\n` +
+            `▸ Engine: NEXTYAPI\n` +
             `▸ Type: Audio 🎵\n` +
             `${videoTitle ? `▸ Title: ${videoTitle.substring(0, 50)}${videoTitle.length > 50 ? '...' : ''}\n` : ''}` +
             `\n> 👀 *POWERED BY NEXTY MINI*`;
