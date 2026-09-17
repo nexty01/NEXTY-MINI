@@ -1,7 +1,8 @@
 /**
- * 🎵 NEXTY MINI — Play Command (Tornado API)
- * ──────────────────────────────────────────
+ * 🎵 NEXTY MINI — Play Command (EliteProTech API)
+ * ────────────────────────────────────────────────
  * Search & download YouTube audio (MP3).
+ * Fastest API — 5-10 seconds response.
  * 
  * Usage: .play <song name or YouTube URL>
  */
@@ -9,10 +10,8 @@
 const axios = require('axios');
 const yts = require('yt-search');
 
-// ═══ Tornado API Config ═══
-const TORNADO_API_KEY = 'sk_tornadoapi_trial_LH58MaBxJ7Gh5LUskXp7Tp0kZCCTyeXZPS5lhbJOK10m5ge__mwir6Vv5sfuUdn1nAQRGbLcITmn2txGu2hDFg';
-const TORNADO_API_URL = 'https://api.tornadoapi.io/jobs';
-const R2_BASE_URL = 'https://r2.tornadoapi.io';
+// ═══ EliteProTech API Config ═══
+const ELITE_API_URL = 'https://eliteprotech-apis.zone.id/download/ytmp3';
 
 async function playCommand(sock, chatId, message, q) {
     try {
@@ -75,7 +74,7 @@ async function playCommand(sock, chatId, message, q) {
                      `│ ▸ *Title*  : ${videoTitle.substring(0, 45)}${videoTitle.length > 45 ? '...' : ''}\n` +
                      `${videoDuration ? `│ ▸ *Duration* : ${videoDuration}\n` : ''}` +
                      `${videoAuthor ? `│ ▸ *Author*   : ${videoAuthor}\n` : ''}` +
-                     `│ ▸ *Engine* : Tornado API\n` +
+                     `│ ▸ *Engine* : EliteProTech API\n` +
                      `╰──────────────────────────────────\n\n` +
                      `⏳ _Please wait, downloading audio..._\n\n` +
                      `╭━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╮\n` +
@@ -83,67 +82,31 @@ async function playCommand(sock, chatId, message, q) {
                      `╰━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╯`
         }, { quoted: message });
 
-        // ═══ Tornado API Call ═══
-        console.log('[play] 🚀 Calling Tornado API...');
+        // ═══ EliteProTech API Call ═══
+        console.log('[play] 🚀 Calling EliteProTech API...');
 
-        const { data } = await axios.post(
-            TORNADO_API_URL,
-            {
-                url: videoUrl,
-                format: 'mp3'
-            },
-            {
-                headers: {
-                    'x-api-key': TORNADO_API_KEY,
-                    'Content-Type': 'application/json'
-                },
-                timeout: 180000
+        const { data } = await axios.get(ELITE_API_URL, {
+            params: { url: videoUrl },
+            timeout: 120000,
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                'Accept': 'application/json'
             }
-        );
+        });
 
-        console.log('[play] ✅ Tornado response:', JSON.stringify(data).substring(0, 200));
+        console.log('[play] ✅ EliteProTech response:', JSON.stringify(data).substring(0, 250));
 
         // ═══ Extract Download URL ═══
-        let downloadUrl = null;
-
-        if (data?.jobs?.[0]?.status === 'Completed') {
-            const job = data.jobs[0];
-            if (job.s3_url) downloadUrl = job.s3_url;
-            else if (job.s3_key) downloadUrl = `${R2_BASE_URL}/${job.s3_key}`;
-        } else if (data?.s3_url) {
-            downloadUrl = data.s3_url;
-        } else if (data?.job_id || data?.id) {
-            const jobId = data.job_id || data.id;
-            console.log('[play] ⏳ Polling job:', jobId);
-
-            for (let i = 0; i < 40; i++) {
-                await new Promise(r => setTimeout(r, 3000));
-                try {
-                    const jobRes = await axios.get(
-                        `https://api.tornadoapi.io/jobs/${jobId}`,
-                        { headers: { 'x-api-key': TORNADO_API_KEY } }
-                    );
-                    
-                    if (jobRes.data?.jobs?.[0]?.status === 'Completed') {
-                        const j = jobRes.data.jobs[0];
-                        downloadUrl = j.s3_url || `${R2_BASE_URL}/${j.s3_key}`;
-                        console.log('[play] ✅ Job completed');
-                        break;
-                    }
-                    if (jobRes.data?.jobs?.[0]?.status === 'Failed') {
-                        throw new Error('Tornado job failed');
-                    }
-                } catch (e) {
-                    if (e.message === 'Tornado job failed') throw e;
-                }
-            }
+        if (!data?.status || !data?.download?.downloadUrl) {
+            throw new Error(data?.message || 'API returned no download URL');
         }
 
-        if (!downloadUrl) {
-            throw new Error('No download URL received');
-        }
+        const downloadUrl = data.download.downloadUrl;
+        const apiTitle = data.download.title || videoTitle;
+        const apiDuration = data.download.duration || '';
+        const apiThumbnail = data.download.thumbnail || '';
 
-        console.log('[play] ✅ Download URL:', downloadUrl.substring(0, 80));
+        console.log('[play] ✅ Download URL:', downloadUrl.substring(0, 100));
 
         // ═══ Download Audio Buffer ═══
         console.log('[play] 📥 Downloading audio to buffer...');
@@ -152,8 +115,9 @@ async function playCommand(sock, chatId, message, q) {
             responseType: 'arraybuffer',
             timeout: 120000,
             headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-                'Accept': '*/*'
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                'Accept': '*/*',
+                'Referer': 'https://eliteprotech-apis.zone.id/'
             },
             maxContentLength: 200 * 1024 * 1024,
             transformResponse: [(d) => d]
@@ -168,7 +132,7 @@ async function playCommand(sock, chatId, message, q) {
         }
 
         // ═══ Send Audio ═══
-        const safeTitle = (videoTitle || 'NEXTY_MINI_Audio')
+        const safeTitle = (apiTitle || 'NEXTY_MINI_Audio')
             .replace(/[^\w\s\-\.\(\)]/g, '')
             .substring(0, 60)
             .trim();
@@ -189,10 +153,10 @@ async function playCommand(sock, chatId, message, q) {
         console.error('[play] ❌ Error:', err.message);
 
         let errorMsg = err.message;
-        if (err.response?.status === 401) errorMsg = 'Invalid Tornado API key.';
-        else if (err.response?.status === 422) errorMsg = 'Format not supported.';
+        if (err.response?.status === 401) errorMsg = 'API unauthorized.';
         else if (err.response?.status === 429) errorMsg = 'Rate limit. Wait.';
-        else if (err.response?.status === 402) errorMsg = 'Out of trial credits.';
+        else if (err.response?.status === 404) errorMsg = 'Song not found.';
+        else if (err.response?.status === 500) errorMsg = 'API server error.';
 
         try {
             await sock.sendMessage(chatId, { 
