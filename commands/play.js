@@ -10,7 +10,7 @@ const axios = require('axios');
 const yts = require('yt-search');
 
 // ═══ Tornado API Config ═══
-const TORNADO_API_KEY = 'sk_tornadoapi_trial_YOUR_NEW_KEY_HERE'; // ← Nayi key
+const TORNADO_API_KEY = 'sk_tornadoapi_trial_LH58MaBxJ7Gh5LUskXp7Tp0kZCCTyeXZPS5lhbJOK10m5ge__mwir6Vv5sfuUdn1nAQRGbLcITmn2txGu2hDFg'; // ← Nayi key
 const TORNADO_API_URL = 'https://api.tornadoapi.io/jobs';
 const R2_BASE_URL = 'https://r2.tornadoapi.io';
 
