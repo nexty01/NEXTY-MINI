@@ -1,10 +1,10 @@
 /**
- * 🎬 NEXTY MINI — YouTube Video Downloader (Tornado API)
+ * 🎵 NEXTY MINI — YouTube Audio Downloader (Tornado API)
  * ──────────────────────────────────────────────────────
  * Search by name OR direct URL — auto downloads.
  * 
- * Usage: .video I Wanna Be Your Slave
- *        .video https://youtu.be/xxx
+ * Usage: .play I Wanna Be Your Slave
+ *        .play https://youtu.be/xxx
  */
 
 const axios = require('axios');
@@ -15,7 +15,7 @@ const TORNADO_API_KEY = 'sk_tornadoapi_trial_LH58MaBxJ7Gh5LUskXp7Tp0kZCCTyeXZPS5
 const TORNADO_API_URL = 'https://api.tornadoapi.io/jobs';
 const R2_BASE_URL = 'https://r2.tornadoapi.io'; // ← Base URL confirm karo
 
-async function videoCommand(sock, from, msg, q) {
+async function playCommand(sock, from, msg, q) {
     try {
         // ─── Get Query ───
         let query = q;
@@ -29,15 +29,15 @@ async function videoCommand(sock, from, msg, q) {
                        || messageContent.extendedTextMessage?.text 
                        || messageContent.imageMessage?.caption 
                        || '').trim();
-            query = text.replace(/^\.(video|yt|youtube|ytmp4|play)\s+/i, '').trim();
+            query = text.replace(/^\.(play|song|music|ytmp3)\s+/i, '').trim();
         }
 
         if (!query) {
             return await sock.sendMessage(from, { 
-                text: `❌ *Please provide a video name or YouTube URL.*\n\n` +
+                text: `❌ *Please provide a song name or YouTube URL.*\n\n` +
                       `*Examples:*\n` +
-                      `▸ .video I Wanna Be Your Slave\n` +
-                      `▸ .video https://youtu.be/xxx`
+                      `▸ .play I Wanna Be Your Slave\n` +
+                      `▸ .play https://youtu.be/xxx`
             }, { quoted: msg });
         }
 
@@ -45,7 +45,7 @@ async function videoCommand(sock, from, msg, q) {
         await sock.sendMessage(from, { react: { text: '⏳', key: msg.key } });
 
         // ─── Search YouTube ───
-        console.log(`[video] 🔍 Searching YouTube: ${query}`);
+        console.log(`[play] 🔍 Searching YouTube: ${query}`);
 
         const ytRegex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\//i;
         let videoUrl, videoTitle, videoThumb, videoDuration, videoViews, videoAuthor;
@@ -53,7 +53,7 @@ async function videoCommand(sock, from, msg, q) {
         if (ytRegex.test(query)) {
             // Direct URL
             videoUrl = query;
-            videoTitle = 'YouTube Video';
+            videoTitle = 'YouTube Audio';
             const match = videoUrl.match(/(?:v=|\/)([0-9A-Za-z_-]{11})/);
             if (match) {
                 videoThumb = `https://i.ytimg.com/vi/${match[1]}/hqdefault.jpg`;
@@ -82,7 +82,7 @@ async function videoCommand(sock, from, msg, q) {
         await sock.sendMessage(from, {
             image: { url: videoThumb },
             caption: `╭━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╮\n` +
-                     `┃  🎬 *NEXTY MINI VIDEO* 🎬      ┃\n` +
+                     `┃  🎵 *NEXTY MINI MUSIC* 🎵      ┃\n` +
                      `╰━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╯\n\n` +
                      `╭─「 📀 *NOW DOWNLOADING* 」──────\n` +
                      `│ ▸ *Title*  : ${videoTitle.substring(0, 45)}${videoTitle.length > 45 ? '...' : ''}\n` +
@@ -98,14 +98,13 @@ async function videoCommand(sock, from, msg, q) {
         }, { quoted: msg });
 
         // ═══ Tornado API Call ═══
-        console.log('[video] 🚀 Calling Tornado API...');
+        console.log('[play] 🚀 Calling Tornado API...');
 
         const { data } = await axios.post(
             TORNADO_API_URL,
             {
                 url: videoUrl,
-                format: 'mp4',
-                max_resolution: '720'
+                format: 'mp3'
             },
             {
                 headers: {
@@ -116,7 +115,7 @@ async function videoCommand(sock, from, msg, q) {
             }
         );
 
-        console.log('[video] ✅ Response:', JSON.stringify(data).substring(0, 300));
+        console.log('[play] ✅ Response:', JSON.stringify(data).substring(0, 300));
 
         // ═══ Extract Download URL ═══
         let downloadUrl = null;
@@ -149,7 +148,7 @@ async function videoCommand(sock, from, msg, q) {
         // Format 4: job_id (poll)
         else if (data?.job_id || data?.id) {
             const jobId = data.job_id || data.id;
-            console.log('[video] ⏳ Polling job:', jobId);
+            console.log('[play] ⏳ Polling job:', jobId);
 
             for (let i = 0; i < 60; i++) {
                 await new Promise(r => setTimeout(r, 3000));
@@ -163,7 +162,7 @@ async function videoCommand(sock, from, msg, q) {
                         }
                     );
 
-                    console.log(`[video] Poll ${i + 1}: ${jobRes.data?.status || jobRes.data?.jobs?.[0]?.status}`);
+                    console.log(`[play] Poll ${i + 1}: ${jobRes.data?.status || jobRes.data?.jobs?.[0]?.status}`);
 
                     // Check jobs array response
                     if (jobRes.data?.jobs?.[0]) {
@@ -188,7 +187,7 @@ async function videoCommand(sock, from, msg, q) {
                         }
                     }
                 } catch (pollErr) {
-                    console.log('[video] Poll error:', pollErr.message);
+                    console.log('[play] Poll error:', pollErr.message);
                 }
             }
         }
@@ -197,39 +196,41 @@ async function videoCommand(sock, from, msg, q) {
             throw new Error('No download URL received. Check logs.');
         }
 
-        console.log('[video] ✅ Download URL:', downloadUrl.substring(0, 80) + '...');
+        console.log('[play] ✅ Download URL:', downloadUrl.substring(0, 80) + '...');
 
-        // ═══ Send Video ═══
+        // ═══ Send Audio ═══
         const botCaption = 
             `╭━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╮\n` +
-            `┃  🎬 *NEXTY MINI VIDEO* 🎬      ┃\n` +
+            `┃  🎵 *NEXTY MINI MUSIC* 🎵      ┃\n` +
             `╰━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╯\n\n` +
             `✅ *Downloaded Successfully*\n` +
             `▸ Engine: Tornado API\n` +
-            `▸ Type: Video 🎬\n` +
-            `▸ Quality: 720p HD\n` +
+            `▸ Type: Audio 🎵\n` +
             `${videoTitle ? `▸ Title: ${videoTitle.substring(0, 50)}${videoTitle.length > 50 ? '...' : ''}\n` : ''}` +
             `\n> 👀 *POWERED BY NEXTY MINI*`;
 
         await sock.sendMessage(from, {
-            video: { url: downloadUrl },
-            mimetype: 'video/mp4',
-            caption: botCaption
+            audio: { url: downloadUrl },
+            mimetype: 'audio/mpeg',
+            ptt: false
         }, { quoted: msg });
+
+        // Send info as separate text since audio messages don't support captions
+        await sock.sendMessage(from, { text: botCaption }, { quoted: msg });
 
         // ═══ Success reaction ═══
         await sock.sendMessage(from, { react: { text: '✅', key: msg.key } });
 
-        console.log('[video] ✅ Sent successfully');
+        console.log('[play] ✅ Sent successfully');
 
     } catch (err) {
-        console.error('[video] ❌ Error:', err.message);
+        console.error('[play] ❌ Error:', err.message);
 
         let errorMsg = err.message;
 
         if (err.response) {
-            console.error('[video] Status:', err.response.status);
-            console.error('[video] Data:', JSON.stringify(err.response.data).substring(0, 300));
+            console.error('[play] Status:', err.response.status);
+            console.error('[play] Data:', JSON.stringify(err.response.data).substring(0, 300));
 
             if (err.response.status === 401) {
                 errorMsg = 'Invalid API key. Please update.';
@@ -246,11 +247,11 @@ async function videoCommand(sock, from, msg, q) {
 
         try {
             await sock.sendMessage(from, { 
-                text: `❌ *Video Download Error*\n\n\`${errorMsg}\`` 
+                text: `❌ *Audio Download Error*\n\n\`${errorMsg}\`` 
             }, { quoted: msg });
             await sock.sendMessage(from, { react: { text: '❌', key: msg.key } });
         } catch (e) {}
     }
 }
 
-module.exports = videoCommand;
+module.exports = playCommand;
