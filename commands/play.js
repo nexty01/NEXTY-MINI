@@ -41,7 +41,7 @@ async function playCommand(sock, chatId, message, q) {
         console.log(`[play] 🔍 Searching: ${query}`);
 
         const ytRegex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\//i;
-        let videoUrl, videoTitle, videoThumb, videoDuration, videoAuthor;
+        let videoUrl, videoTitle, videoThumb, videoDuration, videoAuthor, videoId = null;
 
         if (ytRegex.test(query)) {
             videoUrl = query;
@@ -62,11 +62,27 @@ async function playCommand(sock, chatId, message, q) {
             videoThumb = video.thumbnail;
             videoDuration = video.timestamp;
             videoAuthor = video.author?.name || 'Unknown';
+            videoId = video.videoId || null;
         }
 
-        // ─── Extract Video ID ───
-        const videoIdMatch = videoUrl.match(/(?:v=|\/)([0-9A-Za-z_-]{11})/);
-        const videoId = videoIdMatch ? videoIdMatch[1] : null;
+        // ─── Extract Video ID (Robust) ───
+        if (!videoId) {
+            const patterns = [
+                /(?:youtube\.com\/watch\?v=)([^#\&\?]{11})/,
+                /(?:youtu\.be\/)([^#\&\?]{11})/,
+                /(?:youtube\.com\/embed\/)([^#\&\?]{11})/,
+                /(?:youtube\.com\/shorts\/)([^#\&\?]{11})/,
+                /(?:v=)([^#\&\?]{11})/
+            ];
+            
+            for (const pattern of patterns) {
+                const match = videoUrl.match(pattern);
+                if (match && match[1] && match[1].length === 11) {
+                    videoId = match[1];
+                    break;
+                }
+            }
+        }
 
         if (!videoId) {
             throw new Error('Could not extract YouTube video ID');
@@ -92,58 +108,107 @@ async function playCommand(sock, chatId, message, q) {
                      `╰━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╯`
         }, { quoted: message });
 
-        // ═══ RapidAPI Call — YouTube MP3 Download ═══
+        // ═══ RapidAPI Call — Get Download URL ═══
         console.log('[play] 🚀 Calling RapidAPI...');
+
+        const rapidAPIHeaders = {
+            'x-rapidapi-key': RAPIDAPI_KEY,
+            'x-rapidapi-host': RAPIDAPI_HOST,
+            'Content-Type': 'application/json'
+        };
 
         const { data } = await axios.get(
             `https://${RAPIDAPI_HOST}/dl`,
             {
                 params: { id: videoId },
-                headers: {
-                    'x-rapidapi-key': RAPIDAPI_KEY,
-                    'x-rapidapi-host': RAPIDAPI_HOST,
-                    'Content-Type': 'application/json'
-                },
+                headers: rapidAPIHeaders,
                 timeout: 120000
             }
         );
 
-        console.log('[play] ✅ RapidAPI response:', JSON.stringify(data).substring(0, 300));
+        console.log('[play] ✅ RapidAPI response:', JSON.stringify(data).substring(0, 250));
 
-        // ═══ Check Status ═══
         if (data?.status !== 'ok' && data?.status !== 'processing') {
             throw new Error(data?.msg || 'API returned error');
         }
 
-        // ═══ Extract Download URL ═══
-        const downloadUrl = data?.link;
+        let downloadUrl = data?.link;
 
         if (!downloadUrl) {
             throw new Error('No download link in response');
         }
 
-        console.log('[play] ✅ Download URL:', downloadUrl.substring(0, 100));
+        console.log('[play] ✅ Initial URL received');
 
-        // ═══ Download Audio Buffer ═══
-        console.log('[play] 📥 Downloading audio to buffer...');
+        // ═══════════════════════════════════════════════════════
+        //  DOWNLOAD AUDIO WITH RETRY (123tokyo URL expires fast)
+        // ═══════════════════════════════════════════════════════
+        console.log('[play] 📥 Downloading audio with retry...');
 
-        const audioResponse = await axios.get(downloadUrl, {
-            responseType: 'arraybuffer',
-            timeout: 60000,
-            headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-                'Accept': '*/*'
-            },
-            maxContentLength: 100 * 1024 * 1024,
-            transformResponse: [(d) => d]
-        });
+        let audioBuffer = null;
+        let attempts = 0;
+        const maxAttempts = 5;
 
-        const audioBuffer = Buffer.from(audioResponse.data);
+        while (attempts < maxAttempts && !audioBuffer) {
+            attempts++;
+            try {
+                console.log(`[play] 📥 Attempt ${attempts}/${maxAttempts}...`);
 
-        console.log('[play] ✅ Downloaded:', audioBuffer.length, 'bytes');
+                const audioResponse = await axios.get(downloadUrl, {
+                    responseType: 'arraybuffer',
+                    timeout: 30000,
+                    headers: {
+                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                        'Accept': '*/*',
+                        'Accept-Language': 'en-US,en;q=0.9',
+                        'Referer': 'https://www.youtube.com/',
+                        'Origin': 'https://www.youtube.com'
+                    },
+                    maxContentLength: 100 * 1024 * 1024,
+                    maxRedirects: 5,
+                    transformResponse: [(d) => d]
+                });
 
-        if (!audioBuffer || audioBuffer.length < 10240) {
-            throw new Error(`Audio file too small: ${audioBuffer.length} bytes`);
+                const buf = Buffer.from(audioResponse.data);
+
+                if (buf && buf.length > 10240) {
+                    audioBuffer = buf;
+                    console.log(`[play] ✅ Downloaded: ${buf.length} bytes`);
+                    break;
+                } else {
+                    console.log(`[play] ⚠️ Attempt ${attempts}: ${buf?.length || 0} bytes`);
+                }
+            } catch (err) {
+                console.log(`[play] ❌ Attempt ${attempts} failed: ${err.message}`);
+            }
+
+            // If not last attempt, get fresh URL and retry
+            if (!audioBuffer && attempts < maxAttempts) {
+                try {
+                    console.log('[play] 🔄 Getting fresh URL...');
+                    const { data: retryData } = await axios.get(
+                        `https://${RAPIDAPI_HOST}/dl`,
+                        {
+                            params: { id: videoId },
+                            headers: rapidAPIHeaders,
+                            timeout: 60000
+                        }
+                    );
+
+                    if (retryData?.link) {
+                        downloadUrl = retryData.link;
+                        console.log('[play] ✅ Fresh URL received');
+                    }
+                } catch (e) {
+                    console.log('[play] ⚠️ Fresh URL failed:', e.message);
+                }
+
+                await new Promise(r => setTimeout(r, 1500));
+            }
+        }
+
+        if (!audioBuffer) {
+            throw new Error('Download failed after all retries');
         }
 
         // ═══ Send Audio ═══
@@ -165,7 +230,7 @@ async function playCommand(sock, chatId, message, q) {
         console.log('[play] ✅ Sent successfully');
 
     } catch (err) {
-        console.error('[play] ❌ Error:', err.message);
+        console.error('[play] ❌ Main error:', err.message);
 
         let errorMsg = err.message;
         if (err.response?.status === 401) errorMsg = 'Invalid RapidAPI key.';
