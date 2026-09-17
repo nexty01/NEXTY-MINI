@@ -1,7 +1,8 @@
 /**
- * 🎵 NEXTY MINI — Play Command (Tornado API)
+ * 🎵 NEXTY MINI — Play Command (Cobalt API)
  * ──────────────────────────────────────────
  * Search & download YouTube audio (MP3).
+ * Powered by self-hosted Cobalt API.
  * 
  * Usage: .play <song name or YouTube URL>
  */
@@ -9,10 +10,8 @@
 const axios = require('axios');
 const yts = require('yt-search');
 
-// ═══ Tornado API Config ═══
-const TORNADO_API_KEY = 'sk_tornadoapi_trial_LH58MaBxJ7Gh5LUskXp7Tp0kZCCTyeXZPS5lhbJOK10m5ge__mwir6Vv5sfuUdn1nAQRGbLcITmn2txGu2hDFg'; // ← Nayi key
-const TORNADO_API_URL = 'https://api.tornadoapi.io/jobs';
-const R2_BASE_URL = 'https://r2.tornadoapi.io';
+// ═══ Cobalt API Config ═══
+const COBALT_URL = 'https://cobalt-tools-production-82e7.up.railway.app/';
 
 async function playCommand(sock, chatId, message, q) {
     try {
@@ -28,7 +27,6 @@ async function playCommand(sock, chatId, message, q) {
             const text = (messageContent.conversation 
                        || messageContent.extendedTextMessage?.text 
                        || messageContent.imageMessage?.caption 
-                       || messageContent.videoMessage?.caption 
                        || '').trim();
             query = text.replace(/^\.(play|song|music|ytmp3)\s+/i, '').trim();
         }
@@ -68,7 +66,7 @@ async function playCommand(sock, chatId, message, q) {
 
         // ─── Info Card ───
         await sock.sendMessage(chatId, {
-            image: { url: videoThumb },
+            image: { url: videoThumb || 'https://i.postimg.cc/y6GV9P3H/file-000000004c307206bc366893b817568c-(1).png' },
             caption: `╭━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╮\n` +
                      `┃  🎵 *NEXTY MINI MUSIC* 🎵      ┃\n` +
                      `╰━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╯\n\n` +
@@ -76,7 +74,7 @@ async function playCommand(sock, chatId, message, q) {
                      `│ ▸ *Title*  : ${videoTitle.substring(0, 45)}${videoTitle.length > 45 ? '...' : ''}\n` +
                      `${videoDuration ? `│ ▸ *Duration* : ${videoDuration}\n` : ''}` +
                      `${videoAuthor ? `│ ▸ *Author*   : ${videoAuthor}\n` : ''}` +
-                     `│ ▸ *Engine* : Tornado API\n` +
+                     `│ ▸ *Engine* : Cobalt API\n` +
                      `╰──────────────────────────────────\n\n` +
                      `⏳ _Please wait, downloading audio..._\n\n` +
                      `╭━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╮\n` +
@@ -84,20 +82,20 @@ async function playCommand(sock, chatId, message, q) {
                      `╰━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╯`
         }, { quoted: message });
 
-        // ═══ Tornado API Call — Audio ═══
-        console.log('[play] 🚀 Calling Tornado API...');
+        // ═══ Cobalt API Call — Audio ═══
+        console.log('[play] 🚀 Calling Cobalt API...');
 
         const { data } = await axios.post(
-            TORNADO_API_URL,
+            COBALT_URL,
             {
                 url: videoUrl,
-                format: 'mp3',
-                audio_quality: '128'
+                downloadMode: 'audio',
+                audioFormat: 'mp3'
             },
             {
                 headers: {
-                    'x-api-key': TORNADO_API_KEY,
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
                 },
                 timeout: 180000
             }
@@ -105,39 +103,28 @@ async function playCommand(sock, chatId, message, q) {
 
         console.log('[play] ✅ Response:', JSON.stringify(data).substring(0, 200));
 
-        // ═══ Extract Download URL ═══
+        // ═══ Check Response ═══
         let downloadUrl = null;
 
-        if (data?.jobs?.[0]?.status === 'Completed') {
-            const job = data.jobs[0];
-            if (job.s3_url) downloadUrl = job.s3_url;
-            else if (job.s3_key) downloadUrl = `${R2_BASE_URL}/${job.s3_key}`;
-        } else if (data?.s3_url) {
-            downloadUrl = data.s3_url;
-        } else if (data?.job_id || data?.id) {
-            const jobId = data.job_id || data.id;
-            for (let i = 0; i < 40; i++) {
-                await new Promise(r => setTimeout(r, 3000));
-                try {
-                    const jobRes = await axios.get(
-                        `https://api.tornadoapi.io/jobs/${jobId}`,
-                        { headers: { 'x-api-key': TORNADO_API_KEY } }
-                    );
-                    if (jobRes.data?.jobs?.[0]?.status === 'Completed') {
-                        const j = jobRes.data.jobs[0];
-                        downloadUrl = j.s3_url || `${R2_BASE_URL}/${j.s3_key}`;
-                        break;
-                    }
-                } catch (e) {}
+        if (data?.status === 'redirect' || data?.status === 'tunnel') {
+            downloadUrl = data.url;
+        } else if (data?.status === 'picker') {
+            // Multiple items — pick first audio
+            if (data.picker && data.picker.length > 0) {
+                downloadUrl = data.picker[0].url;
             }
+        } else if (data?.url) {
+            downloadUrl = data.url;
         }
 
         if (!downloadUrl) {
-            throw new Error('No download URL received');
+            throw new Error(data?.error?.code || 'No download URL received');
         }
 
+        console.log('[play] ✅ Download URL:', downloadUrl.substring(0, 80));
+
         // ═══ Send Audio ═══
-        const fileName = (videoTitle || 'audio').replace(/[^\w\s-]/g, '').substring(0, 50) + '.mp3';
+        const fileName = (data.filename || videoTitle || 'audio').replace(/[^\w\s\-\.\(\)]/g, '').substring(0, 80) + '.mp3';
 
         await sock.sendMessage(chatId, {
             audio: { url: downloadUrl },
@@ -153,8 +140,9 @@ async function playCommand(sock, chatId, message, q) {
 
         let errorMsg = err.message;
         if (err.response?.status === 401) errorMsg = 'Invalid API key.';
+        else if (err.response?.status === 422) errorMsg = 'Audio format not supported.';
         else if (err.response?.status === 429) errorMsg = 'Rate limit. Wait 1 min.';
-        else if (err.response?.status === 402) errorMsg = 'Out of credits.';
+        else if (err.response?.status === 500) errorMsg = 'Cobalt server error. Try again.';
 
         try {
             await sock.sendMessage(chatId, { 
