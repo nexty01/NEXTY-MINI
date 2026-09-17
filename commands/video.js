@@ -1,127 +1,149 @@
+/**
+ * 🎬 NEXTY MINI — YouTube Video Downloader (FastSaver API)
+ * ────────────────────────────────────────────────────────
+ * Downloads YouTube videos up to 4K quality.
+ * Note: YouTube costs 15 credits per download.
+ */
+
 const axios = require('axios');
-const yts = require('yt-search');
 
-const AXIOS_DEFAULTS = {
-    timeout: 60000,
-    headers: {
-        'User-Agent': 'Mozilla/5.0',
-        'Accept': 'application/json, text/plain, */*'
-    }
-};
+const FASTSAVER_API_KEY = 'fs_sk_0q5x5p9t6h7u6s9a9i9i3t4j7c2g';
+const FASTSAVER_BASE_URL = 'https://api.fastsaver.io/v1';
 
-async function tryRequest(getter, attempts = 3) {
-    let lastError;
-    for (let attempt = 1; attempt <= attempts; attempt++) {
-        try {
-            return await getter();
-        } catch (err) {
-            lastError = err;
-            if (attempt < attempts) {
-                await new Promise(r => setTimeout(r, 1000 * attempt));
-            }
-        }
-    }
-    throw lastError;
-}
-
-async function getEliteProTechVideoByUrl(youtubeUrl) {
-    const apiUrl = `https://eliteprotech-apis.zone.id/ytdown?url=${encodeURIComponent(youtubeUrl)}&format=mp4`;
-    const res = await tryRequest(() => axios.get(apiUrl, AXIOS_DEFAULTS));
-    if (res?.data?.success && res?.data?.downloadURL) {
-        return { download: res.data.downloadURL, title: res.data.title };
-    }
-    throw new Error('EliteProTech failed');
-}
-
-async function getYupraVideoByUrl(youtubeUrl) {
-    const apiUrl = `https://api.yupra.my.id/api/downloader/ytmp4?url=${encodeURIComponent(youtubeUrl)}`;
-    const res = await tryRequest(() => axios.get(apiUrl, AXIOS_DEFAULTS));
-    if (res?.data?.success && res?.data?.data?.download_url) {
-        return { download: res.data.data.download_url, title: res.data.data.title };
-    }
-    throw new Error('Yupra failed');
-}
-
-async function getOkatsuVideoByUrl(youtubeUrl) {
-    const apiUrl = `https://okatsu-rolezapiiz.vercel.app/downloader/ytmp4?url=${encodeURIComponent(youtubeUrl)}`;
-    const res = await tryRequest(() => axios.get(apiUrl, AXIOS_DEFAULTS));
-    if (res?.data?.result?.mp4) {
-        return { download: res.data.result.mp4, title: res.data.result.title };
-    }
-    throw new Error('Okatsu failed');
-}
-
-async function videoCommand(sock, chatId, message) {
+async function videoCommand(sock, from, msg, q) {
     try {
-        // Loading reactions
-        const loadEmojis = ['📥', '⏳', '🎥'];
-        for (const emoji of loadEmojis) {
-            await sock.sendMessage(chatId, { react: { text: emoji, key: message.key } });
-        }
-        const messageContent = message.message?.ephemeralMessage?.message || message.message?.viewOnceMessage?.message || message.message?.viewOnceMessageV2?.message || message.message;
-        const text = (messageContent.conversation || messageContent.extendedTextMessage?.text || messageContent.imageMessage?.caption || messageContent.videoMessage?.caption || '').trim();
-        const query = text.replace(/^\.video\s+/i, '').trim();
-        
-        if (!query || query.toLowerCase() === '.video') {
-            await sock.sendMessage(chatId, { text: 'Usage: .video <name or link>' }, { quoted: message });
-            return;
+        // ─── Get URL ───
+        let url = q;
+        if (!url) {
+            const messageContent = msg.message?.ephemeralMessage?.message 
+                                || msg.message?.viewOnceMessage?.message 
+                                || msg.message?.viewOnceMessageV2?.message 
+                                || msg.message;
+            const text = (messageContent.conversation 
+                       || messageContent.extendedTextMessage?.text 
+                       || messageContent.imageMessage?.caption 
+                       || '').trim();
+            url = text.replace(/^\.(video|yt|youtube)\s+/i, '').trim();
         }
 
-        let videoUrl = '';
-        let videoTitle = '';
-        let videoThumbnail = '';
-        
-        if (query.includes('youtube.com') || query.includes('youtu.be')) {
-            videoUrl = query;
-            videoTitle = 'YouTube Video';
-        } else {
-            const { videos } = await yts(query);
-            if (!videos || videos.length === 0) {
-                await sock.sendMessage(chatId, { text: 'No videos found!' }, { quoted: message });
-                return;
+        // ─── Validate ───
+        if (!url || (!url.includes('youtube.com') && !url.includes('youtu.be'))) {
+            return await sock.sendMessage(from, { 
+                text: `❌ *Please provide a YouTube URL.*\n\n*Example:*\n▸ .video https://youtu.be/xxx`
+            }, { quoted: msg });
+        }
+
+        // ─── Loading reaction ───
+        await sock.sendMessage(from, { react: { text: '⏳', key: msg.key } });
+
+        // ─── Processing message ───
+        await sock.sendMessage(from, {
+            text: `╭━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╮\n` +
+                  `┃  🎬 *NEXTY MINI VIDEO* 🎬      ┃\n` +
+                  `╰━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╯\n\n` +
+                  `╭─「 🔄 *PROCESSING* 」──────────\n` +
+                  `│ ▸ Engine: FastSaver API\n` +
+                  `│ ▸ Quality: 720p HD\n` +
+                  `│ ▸ Cost: 15 credits\n` +
+                  `│ ▸ Please wait...\n` +
+                  `╰──────────────────────────────────\n\n` +
+                  `> _Downloading from YouTube_ ⏳`
+        }, { quoted: msg });
+
+        // ═══ Call FastSaver API ═══
+        // YouTube uses POST /youtube/download endpoint
+        console.log('[video] 🚀 Calling FastSaver YouTube API...');
+
+        const { data } = await axios.post(
+            `${FASTSAVER_BASE_URL}/youtube/download`,
+            {
+                url: url,
+                format: '720p'
+            },
+            {
+                headers: {
+                    'X-Api-Key': FASTSAVER_API_KEY,
+                    'Content-Type': 'application/json'
+                },
+                timeout: 120000
             }
-            videoUrl = videos[0].url;
-            videoTitle = videos[0].title;
-            videoThumbnail = videos[0].thumbnail;
+        );
+
+        console.log('[video] ✅ Response ok:', data.ok);
+
+        if (data.ok === false) {
+            throw new Error(data.reason || 'API returned error');
         }
 
-        await sock.sendMessage(chatId, {
-            image: { url: videoThumbnail || 'https://i.postimg.cc/y6GV9P3H/file-000000004c307206bc366893b817568c-(1).png' },
-            caption: `🎥 Downloading: *${videoTitle}*`
-        }, { quoted: message });
-
-        let videoData;
-        let downloadSuccess = false;
-        const apiMethods = [
-            { name: 'EliteProTech', method: () => getEliteProTechVideoByUrl(videoUrl) },
-            { name: 'Yupra', method: () => getYupraVideoByUrl(videoUrl) },
-            { name: 'Okatsu', method: () => getOkatsuVideoByUrl(videoUrl) }
-        ];
+        // Extract download URL (may be in different fields)
+        const downloadUrl = data.download_url || data.url || (data.data && data.data.url);
         
-        for (const apiMethod of apiMethods) {
-            try {
-                videoData = await apiMethod.method();
-                if (videoData.download) {
-                    downloadSuccess = true;
-                    break;
-                }
-            } catch (err) {
-                console.log(`${apiMethod.name} failed:`, err.message);
-            }
+        if (!downloadUrl) {
+            throw new Error('No download URL in response');
         }
-        
-        if (!downloadSuccess) throw new Error('All download sources failed.');
 
-        await sock.sendMessage(chatId, {
-            video: { url: videoData.download },
+        console.log('[video] 📥 Downloading media...');
+
+        // ─── Download media ───
+        const mediaResponse = await axios.get(downloadUrl, {
+            responseType: 'arraybuffer',
+            timeout: 180000,
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+                'Accept': '*/*'
+            },
+            maxContentLength: 500 * 1024 * 1024
+        });
+
+        const mediaBuffer = Buffer.from(mediaResponse.data);
+
+        if (mediaBuffer.length === 0) {
+            throw new Error('Empty media file');
+        }
+
+        console.log('[video] ✅ Downloaded', mediaBuffer.length, 'bytes');
+
+        // ─── Send media ───
+        const title = data.title || data.data?.title || 'YouTube Video';
+        const duration = data.duration || data.data?.duration || 0;
+
+        const botCaption = `╭━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╮\n` +
+                          `┃  🎬 *NEXTY MINI VIDEO* 🎬      ┃\n` +
+                          `╰━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╯\n\n` +
+                          `✅ *Downloaded Successfully*\n` +
+                          `▸ Engine: FastSaver API\n` +
+                          `▸ Type: Video 🎬\n` +
+                          `▸ Quality: 720p HD\n` +
+                          `${title ? `▸ Title: ${title.substring(0, 60)}${title.length > 60 ? '...' : ''}\n` : ''}` +
+                          `${duration ? `▸ Duration: ${duration}s\n` : ''}` +
+                          `\n> 👀 *POWERED BY NEXTY MINI*`;
+
+        await sock.sendMessage(from, {
+            video: mediaBuffer,
             mimetype: 'video/mp4',
-            fileName: `${videoData.title.replace(/[^\w\s-]/g, '')}.mp4`,
-            caption: `*${videoData.title}*\n\n> *Downloaded by OLD-STUDIO*`
-        }, { quoted: message });
+            caption: botCaption
+        }, { quoted: msg });
 
-    } catch (error) {
-        console.error('Video error:', error);
-        await sock.sendMessage(chatId, { text: `❌ Error: ${error.message}` }, { quoted: message });
+        await sock.sendMessage(from, { react: { text: '✅', key: msg.key } });
+
+    } catch (err) {
+        console.error('[video] ❌ Error:', err.message);
+        
+        let errorMsg = err.message;
+        if (err.response) {
+            if (err.response.status === 401) errorMsg = 'Invalid API key.';
+            else if (err.response.status === 429) errorMsg = 'Rate limit. Wait 1 min.';
+            else if (err.response.status === 402) errorMsg = 'Out of credits (needs 15).';
+            else if (err.response.status === 400) errorMsg = err.response.data?.reason || 'Video unavailable.';
+            else if (err.response.status === 422) errorMsg = 'Invalid YouTube URL.';
+        }
+        
+        try {
+            await sock.sendMessage(from, { 
+                text: `❌ *Video Download Error*\n\n\`${errorMsg}\`` 
+            }, { quoted: msg });
+            await sock.sendMessage(from, { react: { text: '❌', key: msg.key } });
+        } catch (e) {}
     }
 }
 
