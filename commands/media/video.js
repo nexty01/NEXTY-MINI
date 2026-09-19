@@ -1,10 +1,10 @@
 /**
- * 🎵 NEXTY MINI — YouTube Audio Downloader (Tornado API)
+ * 🎬 NEXTY MINI — YouTube Video Downloader (Tornado API)
  * ──────────────────────────────────────────────────────
  * Search by name OR direct URL — auto downloads.
  * 
- * Usage: .play I Wanna Be Your Slave
- *        .play https://youtu.be/xxx
+ * Usage: .video I Wanna Be Your Slave
+ *        .video https://youtu.be/xxx
  */
 
 const axios = require('axios');
@@ -15,7 +15,7 @@ const TORNADO_API_KEY = 'sk_tornadoapi_trial_LH58MaBxJ7Gh5LUskXp7Tp0kZCCTyeXZPS5
 const TORNADO_API_URL = 'https://api.tornadoapi.io/jobs';
 const R2_BASE_URL = 'https://r2.tornadoapi.io'; // ← Base URL confirm karo
 
-async function playCommand(sock, from, msg, q) {
+async function videoCommand(sock, from, msg, q) {
     try {
         // ─── Get Query ───
         let query = q;
@@ -29,15 +29,15 @@ async function playCommand(sock, from, msg, q) {
                        || messageContent.extendedTextMessage?.text 
                        || messageContent.imageMessage?.caption 
                        || '').trim();
-            query = text.replace(/^\.(play|song|music|ytmp3)\s+/i, '').trim();
+            query = text.replace(/^\.(video|yt|youtube|ytmp4|play)\s+/i, '').trim();
         }
 
         if (!query) {
             return await sock.sendMessage(from, { 
-                text: `❌ *Please provide a song name or YouTube URL.*\n\n` +
+                text: `❌ *Please provide a video name or YouTube URL.*\n\n` +
                       `*Examples:*\n` +
-                      `▸ .play I Wanna Be Your Slave\n` +
-                      `▸ .play https://youtu.be/xxx`
+                      `▸ .video I Wanna Be Your Slave\n` +
+                      `▸ .video https://youtu.be/xxx`
             }, { quoted: msg });
         }
 
@@ -45,7 +45,7 @@ async function playCommand(sock, from, msg, q) {
         await sock.sendMessage(from, { react: { text: '⏳', key: msg.key } });
 
         // ─── Search YouTube ───
-        console.log(`[play] 🔍 Searching YouTube: ${query}`);
+        console.log(`[video] 🔍 Searching YouTube: ${query}`);
 
         const ytRegex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\//i;
         let videoUrl, videoTitle, videoThumb, videoDuration, videoViews, videoAuthor;
@@ -53,7 +53,7 @@ async function playCommand(sock, from, msg, q) {
         if (ytRegex.test(query)) {
             // Direct URL
             videoUrl = query;
-            videoTitle = 'YouTube Audio';
+            videoTitle = 'YouTube Video';
             const match = videoUrl.match(/(?:v=|\/)([0-9A-Za-z_-]{11})/);
             if (match) {
                 videoThumb = `https://i.ytimg.com/vi/${match[1]}/hqdefault.jpg`;
@@ -82,14 +82,14 @@ async function playCommand(sock, from, msg, q) {
         await sock.sendMessage(from, {
             image: { url: videoThumb },
             caption: `╭━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╮\n` +
-                     `┃  🎵 *NEXTY MINI MUSIC* 🎵      ┃\n` +
+                     `┃  🎬 *NEXTY MINI VIDEO* 🎬      ┃\n` +
                      `╰━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╯\n\n` +
                      `╭─「 📀 *NOW DOWNLOADING* 」──────\n` +
                      `│ ▸ *Title*  : ${videoTitle.substring(0, 45)}${videoTitle.length > 45 ? '...' : ''}\n` +
                      `${videoDuration ? `│ ▸ *Duration* : ${videoDuration}\n` : ''}` +
                      `${videoViews ? `│ ▸ *Views*    : ${videoViews}\n` : ''}` +
                      `${videoAuthor ? `│ ▸ *Author*   : ${videoAuthor}\n` : ''}` +
-                     `│ ▸ *Engine* : NEXTY API \n` +
+                     `│ ▸ *Engine* : NEXTY API\n` +
                      `╰──────────────────────────────────\n\n` +
                      `⏳ _Please wait, downloading..._\n\n` +
                      `╭━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╮\n` +
@@ -98,13 +98,14 @@ async function playCommand(sock, from, msg, q) {
         }, { quoted: msg });
 
         // ═══ Tornado API Call ═══
-        console.log('[play] 🚀 Calling Tornado API...');
+        console.log('[video] 🚀 Calling Tornado API...');
 
         const { data } = await axios.post(
             TORNADO_API_URL,
             {
                 url: videoUrl,
-                format: 'mp3'
+                format: 'mp4',
+                max_resolution: '720'
             },
             {
                 headers: {
@@ -115,7 +116,7 @@ async function playCommand(sock, from, msg, q) {
             }
         );
 
-        console.log('[play] ✅ Response:', JSON.stringify(data).substring(0, 300));
+        console.log('[video] ✅ Response:', JSON.stringify(data).substring(0, 300));
 
         // ═══ Extract Download URL ═══
         let downloadUrl = null;
@@ -148,7 +149,7 @@ async function playCommand(sock, from, msg, q) {
         // Format 4: job_id (poll)
         else if (data?.job_id || data?.id) {
             const jobId = data.job_id || data.id;
-            console.log('[play] ⏳ Polling job:', jobId);
+            console.log('[video] ⏳ Polling job:', jobId);
 
             for (let i = 0; i < 60; i++) {
                 await new Promise(r => setTimeout(r, 3000));
@@ -162,7 +163,7 @@ async function playCommand(sock, from, msg, q) {
                         }
                     );
 
-                    console.log(`[play] Poll ${i + 1}: ${jobRes.data?.status || jobRes.data?.jobs?.[0]?.status}`);
+                    console.log(`[video] Poll ${i + 1}: ${jobRes.data?.status || jobRes.data?.jobs?.[0]?.status}`);
 
                     // Check jobs array response
                     if (jobRes.data?.jobs?.[0]) {
@@ -187,7 +188,7 @@ async function playCommand(sock, from, msg, q) {
                         }
                     }
                 } catch (pollErr) {
-                    console.log('[play] Poll error:', pollErr.message);
+                    console.log('[video] Poll error:', pollErr.message);
                 }
             }
         }
@@ -196,41 +197,39 @@ async function playCommand(sock, from, msg, q) {
             throw new Error('No download URL received. Check logs.');
         }
 
-        console.log('[play] ✅ Download URL:', downloadUrl.substring(0, 80) + '...');
+        console.log('[video] ✅ Download URL:', downloadUrl.substring(0, 80) + '...');
 
-        // ═══ Send Audio ═══
+        // ═══ Send Video ═══
         const botCaption = 
             `╭━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╮\n` +
-            `┃  🎵 *NEXTY MINI MUSIC* 🎵      ┃\n` +
+            `┃  🎬 *NEXTY MINI VIDEO* 🎬      ┃\n` +
             `╰━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╯\n\n` +
             `✅ *Downloaded Successfully*\n` +
-            `▸ Engine: NEXTYAPI\n` +
-            `▸ Type: Audio 🎵\n` +
+            `▸ Engine: NEXTY API\n` +
+            `▸ Type: Video 🎬\n` +
+            `▸ Quality: 720p HD\n` +
             `${videoTitle ? `▸ Title: ${videoTitle.substring(0, 50)}${videoTitle.length > 50 ? '...' : ''}\n` : ''}` +
             `\n> 👀 *POWERED BY NEXTY MINI*`;
 
         await sock.sendMessage(from, {
-            audio: { url: downloadUrl },
-            mimetype: 'audio/mpeg',
-            ptt: false
+            video: { url: downloadUrl },
+            mimetype: 'video/mp4',
+            caption: botCaption
         }, { quoted: msg });
-
-        // Send info as separate text since audio messages don't support captions
-        await sock.sendMessage(from, { text: botCaption }, { quoted: msg });
 
         // ═══ Success reaction ═══
         await sock.sendMessage(from, { react: { text: '✅', key: msg.key } });
 
-        console.log('[play] ✅ Sent successfully');
+        console.log('[video] ✅ Sent successfully');
 
     } catch (err) {
-        console.error('[play] ❌ Error:', err.message);
+        console.error('[video] ❌ Error:', err.message);
 
         let errorMsg = err.message;
 
         if (err.response) {
-            console.error('[play] Status:', err.response.status);
-            console.error('[play] Data:', JSON.stringify(err.response.data).substring(0, 300));
+            console.error('[video] Status:', err.response.status);
+            console.error('[video] Data:', JSON.stringify(err.response.data).substring(0, 300));
 
             if (err.response.status === 401) {
                 errorMsg = 'Invalid API key. Please update.';
@@ -247,11 +246,11 @@ async function playCommand(sock, from, msg, q) {
 
         try {
             await sock.sendMessage(from, { 
-                text: `❌ *Audio Download Error*\n\n\`${errorMsg}\`` 
+                text: `❌ *Video Download Error*\n\n\`${errorMsg}\`` 
             }, { quoted: msg });
             await sock.sendMessage(from, { react: { text: '❌', key: msg.key } });
         } catch (e) {}
     }
 }
 
-module.exports = playCommand;
+module.exports = videoCommand;

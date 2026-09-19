@@ -23,6 +23,15 @@ const DANGEROUS_COMMANDS = new Set([
     'xrestart', 'xshutdown', 'hack', 'ghostmode2'
 ]);
 const EXCLUDED_CATEGORIES = new Set(['18plus', 'anime-nsfw']);
+// Short aliases for the old-style (plain function) command files in commands/media
+const OLD_STYLE_ALIASES = {
+    insta:     ['ig', 'instagram', 'igdl'],
+    tiktok:    ['tt', 'ttdl'],
+    facebook:  ['fb', 'fbdl'],
+    play:      ['song', 'ytmp3'],
+    video:     ['ytv', 'ytvideo', 'ytmp4', 'yt'],
+    apk:       ['apkdl']
+};
 
 const dynamicRegistry = {};
 
@@ -49,6 +58,19 @@ function loadDynamicCommands() {
                 console.log(`⚠️  Skipped command (load error): ${cat}/${file} — ${e.message}`);
                 continue;
             }
+            // Support two export styles:
+            // 1) SUKUNA style: { name, aliases?, category?, execute(ctx) }
+            // 2) Old flat style: module.exports = function(sock, from, msg, q) {...}
+            if (typeof mod === 'function') {
+                const fnName = path.basename(file, '.js').toLowerCase();
+                const rawFn = mod;
+                mod = {
+                    name: fnName,
+                    aliases: OLD_STYLE_ALIASES[fnName] || [],
+                    category: cat,
+                    execute: (ctx) => rawFn(ctx.sock, ctx.from, ctx.msg, ctx.q)
+                };
+            }
             if (!mod || typeof mod.execute !== 'function' || !mod.name) continue;
 
             const name = String(mod.name).toLowerCase();
@@ -58,12 +80,14 @@ function loadDynamicCommands() {
             if (Array.isArray(mod.aliases)) {
                 for (const alias of mod.aliases) {
                     const a = String(alias).toLowerCase();
-                    if (DANGEROUS_COMMANDS.has(a) || dynamicRegistry[a]) continue;
+                    if (DANGEROUS_COMMANDS.has(a)) continue;
+                    if (dynamicRegistry[a]) continue;
                     dynamicRegistry[a] = mod;
                 }
             }
         }
     }
+
     console.log(`✅ NEXTY MINI: loaded ${Object.keys(dynamicRegistry).length} command names/aliases`);
 }
 loadDynamicCommands();

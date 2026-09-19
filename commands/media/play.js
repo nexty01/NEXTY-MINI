@@ -1,165 +1,257 @@
-'use strict';
+/**
+ * 🎵 NEXTY MINI — YouTube Audio Downloader (Tornado API)
+ * ──────────────────────────────────────────────────────
+ * Search by name OR direct URL — auto downloads.
+ * 
+ * Usage: .play I Wanna Be Your Slave
+ *        .play https://youtu.be/xxx
+ */
 
 const axios = require('axios');
+const yts = require('yt-search');
 
-const MAX_AUDIO_BYTES = 25 * 1024 * 1024;
+// ═══ Tornado API Config ═══
+const TORNADO_API_KEY = 'sk_tornadoapi_trial_LH58MaBxJ7Gh5LUskXp7Tp0kZCCTyeXZPS5lhbJOK10m5ge__mwir6Vv5sfuUdn1nAQRGbLcITmn2txGu2hDFg'; // ← Nayi key yahan
+const TORNADO_API_URL = 'https://api.tornadoapi.io/jobs';
+const R2_BASE_URL = 'https://r2.tornadoapi.io'; // ← Base URL confirm karo
 
-function safeFileName(value) {
-    return String(value || 'audio').replace(/[^a-z0-9 _-]/gi, '').trim().slice(0, 100) || 'audio';
-}
-
-async function fetchAudioBuffer(url) {
-    if (!/^https?:\/\//i.test(String(url || ''))) throw new Error('Provider returned an invalid audio URL');
-    const response = await axios.get(url, {
-        responseType: 'arraybuffer',
-        timeout: 60_000,
-        maxContentLength: MAX_AUDIO_BYTES,
-        maxRedirects: 6,
-        headers: { 'User-Agent': 'Mozilla/5.0', Accept: 'audio/mpeg,audio/*,application/octet-stream;q=0.8,*/*;q=0.5' },
-        validateStatus: () => true,
-    });
-    const buffer = Buffer.from(response.data || '');
-    const contentType = String(response.headers?.['content-type'] || '').toLowerCase();
-    if (response.status < 200 || response.status >= 300) throw new Error(`Audio download HTTP ${response.status}`);
-    if (!buffer.length || contentType.includes('text/html') || contentType.includes('application/json')) throw new Error('Provider returned an invalid audio response');
-    const mimetype = contentType.includes('audio/') ? contentType.split(';')[0] : 'audio/mpeg';
-    return { buffer, mimetype };
-}
-
-async function fetchThumbnailBuffer(url) {
-    if (!/^https?:\/\//i.test(String(url || ''))) return null;
+async function playCommand(sock, from, msg, q) {
     try {
-        const response = await axios.get(url, {
-            responseType: 'arraybuffer',
-            timeout: 15_000,
-            maxContentLength: 5 * 1024 * 1024,
-            headers: { 'User-Agent': 'Mozilla/5.0', Accept: 'image/jpeg,image/*;q=0.8,*/*;q=0.5' },
-            validateStatus: () => true,
-        });
-        const contentType = String(response.headers?.['content-type'] || '').toLowerCase();
-        if (response.status >= 200 && response.status < 300 && contentType.includes('image/')) return Buffer.from(response.data);
-    } catch (error) {
-        console.warn('[play] thumbnail unavailable:', error.message);
+        // ─── Get Query ───
+        let query = q;
+
+        if (!query) {
+            const messageContent = msg.message?.ephemeralMessage?.message 
+                                || msg.message?.viewOnceMessage?.message 
+                                || msg.message?.viewOnceMessageV2?.message 
+                                || msg.message;
+            const text = (messageContent.conversation 
+                       || messageContent.extendedTextMessage?.text 
+                       || messageContent.imageMessage?.caption 
+                       || '').trim();
+            query = text.replace(/^\.(play|song|music|ytmp3)\s+/i, '').trim();
+        }
+
+        if (!query) {
+            return await sock.sendMessage(from, { 
+                text: `❌ *Please provide a song name or YouTube URL.*\n\n` +
+                      `*Examples:*\n` +
+                      `▸ .play I Wanna Be Your Slave\n` +
+                      `▸ .play https://youtu.be/xxx`
+            }, { quoted: msg });
+        }
+
+        // ─── Loading reaction ───
+        await sock.sendMessage(from, { react: { text: '⏳', key: msg.key } });
+
+        // ─── Search YouTube ───
+        console.log(`[play] 🔍 Searching YouTube: ${query}`);
+
+        const ytRegex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\//i;
+        let videoUrl, videoTitle, videoThumb, videoDuration, videoViews, videoAuthor;
+
+        if (ytRegex.test(query)) {
+            // Direct URL
+            videoUrl = query;
+            videoTitle = 'YouTube Audio';
+            const match = videoUrl.match(/(?:v=|\/)([0-9A-Za-z_-]{11})/);
+            if (match) {
+                videoThumb = `https://i.ytimg.com/vi/${match[1]}/hqdefault.jpg`;
+            }
+        } else {
+            // Search by name
+            const search = await yts(query);
+            const video = search.videos[0];
+
+            if (!video) {
+                await sock.sendMessage(from, { react: { text: '❌', key: msg.key } });
+                return await sock.sendMessage(from, { 
+                    text: `❌ *No results found for:* \`${query}\`` 
+                }, { quoted: msg });
+            }
+
+            videoUrl = video.url;
+            videoTitle = video.title;
+            videoThumb = video.thumbnail;
+            videoDuration = video.timestamp;
+            videoViews = video.views;
+            videoAuthor = video.author?.name || 'Unknown';
+        }
+
+        // ─── Send Info Card ───
+        await sock.sendMessage(from, {
+            image: { url: videoThumb },
+            caption: `╭━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╮\n` +
+                     `┃  🎵 *NEXTY MINI MUSIC* 🎵      ┃\n` +
+                     `╰━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╯\n\n` +
+                     `╭─「 📀 *NOW DOWNLOADING* 」──────\n` +
+                     `│ ▸ *Title*  : ${videoTitle.substring(0, 45)}${videoTitle.length > 45 ? '...' : ''}\n` +
+                     `${videoDuration ? `│ ▸ *Duration* : ${videoDuration}\n` : ''}` +
+                     `${videoViews ? `│ ▸ *Views*    : ${videoViews}\n` : ''}` +
+                     `${videoAuthor ? `│ ▸ *Author*   : ${videoAuthor}\n` : ''}` +
+                     `│ ▸ *Engine* : NEXTY API \n` +
+                     `╰──────────────────────────────────\n\n` +
+                     `⏳ _Please wait, downloading..._\n\n` +
+                     `╭━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╮\n` +
+                     `┃  ⚡ *POWERED BY NEXTY MINI* ⚡    ┃\n` +
+                     `╰━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╯`
+        }, { quoted: msg });
+
+        // ═══ Tornado API Call ═══
+        console.log('[play] 🚀 Calling Tornado API...');
+
+        const { data } = await axios.post(
+            TORNADO_API_URL,
+            {
+                url: videoUrl,
+                format: 'mp3'
+            },
+            {
+                headers: {
+                    'x-api-key': TORNADO_API_KEY,
+                    'Content-Type': 'application/json'
+                },
+                timeout: 180000
+            }
+        );
+
+        console.log('[play] ✅ Response:', JSON.stringify(data).substring(0, 300));
+
+        // ═══ Extract Download URL ═══
+        let downloadUrl = null;
+        let jobStatus = null;
+
+        // Format 1: jobs array (aapki API ka response)
+        if (data?.jobs && Array.isArray(data.jobs) && data.jobs.length > 0) {
+            const job = data.jobs[0];
+            jobStatus = job.status;
+
+            if (job.status === 'Completed') {
+                // Try s3_url first
+                if (job.s3_url) {
+                    downloadUrl = job.s3_url;
+                } 
+                // Try s3_key → build URL
+                else if (job.s3_key) {
+                    downloadUrl = `${R2_BASE_URL}/${job.s3_key}`;
+                }
+            }
+        }
+        // Format 2: direct s3_url
+        else if (data?.s3_url) {
+            downloadUrl = data.s3_url;
+        }
+        // Format 3: nested data.s3_url
+        else if (data?.data?.s3_url) {
+            downloadUrl = data.data.s3_url;
+        }
+        // Format 4: job_id (poll)
+        else if (data?.job_id || data?.id) {
+            const jobId = data.job_id || data.id;
+            console.log('[play] ⏳ Polling job:', jobId);
+
+            for (let i = 0; i < 60; i++) {
+                await new Promise(r => setTimeout(r, 3000));
+
+                try {
+                    const jobRes = await axios.get(
+                        `https://api.tornadoapi.io/jobs/${jobId}`,
+                        {
+                            headers: { 'x-api-key': TORNADO_API_KEY },
+                            timeout: 30000
+                        }
+                    );
+
+                    console.log(`[play] Poll ${i + 1}: ${jobRes.data?.status || jobRes.data?.jobs?.[0]?.status}`);
+
+                    // Check jobs array response
+                    if (jobRes.data?.jobs?.[0]) {
+                        const j = jobRes.data.jobs[0];
+                        if (j.status === 'Completed') {
+                            if (j.s3_url) downloadUrl = j.s3_url;
+                            else if (j.s3_key) downloadUrl = `${R2_BASE_URL}/${j.s3_key}`;
+                            break;
+                        }
+                        if (j.status === 'Failed' || j.status === 'Error') {
+                            throw new Error('Job failed: ' + (j.error || 'unknown'));
+                        }
+                    }
+                    // Direct response
+                    else if (jobRes.data?.s3_url) {
+                        downloadUrl = jobRes.data.s3_url;
+                        break;
+                    } else if (jobRes.data?.status === 'Completed') {
+                        if (jobRes.data.s3_key) {
+                            downloadUrl = `${R2_BASE_URL}/${jobRes.data.s3_key}`;
+                            break;
+                        }
+                    }
+                } catch (pollErr) {
+                    console.log('[play] Poll error:', pollErr.message);
+                }
+            }
+        }
+
+        if (!downloadUrl) {
+            throw new Error('No download URL received. Check logs.');
+        }
+
+        console.log('[play] ✅ Download URL:', downloadUrl.substring(0, 80) + '...');
+
+        // ═══ Send Audio ═══
+        const botCaption = 
+            `╭━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╮\n` +
+            `┃  🎵 *NEXTY MINI MUSIC* 🎵      ┃\n` +
+            `╰━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╯\n\n` +
+            `✅ *Downloaded Successfully*\n` +
+            `▸ Engine: NEXTYAPI\n` +
+            `▸ Type: Audio 🎵\n` +
+            `${videoTitle ? `▸ Title: ${videoTitle.substring(0, 50)}${videoTitle.length > 50 ? '...' : ''}\n` : ''}` +
+            `\n> 👀 *POWERED BY NEXTY MINI*`;
+
+        await sock.sendMessage(from, {
+            audio: { url: downloadUrl },
+            mimetype: 'audio/mpeg',
+            ptt: false
+        }, { quoted: msg });
+
+        // Send info as separate text since audio messages don't support captions
+        await sock.sendMessage(from, { text: botCaption }, { quoted: msg });
+
+        // ═══ Success reaction ═══
+        await sock.sendMessage(from, { react: { text: '✅', key: msg.key } });
+
+        console.log('[play] ✅ Sent successfully');
+
+    } catch (err) {
+        console.error('[play] ❌ Error:', err.message);
+
+        let errorMsg = err.message;
+
+        if (err.response) {
+            console.error('[play] Status:', err.response.status);
+            console.error('[play] Data:', JSON.stringify(err.response.data).substring(0, 300));
+
+            if (err.response.status === 401) {
+                errorMsg = 'Invalid API key. Please update.';
+            } else if (err.response.status === 429) {
+                errorMsg = 'Rate limit. Wait a minute.';
+            } else if (err.response.status === 402) {
+                errorMsg = 'Out of trial credits.';
+            } else if (err.response.status === 400) {
+                errorMsg = err.response.data?.reason || 'Invalid request.';
+            } else {
+                errorMsg = `API Error ${err.response.status}`;
+            }
+        }
+
+        try {
+            await sock.sendMessage(from, { 
+                text: `❌ *Audio Download Error*\n\n\`${errorMsg}\`` 
+            }, { quoted: msg });
+            await sock.sendMessage(from, { react: { text: '❌', key: msg.key } });
+        } catch (e) {}
     }
-    return null;
 }
 
-module.exports = {
-    name: 'play',
-    aliases: ['song', 'music', 'audio'],
-    description: 'Search and download a song as audio',
-    usage: '.play <song name or URL>',
-    category: 'media',
-
-    async execute({ sock, msg, from, args, reply, t }) {
-        const tr = t || ((key, vars) => {
-            const fallbacks = {
-                'play.noQuery': '🎵 *Usage:* .play <song name>\n*Example:* .play Essence Wizkid',
-                'play.searching': '🔍 Searching: *' + (vars?.query || '') + '*...',
-                'play.downloading': '⬇️ Downloading: *' + (vars?.title || '') + '*...',
-                'play.notFound': '❌ Could not find: *' + (vars?.query || '') + '*',
-                'play.downloadFail': '❌ Download failed.',
-                'play.success': '✅ *' + (vars?.title || '') + '*\n🎵 Enjoy!',
-                'play.thumbCaption': '🎵 *' + (vars?.title || '') + '*',
-            };
-            return fallbacks[key] || key;
-        });
-
-        const query = args.join(' ').trim();
-        if (!query) {
-            return reply(tr('play.noQuery'));
-        }
-
-        await sock.sendMessage(from, { react: { text: '⏳', key: msg.key } }).catch(() => {});
-
-        const strategies = [
-            // Strategy 1: Primary API provided by user
-            async () => {
-                const { data } = await axios.get(`https://apis.davidcyril.name.ng/play?query=${encodeURIComponent(query)}`, { timeout: 30000 });
-                if (data.status && data.result?.download_url) {
-                    return {
-                        url: data.result.download_url,
-                        title: data.result.title,
-                        thumbnail: data.result.thumbnail,
-                        duration: data.result.duration,
-                        author: data.result.author || data.result.artist || data.result.channel || 'YouTube',
-                        sourceUrl: data.result.url || ''
-                    };
-                }
-                throw new Error('Primary API failed');
-            },
-            // Strategy 2: Fallback search + ytmp3 from same provider
-            async () => {
-                const searchRes = await axios.get(`https://apis.davidcyril.name.ng/youtube/search?query=${encodeURIComponent(query)}`, { timeout: 15000 });
-                const video = searchRes.data?.results?.[0];
-                if (!video?.url) throw new Error('Search failed');
-
-                const dlRes = await axios.get(`https://apis.davidcyril.name.ng/download/ytmp3?url=${encodeURIComponent(video.url)}`, { timeout: 30000 });
-                if (dlRes.data.success && dlRes.data.result?.download_url) {
-                    return {
-                        url: dlRes.data.result.download_url,
-                        title: video.title,
-                        thumbnail: video.thumbnail,
-                        duration: video.duration,
-                        author: video.author || 'YouTube',
-                        sourceUrl: video.url
-                    };
-                }
-                throw new Error('Secondary API failed');
-            },
-            // Strategy 3: Another free API (agatz.xyz)
-            async () => {
-                const { data } = await axios.get(`https://api.agatz.xyz/api/ytmp3?url=${encodeURIComponent(query)}`, { timeout: 30000 }).catch(() => ({ data: {} }));
-                if (data.status === 200 && data.data?.downloadUrl) {
-                    return {
-                        url: data.data.downloadUrl,
-                        title: data.data.title || query,
-                        thumbnail: data.data.thumbnail,
-                        duration: data.data.duration,
-                        author: data.data.author || data.data.artist || data.data.channel || 'YouTube',
-                        sourceUrl: data.data.url || query
-                    };
-                }
-                throw new Error('Agatz API failed');
-            }
-        ];
-
-        for (const strategy of strategies) {
-            try {
-                const res = await strategy();
-                if (res?.url) {
-                    const downloadedAudio = await fetchAudioBuffer(res.url);
-                    const audioBuffer = downloadedAudio.buffer;
-                    const audioMimetype = downloadedAudio.mimetype;
-                    const thumbnailBuffer = await fetchThumbnailBuffer(res.thumbnail);
-                    const title = res.title || query;
-                    const author = res.author || 'YouTube';
-                    const duration = res.duration || '';
-                    if (thumbnailBuffer) {
-                        await sock.sendMessage(from, {
-                            image: thumbnailBuffer,
-                            caption: `🎵 *${title}*\n👤 ${author}${duration ? `\n⏱️ ${duration}` : ''}`,
-                        }, { quoted: msg });
-                    }
-
-                    const audioMessage = {
-                        audio: audioBuffer,
-                        mimetype: audioMimetype,
-                        fileName: `${safeFileName(title)}${audioMimetype.includes('mpeg') ? '.mp3' : '.audio'}`,
-                        ptt: false,
-                    };
-                    await sock.sendMessage(from, audioMessage, { quoted: msg });
-
-                    await sock.sendMessage(from, { react: { text: '✅', key: msg.key } });
-                    return;
-                }
-            } catch (e) {
-                console.error('Strategy failed:', e.message);
-                continue;
-            }
-        }
-
-        await sock.sendMessage(from, { react: { text: '❌', key: msg.key } });
-        return reply(tr('play.notFound', { query }));
-    }
-};
+module.exports = playCommand;
