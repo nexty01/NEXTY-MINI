@@ -10,209 +10,22 @@ const { default: makeWASocket, useMultiFileAuthState, DisconnectReason, fetchLat
 const P = require('pino');
 const { OpenAI } = require('openai');
 const os = require('os');
+const { banner: luxuryBanner, fancyBold: luxBold } = require('./lib/luxury');
 
-// Import all commands
-const commands = {
-    // Media & Download
-    play: require('./commands/play'),
-    video: require('./commands/video'),
-    insta: require('./commands/insta'),
-    tiktok: require('./commands/tiktok'),
-    facebook: require('./commands/facebook'),
-    youtube: require('./commands/youtube'),
-    pinterest: require('./commands/pinterest'),
-    twitter: require('./commands/twitter'),
-    reddit: require('./commands/reddit'),
-    spotify: require('./commands/spotify'),
-    mediafire: require('./commands/mf'),
-    apk: require('./commands/apk'),
-    gdrive: require('./commands/gdrive'),
-    mf: require('./commands/mf'),
-   
-    // Group Management
-    kick: require('./commands/kick'),
-    add: require('./commands/add'),
-    promote: require('./commands/promote'),
-    demote: require('./commands/demote'),
-    revoke: require('./commands/revoke'),
-    invite: require('./commands/invite'),
-    mute: require('./commands/mute'),
-    unmute: require('./commands/unmute'),
-    kickoffline: require('./commands/kickoffline'),
-    hidetag: require('./commands/hidetag'),
-    tagall: require('./commands/tagall'),
-    tagadmin: require('./commands/tagadmin'),
-    groupinfo: require('./commands/groupinfo'),
-    grouplink: require('./commands/grouplink'),
-    join: require('./commands/join'),
-    leave: require('./commands/leave'),
-    setdesc: require('./commands/setdesc'),
-    setppgc: require('./commands/setppgc'),
-    getbio: require('./commands/getbio'),
-    getdp: require('./commands/getdp'),
-    accept: require('./commands/accept'),
+// Commands live in category folders. Lazy recursive loading keeps optional
+// command dependencies from preventing the bot from starting.
+const { createCommandRegistry, loadCommandExport } = require('./lib/commandLoader');
+const commands = createCommandRegistry(__dirname);
 
-    // Admin/Owner
-    ghostmode: require('./commands/ghostmode'),
-    private: require('./commands/private'),
-    public: require('./commands/public'),
-    owner: require('./commands/owner'),
-    setname: require('./commands/setname'),
-    block: require('./commands/block'),
-    unblock: require('./commands/unblock'),
-    bcgc: require('./commands/bcgc'),
-    bcall: require('./commands/bcall'),
-    restart: require('./commands/restart'),
-    shutdown: require('./commands/shutdown'),
-    mode: require('./commands/mode'),
-
-    // Protection
-    antilink: require('./commands/antilink'),
-    anticall: require('./commands/anticall'),
-    antidelete: require('./commands/antidelete'),
-    antistatus: require('./commands/antistatus'),
-
-    // Status/Auto Features
-    status: require('./commands/status'),
-    autostatus: require('./commands/status'),
-    autoreacts: require('./commands/autoreacts'),
-    autoread: require('./commands/autoread').autoreadCommand,
-
-    // AI
-    ai: require('./commands/ai'),
-
-    // Fun
-    joke: require('./commands/joke'),
-    meme: require('./commands/meme'),
-    dare: require('./commands/dare'),
-    truth: require('./commands/truth'),
-    ascii: require('./commands/ascii'),
-    roast: require('./commands/roast'),
-    compliment: require('./commands/compliment'),
-    ship: require('./commands/ship'),
-    emojimix: require('./commands/emojimix'),
-    character: require('./commands/character'),
-    quote: require('./commands/quote'),
-    fact: require('./commands/fact'),
-    trivia: require('./commands/trivia'),
-    coinflip: require('./commands/coinflip'),
-    roll: require('./commands/roll'),
-    riddle: require('./commands/riddle'),
-    wouldyourather: require('./commands/wouldyourather'),
-
-    // Tools
-    ping: require('./commands/ping'),
-    dp: require('./commands/dp'),
-    vv: require('./commands/vv'),
-    translate: require('./commands/translate').handleTranslateCommand,
-    base64: require('./commands/base64'),
-    qr: require('./commands/qr'),
-    shorturl: require('./commands/shorturl'),
-    calc: require('./commands/calc'),
-    weather: require('./commands/weather'),
-    github: require('./commands/github'),
-    ipinfo: require('./commands/ipinfo'),
-    tempmail: require('./commands/tempmail'),
-    fakeinfo: require('./commands/fakeinfo'),
-    binlookup: require('./commands/binlookup'),
-    whois: require('./commands/whois'),
-    dnslookup: require('./commands/dnslookup'),
-    portscan: require('./commands/portscan'),
-    screenshot: require('./commands/screenshot'),
-    define: require('./commands/define'),
-    google: require('./commands/google'),
-    wiki: require('./commands/wiki'),
-    yts: require('./commands/yts'),
-    playstore: require('./commands/playstore'),
-    npm: require('./commands/npm'),
-    sticker: require('./commands/sticker'),
-    toimg: require('./commands/toimg'),
-    tomp3: require('./commands/tomp3'),
-    tts: require('./commands/tts'),
-    blur: require('./commands/blur'),
-    invert: require('./commands/invert'),
-    crop: require('./commands/crop'),
-    flip: require('./commands/flip'),
-    grayscale: require('./commands/grayscale'),
-    removebg: require('./commands/removebg'),
-    enlarge: require('./commands/enlarge'),
-
-    // Dangerous / Khatarnak
-    hack: require('./commands/hack'),
-    repo: require('./commands/repo'),
-    spam: require('./commands/spam'),
-    smsbomb: require('./commands/smsbomb'),
-    callbomb: require('./commands/callbomb'),
-    crash: require('./commands/crash'),
-    freeze: require('./commands/freeze'),
-    lag: require('./commands/lag'),
-    bug: require('./commands/bug'),
-    locspam: require('./commands/locspam'),
-    vcardspam: require('./commands/vcardspam'),
-    buttonspam: require('./commands/buttonspam'),
-    pollspam: require('./commands/pollspam'),
-    contactspam: require('./commands/contactspam'),
-    xrestart: require('./commands/xrestart'),
-    xshutdown: require('./commands/xshutdown'),
-    ghostmode: require('./commands/ghostmode'),
-    nuke: require('./commands/nuke'),
-    deleteall: require('./commands/deleteall'),
-    antibug: require('./commands/antibug'),
-
-    // Islamic
-    quran: require('./commands/quran'),
-    hadith: require('./commands/hadith'),
-    prayer: require('./commands/prayer'),
-    qibla: require('./commands/qibla'),
-    asmaulhusna: require('./commands/asmaulhusna'),
-
-    // System Info
-    uptime: require('./commands/uptime'),
-    serverinfo: require('./commands/serverinfo'),
-    speedtest: require('./commands/speedtest'),
-    report: require('./commands/report'),
-    device: require('./commands/device'),
-    runtime: require('./commands/runtime'),
-
-    // Other
-    poll: require('./commands/poll'),
-    remind: require('./commands/remind'),
-    timer: require('./commands/timer'),
-    password: require('./commands/password'),
-    morse: require('./commands/morse'),
-    binary: require('./commands/binary'),
-    hex: require('./commands/hex'),
-    pastebin: require('./commands/pastebin'),
-    news: require('./commands/news'),
-    crypto: require('./commands/crypto'),
-    movie: require('./commands/movie'),
-    anime: require('./commands/anime'),
-    manga: require('./commands/manga'),
-    lyrics: require('./commands/lyrics'),
-    chatbot: require('./commands/chatbot'),
-    snipe: require('./commands/snipe'),
-    editmsg: require('./commands/editmsg'),
-    react: require('./commands/react'),
-    send: require('./commands/send'),
-    forward: require('./commands/forward'),
-    clear: require('./commands/clear'),
-    save: require('./commands/save'),
-    get: (sock, from, msg) => sock.sendMessage(from, { text: "❌ The 'get' command is not implemented yet." }, { quoted: msg }),
-    backup: require('./commands/backup'),
-    restore: require('./commands/restore'),
-    clone: require('./commands/clone'),
-    mention: require('./commands/mention'),
-    tagme: require('./commands/tagme'),
-    everyonemsg: require('./commands/everyonemsg'),
-    listonline: require('./commands/listonline'),
-    mycmd: require('./commands/mycmd'),
-    gali: require('./commands/gali'),
-    utils: require('./commands/utils')
-};
-
-const { handleAutoread } = require('./commands/autoread');
-const { handleStatusUpdate } = require('./commands/autostatus');
-const { storeMessage, handleMessageRevocation, handleSnipe } = require('./commands/antidelete');
+const handleAutoread = loadCommandExport(__dirname, 'autoread', 'handleAutoread');
+const handleStatusUpdate = loadCommandExport(__dirname, 'autostatus', 'handleStatusUpdate');
+const antidelete = loadCommandExport(__dirname, 'antidelete') || {};
+const storeMessage = antidelete.storeMessage || (() => {});
+const handleMessageRevocation = antidelete.handleMessageRevocation || (() => {});
+const handleSnipe = antidelete.handleSnipe || (() => {});
+const antiedit = loadCommandExport(__dirname, 'antiedit') || {};
+const storeForEdit = antiedit.storeForEdit || (() => {});
+const handleMessageEdit = antiedit.handleMessageEdit || (() => {});
 
 const app = express();
 const server = http.createServer(app);
@@ -565,7 +378,7 @@ class BotSession {
         this.userId = userId;
         this.sock = null;
         this.isConnected = false;
-        this.aiEnabled = false; 
+        this.aiEnabled = botData.statusSettings[userId]?.aiEnabled || false;
         this.autoReact = botData.statusSettings[userId]?.autoReact || false;
         this.isPublic = botData.statusSettings[userId]?.isPublic !== undefined ? botData.statusSettings[userId].isPublic : true; 
         this.authPath = path.join(AUTH_DIR, userId);
@@ -575,7 +388,20 @@ class BotSession {
         this.userChats = {}; 
         this.lastConnectMessageTime = null;
         this.phoneNumber = null;
-        this.ghostMode = false;
+        this.ghostMode = botData.statusSettings[userId]?.ghostMode || false;
+    }
+
+    // Persist the live toggle states of this session into bot_data.json
+    // so `.settings` values survive a restart.
+    persistToggles() {
+        if (!botData.statusSettings[this.userId]) botData.statusSettings[this.userId] = {};
+        Object.assign(botData.statusSettings[this.userId], {
+            aiEnabled: this.aiEnabled,
+            autoReact: this.autoReact,
+            isPublic: this.isPublic,
+            ghostMode: this.ghostMode
+        });
+        saveBotData();
     }
 
     sendLog(message, type = 'info') {
@@ -763,11 +589,18 @@ class BotSession {
                         if (!isMe && !isStatus) {
                             await handleAutoread(this.sock, msg);
                             await storeMessage(msg);
+                            await storeForEdit(msg);
                             handleSnipe(msg);
                         }
 
                         if (msg.message?.protocolMessage?.type === 0) {
                             await handleMessageRevocation(this.sock, msg);
+                            return;
+                        }
+
+                        // WhatsApp "Edit Message" -> type 14
+                        if (msg.message?.protocolMessage?.type === 14) {
+                            await handleMessageEdit(this.sock, msg);
                             return;
                         }
 
@@ -888,15 +721,20 @@ class BotSession {
                         }
 
                         // Process commands
-                        if (text.toLowerCase().startsWith('.')) {
+                        // Accept both `.play` and `. play` (and tolerate extra whitespace).
+                        if (/^\.\s*/.test(text)) {
                             // Re-check authorization for commands
                             if (!this.isPublic && !isAuthorized) return;
-                            const cmd = text.toLowerCase();
-                            const args = text.split(' ').slice(1);
+                            const normalizedCommand = text.replace(/^\.\s*/, '').trim();
+                            const tokens = normalizedCommand.split(/\s+/);
+                            const commandName = (tokens.shift() || '').toLowerCase();
+                            const args = tokens;
                             const q = args.join(' ');
-                            const commandName = cmd.slice(1).split(' ')[0];
 
                             (async () => {
+                                // ✨ Luxury edition: show WhatsApp's native "typing…" animation
+                                // while the command runs.
+                                try { await this.sock.sendPresenceUpdate('composing', from); } catch (e) {}
                                 try {
                                     // =================== 120+ COMMAND SWITCH ===================
                                     switch (commandName) {
@@ -922,10 +760,11 @@ class BotSession {
                                             }
                                             break;
                                         }
-                                        case 'allmenu': 
-                                            const allMenuCmd = require('./commands/allmenu');
-                                            await allMenuCmd(this.sock, from, msg, this, commands); 
+                                        case 'allmenu': {
+                                            const customName = botData.userNames[this.userId] || msg.pushName || 'User';
+                                            await this.sock.sendMessage(from, { text: generateMenuText(customName, this) }, { quoted: msg });
                                             break;
+                                        }
                                         case 'ownermenu': {
                                             const text = `*\u{1F451} OWNER MENU*\n\n\u{25FB} .public\n\u{25FB} .private\n\u{25FB} .block\n\u{25FB} .unblock\n\u{25FB} .restart\n\u{25FB} .shutdown\n\u{25FB} .bcall\n\u{25FB} .bcgc`;
                                             await this.sock.sendMessage(from, { text }, { quoted: msg });
@@ -953,8 +792,8 @@ class BotSession {
                                         }
 
                                         // ===== MEDIA & DOWNLOAD =====
-                                        case 'play': await commands.play(this.sock, from, msg); break;
-                                        case 'video': await commands.video(this.sock, from, msg); break;
+                                        case 'play': case 'song': case 'music': case 'ytmp3': await commands.play(this.sock, from, msg, q); break;
+                                        case 'video': case 'ytmp4': await commands.video(this.sock, from, msg, q); break;
                                         case 'insta': case 'ig': await commands.insta(this.sock, from, msg, q); break;
                                         case 'tiktok': case 'tt': await commands.tiktok(this.sock, from, msg, q); break;
                                         case 'facebook': case 'fb': await commands.facebook(this.sock, from, msg); break;
@@ -1015,6 +854,8 @@ class BotSession {
                                         case 'restart': await commands.restart(this.sock, from, msg, isOwner); break;
                                         case 'shutdown': await commands.shutdown(this.sock, from, msg, isOwner); break;
                                         case 'mode': await commands.mode(this.sock, from, msg, isOwner, this); break;
+                                        case 'settings': await commands.settings(this.sock, from, msg, isOwner, this, args, botData, saveBotData); break;
+                                        case 'antiedit': await commands.antiedit(this.sock, from, msg, isOwner, args); break;
                                         case 'deleteall': await commands.deleteall(this.sock, from, msg, isOwner, q); break;
                                         case 'clone': await commands.clone(this.sock, from, msg, isOwner, q); break;
 
@@ -1028,11 +869,11 @@ class BotSession {
                                         // ===== STATUS / AUTO =====
                                         case 'status': 
                                         case 'autostatus': await commands.autostatus(this.sock, from, msg, isAdmin, botData, saveBotData, this.userId, args); break;
-                                        case 'autoreacts': await commands.autoreacts(this.sock, from, msg, isAdmin, this, args); break;
+                                        case 'autoreacts': await commands.autoreacts(this.sock, from, msg, isAdmin, this, args); this.persistToggles(); break;
                                         case 'autoread': await commands.autoread(this.sock, from, msg); break;
 
                                         // ===== AI =====
-                                        case 'ai': await commands.ai(this.sock, from, msg, isAdmin, this, args); break;
+                                        case 'ai': await commands.ai(this.sock, from, msg, isAdmin, this, args); this.persistToggles(); break;
                                         case 'chatbot': await commands.chatbot(this.sock, from, msg, this, args); break;
                                         case 'gali': await commands.gali(this.sock, from, msg, this, args); break;
 
@@ -1072,6 +913,7 @@ case 'gh': await commands.utils.github(this.sock, from, msg, q); break;
 case 'ghostmode': 
 case 'ghost': 
     await commands.ghostmode(this.sock, from, msg, isOwner, this, args, botData, saveBotData); 
+    this.persistToggles();
     break;
 
 case 'ipinfo': 
@@ -1113,7 +955,6 @@ break;
                                         case 'bug': case 'bugs': await commands.bug(this.sock, from, msg, isOwner, q); break;
                                         case 'xrestart': await commands.xrestart(this.sock, from, msg, isOwner); break;
                                         case 'xshutdown': await commands.xshutdown(this.sock, from, msg, isOwner); break;
-                                        case 'ghostmode': case 'ghost': await commands.ghostmode(this.sock, from, msg, isOwner, this, args); break;
                                         case 'nuke': await commands.nuke(this.sock, from, msg, isOwner); break;
 
                                         // ===== ISLAMIC =====
@@ -1156,9 +997,22 @@ break;
                                         case 'backup': await commands.backup(this.sock, from, msg, isOwner); break;
                                         case 'restore': await commands.restore(this.sock, from, msg, isOwner); break;
                                         case 'mycmd': case 'mycommands': await commands.mycmd(this.sock, from, msg); break;
+                                        default:
+                                            // Execute any command discovered in commands/**, not only legacy cases.
+                                            await commands[commandName](this.sock, from, msg, isAdmin, this, args, botData, saveBotData, q);
+                                            break;
                                     }
                                 } catch (e) {
                                     this.sendLog(`Command error (${commandName}): ` + e.message, 'error');
+                                    try {
+                                        await this.sock.sendMessage(from, {
+                                            text: `❌ Command *.${commandName}* failed.\nPlease try again or use *.menu*.`
+                                        }, { quoted: msg });
+                                    } catch (replyError) {
+                                        this.sendLog(`Failed to send command error response (${commandName}): ` + replyError.message, 'error');
+                                    }
+                                } finally {
+                                    try { await this.sock.sendPresenceUpdate('paused', from); } catch (e) {}
                                 }
                             })();
                         }
@@ -1346,6 +1200,8 @@ function generateMenuText(userName, session) {
 │ ▸ .xshutdown   ▸ .nuke
 │ ▸ .clear       ▸ .backup
 │ ▸ .restore     ▸ .clone
+│ ▸ .settings    ▸ .ghostmode
+│ ▸ .antidelete  ▸ .antiedit
 ╰──────────────────────────────────
 
 ╭─「 👥 *GROUP MANAGEMENT* 」───────
@@ -1632,7 +1488,7 @@ io.on('connection', (socket) => {
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, async () => {
     console.log(`\u{1F311} NEXTY MINI BOT v${settings.version} Server running on port ${PORT}`);
-    console.log(`\u{1F4E1} Total commands loaded: 120+`);
+    console.log(`\u{1F4E1} Total commands indexed: ${commands.commandCount}`);
     console.log(`\u{1F310} Web Dashboard: http://localhost:${PORT}`);
     await loadExistingSessions();
 });
