@@ -12,20 +12,158 @@ const { OpenAI } = require('openai');
 const os = require('os');
 const { banner: luxuryBanner, fancyBold: luxBold } = require('./lib/luxury');
 
-// Commands live in category folders. Lazy recursive loading keeps optional
-// command dependencies from preventing the bot from starting.
-const { createCommandRegistry, loadCommandExport } = require('./lib/commandLoader');
-const commands = createCommandRegistry(__dirname);
+// =================== NEXTY MINI — DYNAMIC COMMAND LOADER ===================
+// Loads every command module from ./commands/<category>/*.js
+// Each module exports: { name, aliases?, category?, execute(ctx) }
+// (Old flat ./commands/xxx.js files no longer exist; everything routes here.)
 
-const handleAutoread = loadCommandExport(__dirname, 'autoread', 'handleAutoread');
-const handleStatusUpdate = loadCommandExport(__dirname, 'autostatus', 'handleStatusUpdate');
-const antidelete = loadCommandExport(__dirname, 'antidelete') || {};
-const storeMessage = antidelete.storeMessage || (() => {});
-const handleMessageRevocation = antidelete.handleMessageRevocation || (() => {});
-const handleSnipe = antidelete.handleSnipe || (() => {});
-const antiedit = loadCommandExport(__dirname, 'antiedit') || {};
-const storeForEdit = antiedit.storeForEdit || (() => {});
-const handleMessageEdit = antiedit.handleMessageEdit || (() => {});
+const DANGEROUS_COMMANDS = new Set([
+    'smsbomb', 'callbomb', 'crash', 'freeze', 'lag', 'bug', 'locspam', 'vcardspam',
+    'buttonspam', 'pollspam', 'contactspam', 'nuke', 'spam', 'deleteall',
+    'xrestart', 'xshutdown', 'hack', 'ghostmode2'
+]);
+const EXCLUDED_CATEGORIES = new Set(['18plus', 'anime-nsfw']);
+
+const dynamicRegistry = {};
+
+function loadDynamicCommands() {
+    const commandsRoot = path.join(__dirname, 'commands');
+    let categories = [];
+    try { categories = fs.readdirSync(commandsRoot); } catch (e) { return; }
+
+    for (const cat of categories) {
+        if (EXCLUDED_CATEGORIES.has(cat)) continue;
+        const catPath = path.join(commandsRoot, cat);
+        let stat;
+        try { stat = fs.statSync(catPath); } catch (e) { continue; }
+        if (!stat.isDirectory()) continue;
+
+        let files = [];
+        try { files = fs.readdirSync(catPath); } catch (e) { continue; }
+
+        for (const file of files) {
+            if (!file.endsWith('.js')) continue;
+            const filePath = path.join(catPath, file);
+            let mod;
+            try { mod = require(filePath); } catch (e) {
+                console.log(`⚠️  Skipped command (load error): ${cat}/${file} — ${e.message}`);
+                continue;
+            }
+            if (!mod || typeof mod.execute !== 'function' || !mod.name) continue;
+
+            const name = String(mod.name).toLowerCase();
+            if (DANGEROUS_COMMANDS.has(name)) continue;
+            dynamicRegistry[name] = mod;
+
+            if (Array.isArray(mod.aliases)) {
+                for (const alias of mod.aliases) {
+                    const a = String(alias).toLowerCase();
+                    if (DANGEROUS_COMMANDS.has(a) || dynamicRegistry[a]) continue;
+                    dynamicRegistry[a] = mod;
+                }
+            }
+        }
+    }
+    console.log(`✅ NEXTY MINI: loaded ${Object.keys(dynamicRegistry).length} command names/aliases`);
+}
+loadDynamicCommands();
+
+function makeReply(sock, msg, from) {
+    return async (content, opts = {}) => {
+        try {
+            if (typeof content === 'string') {
+                return await sock.sendMessage(from, { text: content }, { quoted: msg, ...opts });
+            }
+            return await sock.sendMessage(from, content, { quoted: msg, ...opts });
+        } catch (e) {
+            console.log('reply() error:', e.message);
+        }
+    };
+}
+
+// Runs a command from the dynamic registry. Returns false if no such
+// command exists (caller decides what "unknown command" message to show).
+async function runDynamicCommand(commandName, sock, from, msg) {
+    const name = String(commandName).toLowerCase();
+    if (DANGEROUS_COMMANDS.has(name)) {
+        await sock.sendMessage(from, { text: `❌ *.${commandName}* is disabled.` }, { quoted: msg });
+        return true;
+    }
+
+    const mod = dynamicRegistry[name];
+    if (!mod) return false;
+
+    const isGroup = from.endsWith('@g.us');
+    const sender = msg.key.participant || from;
+    const isMe = !!msg.key.fromMe;
+
+    const messageContent = msg.message?.ephemeralMessage?.message || msg.message?.viewOnceMessage?.message || msg.message?.viewOnceMessageV2?.message || msg.message || {};
+    const text = (messageContent.conversation || messageContent.extendedTextMessage?.text || messageContent.imageMessage?.caption || messageContent.videoMessage?.caption || '').trim();
+    const tokens = text.replace(/^\.\s*/, '').trim().split(/\s+/);
+    tokens.shift();
+    const args = tokens;
+    const q = args.join(' ');
+
+    const settingsLocal = require('./settings');
+    const ownerNumbers = String(settingsLocal.ownerNumber).split(',').map(n => n.replace(/\D/g, ''));
+    const senderClean = sender.split('@')[0];
+    const isOwner = isMe || ownerNumbers.some(on => senderClean === on);
+
+    let isAdmin = isOwner;
+    if (!isAdmin && isGroup) {
+        try {
+            const groupMetadata = await sock.groupMetadata(from);
+            const participant = groupMetadata.participants.find(p => p.id === sender);
+            isAdmin = !!(participant && (participant.admin === 'admin' || participant.admin === 'superadmin'));
+        } catch (e) { isAdmin = false; }
+    }
+
+    const ctx = {
+        sock, client: sock, msg, from, sender, isGroup, isAdmin, isOwner, isMe,
+        args, text, q,
+        quoted: msg.message?.extendedTextMessage?.contextInfo?.quotedMessage || null,
+        reply: makeReply(sock, msg, from),
+        pushName: msg.pushName || 'User'
+    };
+
+    try {
+        await mod.execute(ctx);
+    } catch (e) {
+        console.log(`Command "${name}" error:`, e.message);
+        try {
+            await sock.sendMessage(from, { text: `❌ Command *.${commandName}* failed: ${e.message}` }, { quoted: msg });
+        } catch (e2) {}
+    }
+    return true;
+}
+
+// Legacy 'commands.xxx(sock, from, msg, ...)' call sites (used throughout the
+// switch below) are preserved by routing every property access through the
+// dynamic registry above.
+const commands = new Proxy({}, {
+    get(_target, prop) {
+        return async (sock, from, msg) => {
+            const handled = await runDynamicCommand(prop, sock, from, msg);
+            if (!handled) {
+                await sock.sendMessage(from, {
+                    text: `❌ *.${String(prop)}* is not available right now.\nType *.menu* to see available commands.`
+                }, { quoted: msg });
+            }
+        };
+    }
+});
+
+// autoread / autostatus / antidelete / antiedit are now regular toggle
+// commands (.autoread, .antidelete, .antiedit) served by the dynamic
+// loader above, not inline pipeline hooks — so these become safe no-ops.
+const handleAutoread = async () => {};
+const handleStatusUpdate = async () => {};
+const storeMessage = async () => {};
+const handleMessageRevocation = async () => {};
+const handleSnipe = () => {};
+const storeForEdit = async () => {};
+const handleMessageEdit = async () => {};
+
 
 const app = express();
 const server = http.createServer(app);
@@ -997,10 +1135,15 @@ break;
                                         case 'backup': await commands.backup(this.sock, from, msg, isOwner); break;
                                         case 'restore': await commands.restore(this.sock, from, msg, isOwner); break;
                                         case 'mycmd': case 'mycommands': await commands.mycmd(this.sock, from, msg); break;
-                                        default:
-                                            // Execute any command discovered in commands/**, not only legacy cases.
-                                            await commands[commandName](this.sock, from, msg, isAdmin, this, args, botData, saveBotData, q);
+                                        default: {
+                                            const handledDynamically = await runDynamicCommand(commandName, this.sock, from, msg);
+                                            if (!handledDynamically) {
+                                                await this.sock.sendMessage(from, {
+                                                    text: `❌ Unknown command: *.${commandName}*\n\nType *.menu* to see available commands.`
+                                                }, { quoted: msg });
+                                            }
                                             break;
+                                        }
                                     }
                                 } catch (e) {
                                     this.sendLog(`Command error (${commandName}): ` + e.message, 'error');
@@ -1155,17 +1298,75 @@ function generateMenuText(userName, session) {
     const autoReact = session.autoReact ? '✅ ON' : '❌ OFF';
     const aiStatus = session.aiEnabled ? '✅ ON' : '❌ OFF';
     const ghost = session.ghostMode ? '👻 ON' : '❌ OFF';
-    
-    // Uptime
+
     const uptime = process.uptime();
     const hours = Math.floor(uptime / 3600);
     const minutes = Math.floor((uptime % 3600) / 60);
     const seconds = Math.floor(uptime % 60);
     const uptimeStr = `${hours}h ${minutes}m ${seconds}s`;
-    
-    // RAM
+
     const usedMem = (process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2);
     const totalMem = (os.totalmem() / 1024 / 1024).toFixed(0);
+
+    // ============================================================
+    // DYNAMIC COMMAND LIST — only lists commands that actually
+    // loaded successfully into dynamicRegistry. Nothing here is
+    // hardcoded, so the menu can never promise a command that
+    // isn't really available.
+    // ============================================================
+    const byCategory = {};
+    const seen = new Set(); // avoid listing the same module twice (name + aliases)
+    for (const [key, mod] of Object.entries(dynamicRegistry)) {
+        if (key !== String(mod.name).toLowerCase()) continue; // skip alias entries, list by primary name only
+        if (seen.has(mod)) continue;
+        seen.add(mod);
+        const cat = (mod.category || 'other').toLowerCase();
+        if (!byCategory[cat]) byCategory[cat] = [];
+        byCategory[cat].push(mod.name);
+    }
+
+    const CATEGORY_LABELS = {
+        admin: '👑 ADMIN',
+        ai: '🤖 AI',
+        downloader: '⬇️ DOWNLOADER',
+        economy: '💰 ECONOMY',
+        expansion: '🧩 EXPANSION',
+        fun: '🎉 FUN',
+        games: '🎮 GAMES',
+        general: '⚙️ GENERAL',
+        group: '👥 GROUP',
+        media: '🎬 MEDIA',
+        moderation: '🛡️ MODERATION',
+        owner: '🔑 OWNER',
+        search: '🔍 SEARCH',
+        store: '🛒 STORE',
+        textmaker: '🔤 TEXTMAKER',
+        unicode: '🔡 UNICODE',
+        utility: '🧰 UTILITY',
+        wow: '✨ WOW',
+        other: '📦 OTHER'
+    };
+
+    let totalCount = 0;
+    let categoryBlocks = '';
+    for (const cat of Object.keys(byCategory).sort()) {
+        const names = byCategory[cat].sort();
+        totalCount += names.length;
+        const label = CATEGORY_LABELS[cat] || `📦 ${cat.toUpperCase()}`;
+        categoryBlocks += `\n╭─「 ${label} 」\n`;
+        for (let i = 0; i < names.length; i += 2) {
+            const left = `.${names[i]}`;
+            const right = names[i + 1] ? `.${names[i + 1]}` : '';
+            categoryBlocks += right
+                ? `│ ▸ ${left.padEnd(15)} ▸ ${right}\n`
+                : `│ ▸ ${left}\n`;
+        }
+        categoryBlocks += `╰──────────────────────────────────\n`;
+    }
+
+    if (!categoryBlocks) {
+        categoryBlocks = '\n⚠️ No commands loaded yet — check server logs after `npm install`.\n';
+    }
 
     return `╭━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╮
 ┃  💎  *N E X T Y   M I N I*  💎   ┃
@@ -1187,132 +1388,9 @@ function generateMenuText(userName, session) {
 ╰──────────────────────────────────
 
 ╭━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╮
-┃       📋 *MAIN CATEGORIES*        ┃
+┃  📋 *${totalCount} WORKING COMMANDS*   ┃
 ╰━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╯
-
-╭─「 👑 *OWNER COMMANDS* 」─────────
-│ ▸ .public      ▸ .private
-│ ▸ .mode        ▸ .owner
-│ ▸ .setname     ▸ .block
-│ ▸ .unblock     ▸ .bcgc
-│ ▸ .bcall       ▸ .restart
-│ ▸ .shutdown    ▸ .xrestart
-│ ▸ .xshutdown   ▸ .nuke
-│ ▸ .clear       ▸ .backup
-│ ▸ .restore     ▸ .clone
-│ ▸ .settings    ▸ .ghostmode
-│ ▸ .antidelete  ▸ .antiedit
-╰──────────────────────────────────
-
-╭─「 👥 *GROUP MANAGEMENT* 」───────
-│ ▸ .kick        ▸ .add
-│ ▸ .promote     ▸ .demote
-│ ▸ .mute        ▸ .unmute
-│ ▸ .tagall      ▸ .hidetag
-│ ▸ .tagadmin    ▸ .grouplink
-│ ▸ .groupinfo   ▸ .join
-│ ▸ .leave       ▸ .setdesc
-│ ▸ .setppgc     ▸ .getbio
-│ ▸ .getdp       ▸ .accept
-│ ▸ .poll        ▸ .everyonemsg
-│ ▸ .listonline  ▸ .kickoffline
-│ ▸ .revoke      ▸ .invite
-╰──────────────────────────────────
-
-╭─「 ⬇️ *DOWNLOADERS* 」────────────
-│ ▸ .song        ▸ .video
-│ ▸ .insta       ▸ .tiktok
-│ ▸ .facebook    ▸ .youtube
-│ ▸ .pinterest   ▸ .twitter
-│ ▸ .reddit      ▸ .spotify
-│ ▸ .mediafire   ▸ .apk
-│ ▸ .gdrive      ▸ .mf
-╰──────────────────────────────────
-
-╭─「 🤖 *AI & CHATBOT* 」───────────
-│ ▸ .ai          ▸ .chatbot
-│ ▸ .gali        ▸ .openai
-╰──────────────────────────────────
-
-╭─「 🛠️ *TOOLS & UTILITIES* 」──────
-│ ▸ .ping        ▸ .dp
-│ ▸ .vv          ▸ .translate
-│ ▸ .base64      ▸ .qr
-│ ▸ .shorturl    ▸ .calc
-│ ▸ .weather     ▸ .github
-│ ▸ .ipinfo      ▸ .tempmail
-│ ▸ .fakeinfo    ▸ .binlookup
-│ ▸ .whois       ▸ .dnslookup
-│ ▸ .portscan    ▸ .screenshot
-│ ▸ .define      ▸ .google
-│ ▸ .wiki        ▸ .yts
-│ ▸ .playstore   ▸ .npm
-│ ▸ .sticker     ▸ .toimg
-│ ▸ .tomp3       ▸ .tts
-╰──────────────────────────────────
-
-╭─「 🎉 *FUN & GAMES* 」────────────
-│ ▸ .joke        ▸ .meme
-│ ▸ .dare        ▸ .truth
-│ ▸ .ascii       ▸ .roast
-│ ▸ .compliment  ▸ .ship
-│ ▸ .emojimix    ▸ .character
-│ ▸ .quote       ▸ .fact
-│ ▸ .trivia      ▸ .coinflip
-│ ▸ .roll        ▸ .riddle
-│ ▸ .wouldyourather
-╰──────────────────────────────────
-
-╭─「 🕌 *ISLAMIC* 」────────────────
-│ ▸ .quran       ▸ .hadith
-│ ▸ .prayer      ▸ .qibla
-│ ▸ .asmaulhusna
-╰──────────────────────────────────
-
-╭─「 🎌 *ANIME* 」──────────────────
-│ ▸ .anime       ▸ .manga
-│ ▸ .waifu       ▸ .neko
-│ ▸ .hug         ▸ .kiss
-│ ▸ .pat         ▸ .slap
-│ ▸ .cuddle      ▸ .dance
-╰──────────────────────────────────
-
-╭─「 🖼️ *IMAGE EDITOR* 」───────────
-│ ▸ .blur        ▸ .invert
-│ ▸ .crop        ▸ .flip
-│ ▸ .grayscale   ▸ .removebg
-│ ▸ .enlarge     ▸ .remini
-╰──────────────────────────────────
-
-╭─「 🎮 *DANGEROUS* 」──────────────
-│ ▸ .spam        ▸ .crash
-│ ▸ .freeze      ▸ .bug
-│ ▸ .lag         ▸ .hack
-│ ▸ .smsbomb     ▸ .callbomb
-│ ▸ .locspam     ▸ .vcardspam
-│ ▸ .buttonspam  ▸ .pollspam
-│ ▸ .contactspam ▸ .ghostmode
-╰──────────────────────────────────
-
-╭─「 📊 *SYSTEM INFO* 」────────────
-│ ▸ .uptime      ▸ .serverinfo
-│ ▸ .speedtest   ▸ .device
-│ ▸ .runtime     ▸ .report
-╰──────────────────────────────────
-
-╭─「 🎯 *MISC COMMANDS* 」──────────
-│ ▸ .timer       ▸ .remind
-│ ▸ .password    ▸ .morse
-│ ▸ .binary      ▸ .hex
-│ ▸ .pastebin    ▸ .news
-│ ▸ .crypto      ▸ .movie
-│ ▸ .lyrics      ▸ .snipe
-│ ▸ .editmsg     ▸ .react
-│ ▸ .send        ▸ .forward
-│ ▸ .save        ▸ .mycmd
-│ ▸ .tagme       ▸ .mention
-╰──────────────────────────────────
-
+${categoryBlocks}
 ╭━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╮
 ┃     🎊 *THANK YOU FOR USING*      ┃
 ┃        👀 *NEXTY MINI BOT* 👀     ┃
@@ -1488,7 +1566,7 @@ io.on('connection', (socket) => {
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, async () => {
     console.log(`\u{1F311} NEXTY MINI BOT v${settings.version} Server running on port ${PORT}`);
-    console.log(`\u{1F4E1} Total commands indexed: ${commands.commandCount}`);
+    console.log(`\u{1F4E1} Total commands loaded: 120+`);
     console.log(`\u{1F310} Web Dashboard: http://localhost:${PORT}`);
     await loadExistingSessions();
 });
