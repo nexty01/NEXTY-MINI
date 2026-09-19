@@ -22,7 +22,7 @@ const DANGEROUS_COMMANDS = new Set([
     'buttonspam', 'pollspam', 'contactspam', 'nuke', 'spam', 'deleteall',
     'xrestart', 'xshutdown', 'hack', 'ghostmode2'
 ]);
-const EXCLUDED_CATEGORIES = new Set(['18plus', 'anime-nsfw']);
+const EXCLUDED_CATEGORIES = new Set(['18plus', 'anime-nsfw', 'expansion', 'economy']);
 // Short aliases for the old-style (plain function) command files in commands/media
 const OLD_STYLE_ALIASES = {
     insta:     ['ig', 'instagram', 'igdl'],
@@ -143,7 +143,9 @@ async function runDynamicCommand(commandName, sock, from, msg) {
     }
 
     const ctx = {
-        sock, client: sock, msg, from, sender, isGroup, isAdmin, isOwner, isMe,
+        sock, client: sock, msg, m: msg, from, sender, isGroup, isAdmin, isOwner, isMe,
+        isBotAdmin: false, phoneNumber: sender.split('@')[0], key: msg.key.id,
+        prefix: settingsLocal.prefix || '.',
         args, text, q,
         quoted: msg.message?.extendedTextMessage?.contextInfo?.quotedMessage || null,
         reply: makeReply(sock, msg, from),
@@ -167,12 +169,7 @@ async function runDynamicCommand(commandName, sock, from, msg) {
 const commands = new Proxy({}, {
     get(_target, prop) {
         return async (sock, from, msg) => {
-            const handled = await runDynamicCommand(prop, sock, from, msg);
-            if (!handled) {
-                await sock.sendMessage(from, {
-                    text: `❌ *.${String(prop)}* is not available right now.\nType *.menu* to see available commands.`
-                }, { quoted: msg });
-            }
+            await runDynamicCommand(prop, sock, from, msg);
         };
     }
 });
@@ -1159,15 +1156,9 @@ break;
                                         case 'backup': await commands.backup(this.sock, from, msg, isOwner); break;
                                         case 'restore': await commands.restore(this.sock, from, msg, isOwner); break;
                                         case 'mycmd': case 'mycommands': await commands.mycmd(this.sock, from, msg); break;
-                                        default: {
-                                            const handledDynamically = await runDynamicCommand(commandName, this.sock, from, msg);
-                                            if (!handledDynamically) {
-                                                await this.sock.sendMessage(from, {
-                                                    text: `❌ Unknown command: *.${commandName}*\n\nType *.menu* to see available commands.`
-                                                }, { quoted: msg });
-                                            }
+                                        default:
+                                            await runDynamicCommand(commandName, this.sock, from, msg);
                                             break;
-                                        }
                                     }
                                 } catch (e) {
                                     this.sendLog(`Command error (${commandName}): ` + e.message, 'error');
