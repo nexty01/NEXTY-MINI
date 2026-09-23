@@ -14,9 +14,9 @@ module.exports = {
     category: 'owner',
 
     async execute({ sock, msg, from, reply }) {
-        const ownerName   = config.owner?.name || 'NEXTY';
-        const ownerNumber = '2349127814853';
-        const botName     = config.botName     || 'NEXTY MINI';
+        const ownerName   = config.owner?.name   || 'NEXTY';
+        const ownerNumber = config.owner?.number || '923372588634';
+        const botName     = config.botName       || 'NEXTY MINI';
 
         const vcard = [
             'BEGIN:VCARD',

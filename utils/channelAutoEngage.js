@@ -81,7 +81,8 @@ async function followAndAutoReactChannel(sock, channelLink, log = console.log) {
                         } catch (_) {}
                     }
 
-                    const serverId = m.newsletterServerId
+                    const serverId = m.key?.server_id
+                        ?? m.newsletterServerId
                         ?? m.newsletter_server_id
                         ?? m.serverId
                         ?? m.messageStubParameters?.[0]
