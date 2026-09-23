@@ -8,7 +8,7 @@ const REPO_OWNER = 'pasquawisdom2007-beep';
 const REPO_NAME = 'NEXTY_MINI';
 const REPO_URL = `https://github.com/${REPO_OWNER}/${REPO_NAME}`;
 const LIVE_URL = 'https://nexty-mini-production-fabc.up.railway.app';
-const CREATOR = 'ISAGI777';
+const CREATOR = 'NEXTY';
 const IMAGE_PATH = path.join(__dirname, '../../assets/repo/nexty-repo.png');
 
 function githubRepoStats() {
@@ -115,7 +115,7 @@ async function sendRepo({ sock, msg, from, sender, phoneNumber, reply }) {
 module.exports = {
     name: 'repo',
     aliases: ['repository', 'source', 'github'],
-    description: 'Show the official GitHub repository, live stats, creator, and ISAGI777 artwork',
+    description: 'Show the official GitHub repository, live stats, creator, and owner artwork',
     category: 'admin',
     execute: sendRepo,
     __test: { caption, githubRepoStats, REPO_URL, LIVE_URL, CREATOR, IMAGE_PATH, formatSize, formatUpdated },

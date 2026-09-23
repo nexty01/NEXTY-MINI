@@ -64,20 +64,36 @@ async function followAndAutoReactChannel(sock, channelLink, log = console.log) {
         sock.__nextyWatchedChannelJids.add(jid);
 
         sock.ev.on('messages.upsert', async ({ messages, type }) => {
-            if (type !== 'notify') return;
+            // NOTE: don't filter by type — channel/newsletter posts have been observed
+            // arriving with types other than 'notify' on some Baileys builds.
             for (const m of messages || []) {
                 try {
-                    const from = m.key?.remoteJid;
+                    const from = m.key?.remoteJid || m.newsletterJid || m.jid;
                     if (!from || !from.endsWith('@newsletter')) continue;
                     if (!sock.__nextyWatchedChannelJids.has(from)) continue;
+
+                    // One-time raw dump so we can see the exact shape this Baileys
+                    // build uses for channel posts if the guessed fields below miss.
+                    if (!sock.__nextyChannelDebugLogged) {
+                        sock.__nextyChannelDebugLogged = true;
+                        try {
+                            log(`[channel-auto-engage] DEBUG raw newsletter message: ${JSON.stringify(m, (k, v) => (v?.type === 'Buffer' ? '<buffer>' : v), 2).slice(0, 2000)}`);
+                        } catch (_) {}
+                    }
 
                     const serverId = m.newsletterServerId
                         ?? m.newsletter_server_id
                         ?? m.serverId
+                        ?? m.messageStubParameters?.[0]
+                        ?? m.key?.serverId
                         ?? m.key?.id;
-                    if (serverId == null) continue;
+                    if (serverId == null) {
+                        log(`[channel-auto-engage] New post on ${from} but no server-id field found — cannot react. See DEBUG line above.`);
+                        continue;
+                    }
 
                     await sock.newsletterReactMessage(from, String(serverId), randomReaction());
+                    log(`[channel-auto-engage] Reacted to post ${serverId} on ${from}`);
                 } catch (error) {
                     log(`[channel-auto-engage] Auto-react failed: ${error?.message || error}`);
                 }

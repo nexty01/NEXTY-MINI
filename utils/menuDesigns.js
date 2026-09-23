@@ -772,7 +772,7 @@ function designNexty(ctx) {
         if (!match) return clean(uptime);
         return `${match[1] ? `${pad2(match[1])}d ` : ''}${pad2(match[2])}h ${pad2(match[3])}m ${pad2(match[4])}s`;
     })();
-    const owner = clean(creator || 'ISAGI777').toUpperCase();
+    const owner = clean(creator || 'NEXTY').toUpperCase();
     const online = clean(status).replace(/[^a-z]/gi, '').toUpperCase() || 'ONLINE';
     const systemPlatform = clean(platform).toUpperCase() || 'LINUX X64';
     // Use the same canonical category order as the nor design. Each category

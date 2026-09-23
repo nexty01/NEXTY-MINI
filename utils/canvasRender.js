@@ -342,7 +342,7 @@ async function renderHealthCard({
 async function renderAliveCard({
     botName  = 'NEXTY MINI',
     tagline  = 'King of Curses · Online',
-    owner    = 'ISAGI777',
+    owner    = 'NEXTY',
     version  = '2.0.0',
     prefix   = '.',
     uptime   = '0s',

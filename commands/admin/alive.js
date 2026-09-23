@@ -50,7 +50,7 @@ module.exports = {
             usedMB: totalMB - freeMB,
             totalMB,
             ping,
-            owner: config.owner?.name || 'ISAGI777',
+            owner: config.owner?.name || 'NEXTY',
             platform: process.platform,
             nodeVer: process.version,
         });

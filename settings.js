@@ -6,8 +6,8 @@
 
 module.exports = {
     // ═══ Owner Info ═══
-    ownerName: 'ISAGI777',                 // ← Ye change karo
-    ownerNumber: '923XXXXXXXXX',           // ← Apna number daalo (country code +, no spaces)
+    ownerName: 'NEXTY',                    // ← Ye change karo
+    ownerNumber: '923372588634',           // ← Apna number daalo (country code +, no spaces)
     
     // ═══ Bot Info ═══
     botName: 'NEXTY MINI',

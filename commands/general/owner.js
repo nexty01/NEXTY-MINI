@@ -14,7 +14,7 @@ module.exports = {
     category: 'owner',
 
     async execute({ sock, msg, from, reply }) {
-        const ownerName   = config.owner?.name || 'ISAGI777';
+        const ownerName   = config.owner?.name || 'NEXTY';
         const ownerNumber = '2349127814853';
         const botName     = config.botName     || 'NEXTY MINI';
 
