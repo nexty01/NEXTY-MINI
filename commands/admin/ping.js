@@ -1,5 +1,5 @@
 /**
- * Ping Command — Sukuna MD short bold-italic latency bar
+ * Ping Command — Nexty MINI short bold-italic latency bar
  * One line, bold-italic brand + 5-block bar + ms.
  */
 
@@ -13,7 +13,7 @@ const PHRASES = [
     'THE CORE IS AWAKE.',
     'NO LAG. JUST FEAR.',
     'TOO FAST TO SEE.',
-    'SUKUNA APPROVES.',
+    'NEXTY APPROVES.',
     'REACTION TIME: ILLEGAL.',
     'THE VOID COULD NOT KEEP UP.',
     'FASTER THAN A CURSE.',

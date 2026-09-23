@@ -167,7 +167,7 @@ module.exports = {
         // ── render ───────────────────────────────────────────────────────
         try {
             const buffer = await renderCalendarCard({
-                botName:   config.botName || 'SUKUNA MD',
+                botName:   config.botName || 'NEXTY MINI',
                 year:      yearNum,
                 monthIdx,
                 monthName,

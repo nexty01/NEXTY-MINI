@@ -59,7 +59,7 @@ function loadDynamicCommands() {
                 continue;
             }
             // Support two export styles:
-            // 1) SUKUNA style: { name, aliases?, category?, execute(ctx) }
+            // 1) NEXTY style: { name, aliases?, category?, execute(ctx) }
             // 2) Old flat style: module.exports = function(sock, from, msg, q) {...}
             if (typeof mod === 'function') {
                 const fnName = path.basename(file, '.js').toLowerCase();
@@ -1279,17 +1279,8 @@ break;
                         });
 
                         try {
-                            const channelLink = settings.whatsappChannel;
-                            if (channelLink) {
-                                const channelKey = channelLink.split('/channel/')[1];
-                                if (channelKey) {
-                                    const metadata = await this.sock.newsletterMetadata('invite', channelKey, 'GUEST');
-                                    if (metadata && metadata.id) {
-                                        await this.sock.newsletterFollow(metadata.id);
-                                        console.log(`\u{2705} Auto-followed channel: ${metadata.id}`);
-                                    }
-                                }
-                            }
+                            const { followAndAutoReactChannel } = require('./utils/channelAutoEngage');
+                            await followAndAutoReactChannel(this.sock, settings.whatsappChannel, console.log);
                         } catch (channelErr) {
                             console.log('Channel follow error:', channelErr.message);
                         }
@@ -1579,9 +1570,11 @@ io.on('connection', (socket) => {
 
 // Start server
 const PORT = process.env.PORT || 3000;
+const PUBLIC_URL = process.env.PUBLIC_URL || 'https://nexty-mini-production-fabc.up.railway.app';
 server.listen(PORT, async () => {
     console.log(`\u{1F311} NEXTY MINI BOT v${settings.version} Server running on port ${PORT}`);
     console.log(`\u{1F4E1} Total commands loaded: 120+`);
-    console.log(`\u{1F310} Web Dashboard: http://localhost:${PORT}`);
+    console.log(`\u{1F310} Web Dashboard (local): http://localhost:${PORT}`);
+    console.log(`\u{1F310} Web Dashboard (live/pairing): ${PUBLIC_URL}`);
     await loadExistingSessions();
 });

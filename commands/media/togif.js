@@ -116,7 +116,7 @@ module.exports = {
                     const fps = Math.max(10, Math.min(30, Math.round(1000 / delay)));
 
                     // Create GIF using ffmpeg-style command
-                    const cmd = `ffmpeg -y -framerate ${fps} -i "${frameDir}/frame_%04d.png" -vf "scale=512:-1:flags=lanczos,drawtext=text='SUKUNA MD':x=(w-text_w)/2:y=(h-text_h)-20:fontsize=20:fontcolor=white@0.7:borderw=1:bordercolor=black@0.8" -loop 0 -c:v libx264 -pix_fmt yuv420p -movflags +faststart -an "${outputPath}"`;
+                    const cmd = `ffmpeg -y -framerate ${fps} -i "${frameDir}/frame_%04d.png" -vf "scale=512:-1:flags=lanczos,drawtext=text='NEXTY MINI':x=(w-text_w)/2:y=(h-text_h)-20:fontsize=20:fontcolor=white@0.7:borderw=1:bordercolor=black@0.8" -loop 0 -c:v libx264 -pix_fmt yuv420p -movflags +faststart -an "${outputPath}"`;
 
                     await new Promise((resolve, reject) => {
                         exec(cmd, (err) => {

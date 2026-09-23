@@ -122,7 +122,7 @@ async function sendCopyCard({ sock, msg, from, body, title, copies = [], reply }
                     messageContextInfo: { deviceListMetadataVersion: 2, deviceListMetadata: {} },
                     interactiveMessage: proto.Message.InteractiveMessage.fromObject({
                         body: { text: body },
-                        footer: { text: 'SUKUNA MD · JID TOOLS' },
+                        footer: { text: 'NEXTY MINI · JID TOOLS' },
                         header: { title: title || '✦ JID TOOLS ✦', hasMediaAttachment: false },
                         nativeFlowMessage: { buttons, messageParamsJson: '' }
                     })

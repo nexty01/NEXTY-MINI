@@ -1,5 +1,5 @@
 'use strict';
-const { runAction } = require('../../utils/sukunaStore');
+const { runAction } = require('../../utils/nextyStore');
 module.exports = {
     name: 'appinfo',
     aliases: ['appdetails', 'appabout'],

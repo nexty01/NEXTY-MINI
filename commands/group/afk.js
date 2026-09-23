@@ -1,5 +1,5 @@
 /**
- * AFK Command — SUKUNA MD
+ * AFK Command — NEXTY MINI
  * Usage : .afk [reason]
  *
  * How it works:

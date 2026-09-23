@@ -1,6 +1,6 @@
 'use strict';
 
-const { sendRichHtml, sendSukunaTTTCanvas, escapeHtml } = require('../../utils/genaiRich');
+const { sendRichHtml, sendNextyTTTCanvas, escapeHtml } = require('../../utils/genaiRich');
 const database = require('../../utils/database');
 
 const games = new Map();
@@ -8,7 +8,7 @@ const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
 
 function playerId(jid) { return String(jid || '').split(':')[0]; }
 function label(jid) { return playerId(jid).split('@')[0]; }
-function mode(sock) { return sock?.__sukunaDeviceMode || database.getDeviceMode(); }
+function mode(sock) { return sock?.__nextyDeviceMode || database.getDeviceMode(); }
 function gameFor(chat) {
     if (!games.has(chat)) games.set(chat, { players: [], board: Array(9).fill(''), turn: 0, over: false, result: '' });
     return games.get(chat);
@@ -26,17 +26,17 @@ function report(game, chat, message) {
     const next = game.players[game.turn];
     const nextText = next ? `Next turn: @${label(next)} (${game.turn === 0 ? 'X' : 'O'})` : 'Next turn: waiting for player O';
     return {
-        canvasText: `☠ SUKUNA TTT ☠\n\n${first}\n${second}\n\n${boardText(game)}\n\n${message || nextText}`,
-        caption: `☠ SUKUNA TIC-TAC-TOE\n\n${first}\n${second}\n\n${message || nextText}\n\nUse .ttt 1–9 to choose a square.`,
+        canvasText: `☠ NEXTY TTT ☠\n\n${first}\n${second}\n\n${boardText(game)}\n\n${message || nextText}`,
+        caption: `☠ NEXTY TIC-TAC-TOE\n\n${first}\n${second}\n\n${message || nextText}\n\nUse .ttt 1–9 to choose a square.`,
         next,
     };
 }
 async function sendBoard({ sock, msg, from, game, message }) {
     const view = report(game, from, message);
     const mentions = view.next ? [view.next] : game.players.slice(0, 2);
-    const html = `<div><h1>☠ SUKUNA TIC-TAC-TOE</h1><p>${escapeHtml(boardText(game)).replace(/\n/g, '<br>')}</p><p>${escapeHtml(view.caption).replace(/\n/g, '<br>')}</p></div>`;
+    const html = `<div><h1>☠ NEXTY TIC-TAC-TOE</h1><p>${escapeHtml(boardText(game)).replace(/\n/g, '<br>')}</p><p>${escapeHtml(view.caption).replace(/\n/g, '<br>')}</p></div>`;
     if (mode(sock) === 'iphone') {
-        return sendSukunaTTTCanvas({ sock, jid: from, quoted: msg, board: game.board, players: game.players, status: message || 'SEND .TTT 1–9 TO PLAY', mentions });
+        return sendNextyTTTCanvas({ sock, jid: from, quoted: msg, board: game.board, players: game.players, status: message || 'SEND .TTT 1–9 TO PLAY', mentions });
     }
     const sent = await sendRichHtml({ sock, jid: from, quoted: msg, html, mentions });
     if (view.next) {
@@ -79,7 +79,7 @@ async function move({ sock, msg, from, sender, reply, value }) {
     const winner = result(game);
     if (winner) {
         game.over = true;
-        game.result = winner === 'D' ? 'DRAW — the domains collide evenly.' : `🏆 @${label(sender)} wins the Sukuna domain!`;
+        game.result = winner === 'D' ? 'DRAW — the domains collide evenly.' : `🏆 @${label(sender)} wins the Nexty domain!`;
         return sendBoard({ sock, msg, from, game, message: game.result + ' Send .join to start a new round.' });
     }
     game.turn = game.turn === 0 ? 1 : 0;
@@ -89,7 +89,7 @@ async function move({ sock, msg, from, sender, reply, value }) {
 module.exports = {
     name: 'ttt',
     aliases: ['tictactoe', 'xo'],
-    description: 'Play Sukuna Tic-Tac-Toe with .join and numbered moves',
+    description: 'Play Nexty Tic-Tac-Toe with .join and numbered moves',
     usage: '.ttt | .join | .ttt 1-9',
     category: 'games',
     join,

@@ -66,7 +66,7 @@ const quotes = [
     { text: 'Courage is not noise; it is the choice made after fear arrives.', character: 'Megumi Fushiguro', anime: 'Jujutsu Kaisen' },
     { text: 'The road changes when you decide not to turn back.', character: 'Nobara Kugisaki', anime: 'Jujutsu Kaisen' },
     { text: 'Power means little until it protects someone beyond yourself.', character: 'Satoru Gojo', anime: 'Jujutsu Kaisen' },
-    { text: 'Even a broken dream can become the blueprint for a stronger one.', character: 'Ryomen Sukuna', anime: 'Jujutsu Kaisen' },
+    { text: 'Even a broken dream can become the blueprint for a stronger one.', character: 'Ryomen Nexty', anime: 'Jujutsu Kaisen' },
     { text: 'The hardest opponent is the voice that says you cannot rise.', character: 'Maki Zenin', anime: 'Jujutsu Kaisen' },
     { text: 'A promise becomes real when it survives the worst day.', character: 'Yuta Okkotsu', anime: 'Jujutsu Kaisen' },
     { text: 'Do not wait for destiny to open the door; build another entrance.', character: 'Toge Inumaki', anime: 'Jujutsu Kaisen' },

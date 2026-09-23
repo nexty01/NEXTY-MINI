@@ -41,7 +41,7 @@ const PER_PAGE = 25;
 let ffmpegPath = null;
 try { ffmpegPath = require('ffmpeg-static'); } catch (_) { ffmpegPath = null; }
 
-const UA = { 'User-Agent': 'Mozilla/5.0 (SUKUNA-MD)' };
+const UA = { 'User-Agent': 'Mozilla/5.0 (NEXTY-MINI)' };
 
 // ── Generic recursive url-collector (schema-agnostic, same idea as the
 // project's own lib/mediaFetch.js) ──────────────────────────────────────
@@ -91,7 +91,7 @@ async function searchKlipy(query, page, type) {
         const { data, status } = await axios.get(`${KLIPY_BASE}/${type}/search`, {
             params: {
                 q: query,
-                customer_id: 'sukuna-md-bot',
+                customer_id: 'nexty-mini-bot',
                 page: page || 1,
                 per_page: PER_PAGE,
             },

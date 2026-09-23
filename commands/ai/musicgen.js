@@ -183,7 +183,7 @@ function convertToMp3(input) {
 
 async function downloadAudio(audioUrl) {
     const response = await fetch(audioUrl, {
-        headers: { 'User-Agent': 'SUKUNA-MD/3.0' },
+        headers: { 'User-Agent': 'NEXTY-MINI/3.0' },
         signal: AbortSignal.timeout(60 * 1000),
     });
     if (!response.ok) throw new Error(`audio download returned HTTP ${response.status}`);
@@ -247,7 +247,7 @@ module.exports = {
             return sock.sendMessage(from, {
                 audio: audio.buffer,
                 mimetype: audio.mimetype,
-                fileName: `sukuna-musicgen.${audio.extension}`,
+                fileName: `nexty-musicgen.${audio.extension}`,
                 ptt: false,
                 caption: `🎵 *Music generated*\n\n_${prompt}_\n\nProvider: ${generated.provider}${generated.model ? ` · Model: ${generated.model}` : ''}${generated.provider === 'Hugging Face MusicGen Space' ? '\n_Free public endpoint; clip length follows the Space defaults._' : `\nDuration: ${duration}s`}`,
             });

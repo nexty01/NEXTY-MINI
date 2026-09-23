@@ -8,7 +8,7 @@ const TOPICS = new Set(['world', 'nation', 'business', 'technology', 'entertainm
 function fetchText(url, redirectCount = 0) {
     return new Promise((resolve, reject) => {
         const req = https.get(url, {
-            headers: { 'User-Agent': 'SUKUNA-MD-News/1.0', Accept: 'application/rss+xml, application/xml' },
+            headers: { 'User-Agent': 'NEXTY-MINI-News/1.0', Accept: 'application/rss+xml, application/xml' },
         }, res => {
             if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
                 res.resume();

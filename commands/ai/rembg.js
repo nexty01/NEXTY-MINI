@@ -52,7 +52,7 @@ function getQuotedMedia(msg) {
 
 async function downloadQuotedImage(sock, from, msg, contextInfo, quotedMessage, serializedQuoted) {
     // BILLIE_MD serializes quoted media with a `.download()` helper. Support
-    // that shape when available, while keeping SUKUNA_MD’s raw-message path.
+    // that shape when available, while keeping NEXTY_MINI’s raw-message path.
     if (serializedQuoted && typeof serializedQuoted.download === 'function') {
         return serializedQuoted.download();
     }
@@ -153,7 +153,7 @@ module.exports = {
                 const response = await axios.get(sourceUrl, {
                     responseType: 'arraybuffer',
                     timeout: 60000,
-                    headers: { 'User-Agent': 'SUKUNA-MD/3.0' },
+                    headers: { 'User-Agent': 'NEXTY-MINI/3.0' },
                 });
                 imageBuffer = Buffer.from(response.data || '');
             }
@@ -166,7 +166,7 @@ module.exports = {
             await sock.sendMessage(from, {
                 image: resultBuffer,
                 mimetype: 'image/png',
-                caption: '🖼️ *Background Removed*\n\n🚀 Engine: remove.bg\n\n> Processed by SUKUNA MD',
+                caption: '🖼️ *Background Removed*\n\n🚀 Engine: remove.bg\n\n> Processed by NEXTY MINI',
             }, { quoted: msg });
 
             await sock.sendMessage(from, { react: { text: '✅', key: msg.key } }).catch(() => {});

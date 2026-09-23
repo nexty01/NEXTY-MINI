@@ -1,6 +1,6 @@
 /**
- * Pasqua Check — Easter-egg status trigger
- * No prefix, no arguments. Send the exact word "Pasqua!" anywhere
+ * Nexty Check — Easter-egg status trigger
+ * No prefix, no arguments. Send the exact word "Nexty!" anywhere
  * and the bot reacts with a chain of 5 emojis, then confirms it's alive.
  */
 
@@ -8,15 +8,15 @@
 
 const fontmakerLib = require('../../utils/fontmakerLib');
 
-const TRIGGER = 'pasqua!';
+const TRIGGER = 'nexty!';
 const REACTIONS = ['🔥', '💯', '🗿', '⚡', '👑'];
 const REACT_DELAY_MS = 350;
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 module.exports = {
-    name: 'pasquacheck',
-    description: 'Reacts and confirms the bot is online when "Pasqua!" is sent',
+    name: 'nextycheck',
+    description: 'Reacts and confirms the bot is online when "Nexty!" is sent',
     category: 'utility',
     isListener: true,
 
@@ -47,7 +47,7 @@ module.exports = {
 
             await sock.sendMessage(from, { text: coolText }, { quoted: msg });
         } catch (err) {
-            console.error('[pasquacheck]', err.message);
+            console.error('[nextycheck]', err.message);
         }
     }
 };

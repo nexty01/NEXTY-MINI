@@ -33,7 +33,7 @@ module.exports = {
             (next
                 ? `✅ *ON* — _New view-once media will be recovered and sent to the paired bot account\'s private chat._`
                 : `🔴 *OFF* — _View-once messages will pass through normally._`) +
-            `\n\n> _Sukuna MD · Nothing stays hidden_`
+            `\n\n> _Nexty MINI · Nothing stays hidden_`
         );
     },
 };

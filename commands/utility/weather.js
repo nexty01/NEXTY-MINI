@@ -1,5 +1,5 @@
 /**
- * Weather Command — Sukuna canvas card via wttr.in
+ * Weather Command — Nexty canvas card via wttr.in
  * Usage: .weather <city>
  */
 

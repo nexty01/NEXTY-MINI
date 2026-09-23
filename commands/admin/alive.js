@@ -39,7 +39,7 @@ module.exports = {
         const date = now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
         const time = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
         getUiLabels(lang || 'english');
-        const botName = config.botName || 'SUKUNA MD';
+        const botName = config.botName || 'NEXTY MINI';
         const html = aliveHtml({
             botName,
             version: config.version || '2.0.0',
@@ -50,7 +50,7 @@ module.exports = {
             usedMB: totalMB - freeMB,
             totalMB,
             ping,
-            owner: config.owner?.name || 'PASQUA',
+            owner: config.owner?.name || 'ISAGI777',
             platform: process.platform,
             nodeVer: process.version,
         });

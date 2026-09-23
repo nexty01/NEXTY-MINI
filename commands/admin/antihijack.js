@@ -1,5 +1,5 @@
 /**
- * AntiHijack Command — Sukuna MD admin protection
+ * AntiHijack Command — Nexty MINI admin protection
  * Usage: .antihijack on | off | status
  *
  * Robust + fast: cached group metadata, parallel reversals, retry with backoff,

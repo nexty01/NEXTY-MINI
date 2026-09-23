@@ -20,8 +20,8 @@ module.exports = {
         try {
             const encoded = encodeURIComponent(pkg);
             const [infoResponse, downloadsResponse] = await Promise.all([
-                fetch(`https://registry.npmjs.org/${encoded}`, { headers: { 'User-Agent': 'SUKUNA-MD/3.0' }, signal: AbortSignal.timeout(20_000) }),
-                fetch(`https://api.npmjs.org/downloads/point/last-week/${encoded}`, { headers: { 'User-Agent': 'SUKUNA-MD/3.0' }, signal: AbortSignal.timeout(20_000) }),
+                fetch(`https://registry.npmjs.org/${encoded}`, { headers: { 'User-Agent': 'NEXTY-MINI/3.0' }, signal: AbortSignal.timeout(20_000) }),
+                fetch(`https://api.npmjs.org/downloads/point/last-week/${encoded}`, { headers: { 'User-Agent': 'NEXTY-MINI/3.0' }, signal: AbortSignal.timeout(20_000) }),
             ]);
             if (!infoResponse.ok) return reply(`❌ npm package not found (HTTP ${infoResponse.status}).`);
             const data = await infoResponse.json();

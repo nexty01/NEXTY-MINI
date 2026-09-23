@@ -1,5 +1,5 @@
 /**
- * Menu Design Library — Sukuna MD
+ * Menu Design Library — Nexty MINI
  *
  * Exports:
  *   DESIGNS        : list of available design keys
@@ -18,8 +18,8 @@ const DESIGNS = [
     'vapor', 'mirage', 'eclipse', 'phantom', 'monolith',
     // ── Interactive design (renders quick-reply buttons via @pasqua-baileys/baileys) ──
     'chroma',
-    // ── Pasqua signature designs ──
-    'crysnovax', 'pasqua',
+    // ── Nexty signature designs ──
+    'crysnovax', 'nexty',
     // ── Freeway design ──
     'freeway',
     // ── Three new peak designs ──
@@ -70,7 +70,7 @@ function designNor(ctx) {
 
     // Peak header
     c += `◤${RULE}◥\n`;
-    c += `      ✦ ${boldItalic('SUKUNA MD')} ✦\n`;
+    c += `      ✦ ${boldItalic('NEXTY MINI')} ✦\n`;
     c += `◣${RULE}◢\n`;
 
     // Info rail
@@ -102,7 +102,7 @@ function designNor(ctx) {
     c += `◤${RULE}◥\n`;
     c += `   ${total} commands loaded\n`;
     c += `◣${RULE}◢\n`;
-    c += `\n> ${boldItalic('Sukuna MD')} · King of Curses · by ${creator}`;
+    c += `\n> ${boldItalic('Nexty MINI')} · King of Curses · by ${creator}`;
     return c;
 }
 
@@ -113,7 +113,7 @@ function designNeon(ctx) {
             date, time, status, platform } = ctx;
     let c = '';
     c += `▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰\n`;
-    c += `      ✦ ${boldItalic('SUKUNA · NEON')} ✦\n`;
+    c += `      ✦ ${boldItalic('NEXTY · NEON')} ✦\n`;
     c += `▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰\n`;
     c += `◈ User    » ${userTag}\n`;
     c += `◈ Creator » ${creator}\n`;
@@ -138,7 +138,7 @@ function designNeon(ctx) {
     c += `▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰\n`;
     c += `   ${total} neon commands online\n`;
     c += `▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰\n`;
-    c += `\n> ${boldItalic('SUKUNA · NEON')} · powered by ${creator}`;
+    c += `\n> ${boldItalic('NEXTY · NEON')} · powered by ${creator}`;
     return c;
 }
 
@@ -176,7 +176,7 @@ function designClassy(ctx) {
     c += `━━━━━━━━━━━━━━━━━━━━━━\n`;
     c += `   ${total} commands · curated\n`;
     c += `━━━━━━━━━━━━━━━━━━━━━━\n`;
-    c += `\n> ${boldItalic('Sukuna MD')} — quietly powerful · by ${creator}`;
+    c += `\n> ${boldItalic('Nexty MINI')} — quietly powerful · by ${creator}`;
     return c;
 }
 
@@ -186,7 +186,7 @@ function designCyber(ctx) {
             sortedCategories, byCategory, CATEGORY_LABELS, boldItalic,
             date, time, status, platform } = ctx;
     let c = '';
-    c += `╔═[ ${boldItalic('SUKUNA//CYBER')} ]═╗\n`;
+    c += `╔═[ ${boldItalic('NEXTY//CYBER')} ]═╗\n`;
     c += `║ > boot sequence ok\n`;
     c += `║ > user      :: ${userTag}\n`;
     c += `║ > creator   :: ${creator}\n`;
@@ -216,7 +216,7 @@ function designCyber(ctx) {
     }
     c += `> sys.commands = ${total}\n`;
     c += `> handshake :: complete\n`;
-    c += `\n> ${boldItalic('SUKUNA//CYBER')} · root@${creator}`;
+    c += `\n> ${boldItalic('NEXTY//CYBER')} · root@${creator}`;
     return c;
 }
 
@@ -226,7 +226,7 @@ function designRoyal(ctx) {
             sortedCategories, byCategory, CATEGORY_LABELS, boldItalic,
             date, time, status, platform } = ctx;
     let c = '';
-    c += `『 ✦ ${boldItalic('SUKUNA · ROYAL COURT')} ✦ 』\n`;
+    c += `『 ✦ ${boldItalic('NEXTY · ROYAL COURT')} ✦ 』\n`;
     c += `❦ Subject  ➤ ${userTag}\n`;
     c += `❦ Sovereign ➤ ${creator}\n`;
     c += `❦ Court    ➤ ${mode}\n`;
@@ -250,7 +250,7 @@ function designRoyal(ctx) {
     c += `『 ❦ ${boldItalic('Crown Total')} ❦ 』\n`;
     c += `❦ ${total} royal decrees sealed\n`;
     c += `『━━━━━━━━━━━━━━━━━━━━』\n`;
-    c += `\n> ${boldItalic('Sukuna MD')} · long live the king · ${creator}`;
+    c += `\n> ${boldItalic('Nexty MINI')} · long live the king · ${creator}`;
     return c;
 }
 
@@ -260,7 +260,7 @@ function designGhost(ctx) {
             sortedCategories, byCategory, CATEGORY_LABELS, boldItalic,
             date, time, status, platform } = ctx;
     let c = '';
-    c += `      ☽ ${boldItalic('SUKUNA · GHOST')} ☾\n`;
+    c += `      ☽ ${boldItalic('NEXTY · GHOST')} ☾\n`;
     c += `   ───────────────────\n`;
     c += `    ࿐ ${userTag}\n`;
     c += `    ࿐ creator · ${creator}\n`;
@@ -285,7 +285,7 @@ function designGhost(ctx) {
     c += `   ───────────────────\n`;
     c += `   ${total} silent commands\n`;
     c += `   ───────────────────\n`;
-    c += `\n> ${boldItalic('Sukuna · Ghost')} · drifts with ${creator}`;
+    c += `\n> ${boldItalic('Nexty · Ghost')} · drifts with ${creator}`;
     return c;
 }
 
@@ -298,7 +298,7 @@ function designMatrix(ctx) {
     const RAIN = '┃▒┃▒┃▒┃▒┃▒┃▒┃▒┃▒┃▒┃▒┃▒┃';
     let c = '';
     c += `╔══════════════════════╗\n`;
-    c += `║  ${boldItalic('SUKUNA :: MATRIX')}   ║\n`;
+    c += `║  ${boldItalic('NEXTY :: MATRIX')}   ║\n`;
     c += `╚══════════════════════╝\n`;
     c += `${RAIN}\n`;
     c += `01> user      :: ${userTag}\n`;
@@ -328,7 +328,7 @@ function designMatrix(ctx) {
     c += `${RAIN}\n`;
     c += `   ${total} processes alive\n`;
     c += `${RAIN}\n`;
-    c += `\n> ${boldItalic('SUKUNA :: MATRIX')} · trace @ ${creator}`;
+    c += `\n> ${boldItalic('NEXTY :: MATRIX')} · trace @ ${creator}`;
     return c;
 }
 
@@ -340,7 +340,7 @@ function designSamurai(ctx) {
             date, time, status, platform } = ctx;
     const RULE = '― ― ― 道 ― ― ―';
     let c = '';
-    c += `「 ✦ ${boldItalic('SUKUNA · 侍 SAMURAI')} ✦ 」\n`;
+    c += `「 ✦ ${boldItalic('NEXTY · 侍 SAMURAI')} ✦ 」\n`;
     c += `${RULE}\n`;
     c += ` 刀 user     · ${userTag}\n`;
     c += ` 刀 creator  · ${creator}\n`;
@@ -373,7 +373,7 @@ function designSamurai(ctx) {
     c += `「 ${boldItalic('刀 Total')} 」\n`;
     c += `  ${total} blades drawn\n`;
     c += `${RULE}\n`;
-    c += `\n> ${boldItalic('Sukuna · Samurai')} · 切 by ${creator}`;
+    c += `\n> ${boldItalic('Nexty · Samurai')} · 切 by ${creator}`;
     return c;
 }
 
@@ -385,7 +385,7 @@ function designAurora(ctx) {
             date, time, status, platform } = ctx;
     let c = '';
     c += `❀━━━━━━━━━━━━━━━━━━━❀\n`;
-    c += `   ${boldItalic('SUKUNA · AURORA')}\n`;
+    c += `   ${boldItalic('NEXTY · AURORA')}\n`;
     c += `❀━━━━━━━━━━━━━━━━━━━❀\n`;
     c += `❀ user     ⤞ ${userTag}\n`;
     c += `❀ creator  ⤞ ${creator}\n`;
@@ -417,7 +417,7 @@ function designAurora(ctx) {
     c += `❀━━━━━━━━━━━━━━━━━━━❀\n`;
     c += `   ${total} blooms in season\n`;
     c += `❀━━━━━━━━━━━━━━━━━━━❀\n`;
-    c += `\n> ${boldItalic('Sukuna · Aurora')} · drifts with ${creator}`;
+    c += `\n> ${boldItalic('Nexty · Aurora')} · drifts with ${creator}`;
     return c;
 }
 
@@ -431,7 +431,7 @@ function designArcade(ctx) {
     const totalPages = Math.max(1, sections.length);
     let c = '';
     c += `▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓\n`;
-    c += `▓  ${boldItalic('SUKUNA · ARCADE')}  ▓\n`;
+    c += `▓  ${boldItalic('NEXTY · ARCADE')}  ▓\n`;
     c += `▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓\n`;
     c += `『 PLAYER 1 — INSERT COIN 』\n`;
     c += ` ► P1       · ${userTag}\n`;
@@ -464,7 +464,7 @@ function designArcade(ctx) {
 
     c += `『 HI-SCORE: ${total} CMDS 』\n`;
     c += `▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓\n`;
-    c += `\n> ${boldItalic('SUKUNA · ARCADE')} · 1cc by ${creator}`;
+    c += `\n> ${boldItalic('NEXTY · ARCADE')} · 1cc by ${creator}`;
     return c;
 }
 
@@ -495,7 +495,7 @@ function designCrimson(ctx) {
     const { sortedCategories, byCategory, CATEGORY_LABELS, boldItalic } = ctx;
     let c = '';
     c += `🩸━━━━━━━━━━━━━━━━━━━━━🩸\n`;
-    c += `      ${boldItalic('SUKUNA · CRIMSON')}\n`;
+    c += `      ${boldItalic('NEXTY · CRIMSON')}\n`;
     c += `🩸━━━━━━━━━━━━━━━━━━━━━🩸\n`;
     c += _meta(ctx) + '\n';
     c += `🩸━━━━━━━━━━━━━━━━━━━━━🩸\n\n`;
@@ -552,7 +552,7 @@ function designRunic(ctx) {
     const { sortedCategories, byCategory, CATEGORY_LABELS, boldItalic } = ctx;
     let c = '';
     c += `ᚱ═══════════════════════ᚱ\n`;
-    c += `     ${boldItalic('SUKUNA · RUNIC')}\n`;
+    c += `     ${boldItalic('NEXTY · RUNIC')}\n`;
     c += `ᚱ═══════════════════════ᚱ\n`;
     c += _meta(ctx) + '\n';
     c += `ᚱ═══════════════════════ᚱ\n\n`;
@@ -581,7 +581,7 @@ function designObsidian(ctx) {
         byCategory[cat].forEach(n => c += `   ▫ ${n}\n`);
         c += `\n`;
     });
-    c += `■ ${boldItalic('SUKUNA · OBSIDIAN')} ■`;
+    c += `■ ${boldItalic('NEXTY · OBSIDIAN')} ■`;
     return c;
 }
 
@@ -607,7 +607,7 @@ function designVapor(ctx) {
 function designMirage(ctx) {
     const { sortedCategories, byCategory, CATEGORY_LABELS, boldItalic } = ctx;
     let c = '';
-    c += `〰〰〰 ${boldItalic('SUKUNA · MIRAGE')} 〰〰〰\n`;
+    c += `〰〰〰 ${boldItalic('NEXTY · MIRAGE')} 〰〰〰\n`;
     c += _meta(ctx) + '\n';
     c += `〰〰〰〰〰〰〰〰〰〰〰\n\n`;
     sortedCategories.forEach(cat => {
@@ -643,7 +643,7 @@ function designEclipse(ctx) {
 function designPhantom(ctx) {
     const { sortedCategories, byCategory, CATEGORY_LABELS, boldItalic } = ctx;
     let c = '';
-    c += `╔═❀ ${boldItalic('SUKUNA · PHANTOM')} ❀═╗\n`;
+    c += `╔═❀ ${boldItalic('NEXTY · PHANTOM')} ❀═╗\n`;
     c += _meta(ctx) + '\n';
     c += `╚══════════════════════╝\n\n`;
     sortedCategories.forEach(cat => {
@@ -661,7 +661,7 @@ function designPhantom(ctx) {
 function designMonolith(ctx) {
     const { sortedCategories, byCategory, CATEGORY_LABELS, boldItalic } = ctx;
     let c = '';
-    c += `█\n█  ${boldItalic('SUKUNA · MONOLITH')}\n█\n`;
+    c += `█\n█  ${boldItalic('NEXTY · MONOLITH')}\n█\n`;
     _meta(ctx).split('\n').forEach(l => c += `█${l}\n`);
     c += `█\n`;
     sortedCategories.forEach(cat => {
@@ -710,7 +710,7 @@ function designChroma(ctx) {
     out += `┃ ↳ Tap a button below to run a\n`;
     out += `┃   command instantly.\n`;
     out += '╰━━━━━━━━━━━━━━━━━━━━━━━━━━╯\n';
-    out += `       ⛧  ${bi('Powered by Pasqua Tech')}  ⛧`;
+    out += `       ⛧  ${bi('Powered by NEXTY MINI')}  ⛧`;
     return out;
 }
 
@@ -727,7 +727,7 @@ function designCrysnovax(ctx) {
     let c = '';
 
     // ── Header ──
-    c += `⌘ ══〔 ${bi('SUKUNA MD')} 〕══ ⌘\n`;
+    c += `⌘ ══〔 ${bi('NEXTY MINI')} 〕══ ⌘\n`;
     c += `${SEP}\n`;
     c += `𒆜 ✦ ${bi('Hello,')} ${userTag}\n`;
     c += `❏◦ Prefix   ·  ⇆ [ ${prefix} ]\n`;
@@ -758,10 +758,10 @@ function designCrysnovax(ctx) {
     return c;
 }
 
-// ── Design: pasqua — signature system-profile menu ─────────────────
-// Exact PASQUA layout requested by the owner, with the system block kept
+// ── Design: nexty — signature system-profile menu ─────────────────
+// Exact NEXTY MINI layout requested by the owner, with the system block kept
 // live and the three visible sections populated from the command registry.
-function designPasqua(ctx) {
+function designNexty(ctx) {
     const { botName, userTag, creator, total, uptime, version, platform,
             sortedCategories, byCategory, CATEGORY_LABELS, boldItalic, mode, status } = ctx;
     const bi = boldItalic;
@@ -772,7 +772,7 @@ function designPasqua(ctx) {
         if (!match) return clean(uptime);
         return `${match[1] ? `${pad2(match[1])}d ` : ''}${pad2(match[2])}h ${pad2(match[3])}m ${pad2(match[4])}s`;
     })();
-    const owner = clean(creator || 'PASQUA').toUpperCase();
+    const owner = clean(creator || 'ISAGI777').toUpperCase();
     const online = clean(status).replace(/[^a-z]/gi, '').toUpperCase() || 'ONLINE';
     const systemPlatform = clean(platform).toUpperCase() || 'LINUX X64';
     // Use the same canonical category order as the nor design. Each category
@@ -788,7 +788,7 @@ function designPasqua(ctx) {
         .sort((a, b) => String(a).localeCompare(String(b)));
 
     let c = '';
-    c += `╼━━━ ${bi(botName || 'SUKUNA MD')} ━━━╾\n`;
+    c += `╼━━━ ${bi(botName || 'NEXTY MINI')} ━━━╾\n`;
     c += `                ${bi(`𝑽${version || '3.0.0'}`)}\n`;
     c += '          ───────────────────\n\n';
     c += `┌─「 ${bi('𝐒𝐘𝐒𝐓𝐄𝐌')} 」\n`;
@@ -817,7 +817,7 @@ function designPasqua(ctx) {
         section(bi(label), categoryNames(cat));
     }
     c += '\n────────────────────────────\n';
-    c += `          ${bi('𖤐 PASQUA-TECH 𖤐')}\n`;
+    c += `          ${bi('𖤐 NEXTY MINI 𖤐')}\n`;
     c += '────────────────────────────';
     return c;
 }
@@ -835,7 +835,7 @@ function designFreeway(ctx) {
 
     // ── Mile marker header ──
     c += `╔${ROAD}╗\n`;
-    c += `║  🛣  ${bi('F R E E W A Y')}  ·  ${bi('SUKUNA MD')}  🛣  ║\n`;
+    c += `║  🛣  ${bi('F R E E W A Y')}  ·  ${bi('NEXTY MINI')}  🛣  ║\n`;
     c += `╚${ROAD}╝\n`;
     c += `${LANE}\n`;
     c += ` ▸ EXIT 01  ·  USER      ⇒  ${userTag}\n`;
@@ -870,7 +870,7 @@ function designFreeway(ctx) {
     c += `╔${ROAD}╗\n`;
     c += `║  🏁  ${bi('DESTINATION REACHED')}  —  ${total} COMMANDS  🏁  ║\n`;
     c += `╚${ROAD}╝\n`;
-    c += `\n> ${bi('SUKUNA · FREEWAY')}  ·  full throttle by ${creator}`;
+    c += `\n> ${bi('NEXTY · FREEWAY')}  ·  full throttle by ${creator}`;
     return c;
 }
 
@@ -932,7 +932,7 @@ function designTitanium(ctx) {
     let c = '';
 
     c += `${BAR}\n`;
-    c += `⬡  ${bi('T I T A N I U M')}  ·  ${bi('SUKUNA MD')}  ⬡\n`;
+    c += `⬡  ${bi('T I T A N I U M')}  ·  ${bi('NEXTY MINI')}  ⬡\n`;
     c += `${BAR}\n`;
     c += `⬡  USER      ▸  ${userTag}\n`;
     c += `⬡  CREATOR   ▸  ${creator}\n`;
@@ -964,7 +964,7 @@ function designTitanium(ctx) {
     c += `${BAR}\n`;
     c += `⬡  ALLOY LOAD ▸  ${total} commands forged\n`;
     c += `${BAR}\n`;
-    c += `\n> ${bi('SUKUNA · TITANIUM')}  ·  hardened by ${creator}`;
+    c += `\n> ${bi('NEXTY · TITANIUM')}  ·  hardened by ${creator}`;
     return c;
 }
 
@@ -980,7 +980,7 @@ function designInferno(ctx) {
     let c = '';
 
     c += `${FIRE}\n`;
-    c += `🔥  ${bi('I N F E R N O')}  ·  ${bi('SUKUNA MD')}  🔥\n`;
+    c += `🔥  ${bi('I N F E R N O')}  ·  ${bi('NEXTY MINI')}  🔥\n`;
     c += `${FIRE}\n`;
     c += `🔥 user      ⟹  ${userTag}\n`;
     c += `🔥 creator   ⟹  ${creator}\n`;
@@ -1011,7 +1011,7 @@ function designInferno(ctx) {
     c += `${FIRE}\n`;
     c += `🔥  ${total} commands  ·  still burning\n`;
     c += `${FIRE}\n`;
-    c += `\n> ${bi('SUKUNA · INFERNO')}  ·  ignited by ${creator}`;
+    c += `\n> ${bi('NEXTY · INFERNO')}  ·  ignited by ${creator}`;
     return c;
 }
 
@@ -1059,13 +1059,13 @@ function designCodex(ctx) {
     c += `╔═══〔 𖣘 ${bi('TOTAL')} 𖣘 〕═══❒\n`;
     c += `║╭───────────────◆\n`;
     c += `║│ ✰ ${bi(`${total} commands registered`)}\n`;
-    c += `║│ ✰ ${bi('Powered by Pasqua Tech')}\n`;
+    c += `║│ ✰ ${bi('Powered by NEXTY MINI')}\n`;
     c += `║╰───────────────◆\n`;
     c += `╚══════════════════❒`;
     return c;
 }
 
-// ── Design: dark — exact match of Sukuna MD alive/status card ────
+// ── Design: dark — exact match of Nexty MINI alive/status card ────
 // Every line prefixed with "> " so WhatsApp renders the left-bar quote
 // styling. Info card uses ┏❐ / ┃⭔ / ┗❐. Commands listed one per line
 // as "> ❐ commandname". Category headers use *━━ LABEL ━━* bold format.
@@ -1076,7 +1076,7 @@ function designDark(ctx) {
     let c = '';
 
     // ── Info card (> prefix triggers WhatsApp quote bar) ──
-    c += `> ┏❐  ⌜ *SUKUNA MD*⌟  ❐ \n`;
+    c += `> ┏❐  ⌜ *NEXTY MINI*⌟  ❐ \n`;
     c += `> ┃⭔ user    : ${userTag}\n`;
     c += `> ┃⭔ owner   : ${creator}\n`;
     c += `> ┃⭔ prefix  : ${prefix}\n`;
@@ -1106,7 +1106,7 @@ function designDark(ctx) {
 
     // ── Footer ──
     c += `> ┗❐ ┈┈┈┈┈┈┈┈┈┈✧\n`;
-    c += `> _𝙥𝙖𝙨𝙦𝙪𝙖 𝙢𝙙 · king of curses · ${total} commands_`;
+    c += `> _𝙣𝙚𝙭𝙩𝙮 𝙢𝙞𝙣𝙞 · ${total} commands_`;
     return c;
 }
 
@@ -1118,7 +1118,7 @@ function designOnyx(ctx) {
     const bi = ctx.boldItalic || ((value) => String(value));
     let c = '';
 
-    c += `> ┏❐  ⌜ *${bi('SUKUNA MD · ONYX')}* ⌟  ❐ \n`;
+    c += `> ┏❐  ⌜ *${bi('NEXTY MINI · ONYX')}* ⌟  ❐ \n`;
     c += `> ┃⭔ user    : ${userTag}\n`;
     c += `> ┃⭔ owner   : ${creator}\n`;
     c += `> ┃⭔ mode    : ${mode}\n`;
@@ -1141,7 +1141,7 @@ function designOnyx(ctx) {
     }
 
     c += `> ┗❐ ┈┈┈┈┈┈┈┈┈┈✧\n`;
-    c += `> _${bi('onyx core')} · ${total} commands · ${credits || 'pasqua tech'}_`;
+    c += `> _${bi('onyx core')} · ${total} commands · ${credits || 'nexty mini'}_`;
     return c;
 }
 
@@ -1207,13 +1207,13 @@ function designKord(ctx) {
     return c;
 }
 
-// ── Design: default — the attached SUKUNA MD boxed command menu ────────
+// ── Design: default — the attached NEXTY MINI boxed command menu ────────
 function designDefault(ctx) {
     const { userTag, prefix, total, uptime, time, date, mode, version,
             status, platform, sortedCategories, byCategory, CATEGORY_LABELS } = ctx;
     let c = '';
 
-    c += `♲︎☘︎⟨ SUKUNA MD™ ⟩☘︎♲︎\n\n`;
+    c += `♲︎☘︎⟨ NEXTY MINI™ ⟩☘︎♲︎\n\n`;
     c += ` ┌──〔 SYSTEM INFO 〕──┐\n`;
     c += ` 𖥂 User    : ${userTag}\n`;
     c += ` 𖥂 Prefix  : ${prefix}\n`;
@@ -1238,7 +1238,7 @@ function designDefault(ctx) {
         c += `\n`;
     }
 
-    c += `♲︎☘︎⟨ SUKUNA MD™ · ${total} COMMANDS ⟩☘︎♲︎`;
+    c += `♲︎☘︎⟨ NEXTY MINI™ · ${total} COMMANDS ⟩☘︎♲︎`;
     return c;
 }
 
@@ -1268,9 +1268,9 @@ const BUILDERS = {
     // Chroma renders interactive buttons in commands/admin/menu.js. The
     // caption text falls back to the default `nor` design.
     chroma:   designChroma,
-    // ── Pasqua signature designs ──
+    // ── Nexty signature designs ──
     crysnovax: designCrysnovax,
-    pasqua: designPasqua,
+    nexty: designNexty,
     // ── Freeway design ──
     freeway:  designFreeway,
     // ── Three new peak designs ──
@@ -1288,12 +1288,12 @@ const BUILDERS = {
 };
 
 function buildCaption(designKey, ctx) {
-    const key = String(designKey || 'pasqua').toLowerCase();
-    const fn = BUILDERS[key] || BUILDERS.pasqua;
+    const key = String(designKey || 'nexty').toLowerCase();
+    const fn = BUILDERS[key] || BUILDERS.nexty;
     const caption = fn(ctx);
-    const botName = String(ctx?.botName || 'SUKUNA MD').trim() || 'SUKUNA MD';
+    const botName = String(ctx?.botName || 'NEXTY MINI').trim() || 'NEXTY MINI';
     return caption
-        .replace(/SUKUNA(?:\s+MD)?/gi, () => botName)
+        .replace(/NEXTY(?:\s+MD)?/gi, () => botName)
         .replace(/\bKord\b/g, () => botName);
 }
 

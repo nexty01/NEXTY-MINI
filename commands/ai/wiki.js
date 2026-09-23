@@ -6,7 +6,7 @@ const https = require('https');
 function fetchWiki(query) {
     return new Promise((resolve, reject) => {
         const url = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(query)}`;
-        https.get(url, { headers: { 'User-Agent': 'SUKUNA-MD-Bot/1.0' } }, res => {
+        https.get(url, { headers: { 'User-Agent': 'NEXTY-MINI-Bot/1.0' } }, res => {
             let data = '';
             res.on('data', chunk => data += chunk);
             res.on('end', () => { try { resolve(JSON.parse(data)); } catch { reject(new Error('Parse error')); } });

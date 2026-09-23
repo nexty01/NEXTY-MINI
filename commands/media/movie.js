@@ -139,7 +139,7 @@ module.exports = {
     async execute({ sock, msg, from, reply, args }) {
         if (!args.length) {
             return reply(
-                `🎬 *SUKUNA Movie*\n\n` +
+                `🎬 *NEXTY Movie*\n\n` +
                 `📌 *Search (sends trailer):*\n• .movie <title>\n\n` +
                 `▶️ *Stream:*\n` +
                 `• .movie <title> 360p\n` +
@@ -251,7 +251,7 @@ module.exports = {
                     `━━━━━━━━━━━━━━━━━━━━\n` +
                     `⭐ ${rating}  🎭 ${genres}  ⏱️ ${runtime}\n` +
                     `━━━━━━━━━━━━━━━━━━━━\n` +
-                    `📺 _Powered by SUKUNA MD_`;
+                    `📺 _Powered by NEXTY MINI_`;
 
                 try {
                     await sock.sendMessage(from, {

@@ -70,7 +70,7 @@ async function imageData(buffer, mime) {
 }
 
 async function videoFrames(buffer) {
-    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'pasqua-vision-'));
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'nexty-vision-'));
     const input = path.join(dir, `${crypto.randomBytes(6).toString('hex')}.mp4`);
     const pattern = path.join(dir, 'frame-%02d.jpg');
     fs.writeFileSync(input, buffer);
@@ -88,7 +88,7 @@ async function videoFrames(buffer) {
     }
 }
 
-async function extractPasquaMedia(msg) {
+async function extractNextyMedia(msg) {
     const attachment = findAttachment(msg);
     if (!attachment) return null;
     const buffer = await streamBuffer(attachment.node, attachment.type);
@@ -99,4 +99,4 @@ async function extractPasquaMedia(msg) {
     return { type: 'video', media: await videoFrames(buffer) };
 }
 
-module.exports = { extractPasquaMedia, findAttachment };
+module.exports = { extractNextyMedia, findAttachment };

@@ -6,9 +6,9 @@
 
 const SUPABASE_URL = process.env.SUPABASE_URL || '';
 const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY || '';
-const SITE_URL = process.env.SITE_URL || 'https://malevolentkingsukunamdbot.lovable.app';
+const SITE_URL = process.env.SITE_URL || 'https://malevolentkingnextyminibot.lovable.app';
 
-const CURRENCY = 'PASQUA Bucks 💵';
+const CURRENCY = 'NEXTY Bucks 💵';
 const SYMBOL = '💵';
 
 // ===== Catalogs (kept in sync with website /src/lib/economy.ts) =====
@@ -46,7 +46,7 @@ const CHARACTERS = {
     mahito:  { name: 'Mahito',           rarity: 'legendary', price: 180000,  emoji: '🎭' },
     jogo:    { name: 'Jogo',             rarity: 'legendary', price: 160000,  emoji: '🌋' },
     kenjaku: { name: 'Kenjaku',          rarity: 'mythic',    price: 400000,  emoji: '🧠' },
-    sukuna:  { name: 'Ryomen Sukuna',    rarity: 'mythic',    price: 1000000, emoji: '👹' },
+    nexty:  { name: 'Ryomen Nexty',    rarity: 'mythic',    price: 1000000, emoji: '👹' },
 };
 
 const LOCATIONS = {
@@ -65,7 +65,7 @@ const CRIMES = {
 };
 
 const BLACK_MARKET = {
-    cursedfinger:   { name: '🦴 Sukuna Finger',    price: 75000,  description: '+500 max work payout (perm)' },
+    cursedfinger:   { name: '🦴 Nexty Finger',    price: 75000,  description: '+500 max work payout (perm)' },
     forbiddenscroll:{ name: '📜 Forbidden Scroll', price: 45000,  description: 'Reset all cooldowns once' },
     voidtoken:      { name: '🌀 Void Token',       price: 120000, description: 'Skip jail next crime fail' },
     hollowpurple:   { name: '💜 Hollow Purple',    price: 200000, description: '+50% earnings 24h' },

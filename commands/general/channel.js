@@ -1,5 +1,5 @@
 /**
- * .channel — share the official SUKUNA MD WhatsApp channel
+ * .channel — share the official NEXTY MINI WhatsApp channel
  *
  * Sends a stylised text reply with a tappable "View Channel" pill
  * (forwardedNewsletterMessageInfo) so users can join in one tap.
@@ -8,29 +8,29 @@
 const config = require('../../config');
 
 const CHANNEL_JID  = '120363424109748354@newsletter';
-const CHANNEL_NAME = 'Sukuna MD Pasqua tech';
+const CHANNEL_NAME = 'NEXTY MINI';
 const CHANNEL_URL  = 'https://whatsapp.com/channel/0029VbCJho147XeEEuR1LA3s';
 
 module.exports = {
     name: 'channel',
     aliases: ['newsletter'],
-    description: 'Share the official SUKUNA MD channel',
+    description: 'Share the official NEXTY MINI channel',
     category: 'general',
 
     async execute({ sock, msg, from, reply }) {
         const url = config.owner?.channel || CHANNEL_URL;
         const text =
-`╭━━━〔 ⛧ *𝙎𝙐𝙆𝙐𝙉𝘼 𝙈𝘿 𝘾𝙃𝘼𝙉𝙉𝙀𝙇* ⛧ 〕━━━╮
+`╭━━━〔 ⛧ *𝙉𝙀𝙓𝙏𝙔 𝙈𝙄𝙉𝙄 𝘾𝙃𝘼𝙉𝙉𝙀𝙇* ⛧ 〕━━━╮
 ┃ ✦ *Name* : ${CHANNEL_NAME}
 ┃ ✦ *Vibe* : Updates · Drops · Tips
-┃ ✦ *Host* : Pasqua Tech
+┃ ✦ *Host* : NEXTY MINI
 ┃
 ┃ 🔗 *Tap to join:*
 ┃    ${url}
 ┃
 ┃ ⤷ _Or tap the pill above to follow._
 ╰━━━━━━━━━━━━━━━━━━━━━━━━━╯
-       ⛧  𝙋𝙤𝙬𝙚𝙧𝙚𝙙 𝙗𝙮 𝙎𝙐𝙆𝙐𝙉𝘼 𝙈𝘿  ⛧`;
+       ⛧  𝙋𝙤𝙬𝙚𝙧𝙚𝙙 𝙗𝙮 𝙉𝙀𝙓𝙏𝙔 𝙈𝙄𝙉𝙄  ⛧`;
 
         try {
             await sock.sendMessage(from, {

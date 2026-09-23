@@ -13,8 +13,8 @@ async function sendRoadmapButtons({ sock, jid, quoted, text, prefix = '.', actio
     const buttons = actions.slice(0, 4).map(action => quickReply(action.text, action.id.startsWith(prefix) ? action.id : `${prefix}${action.id}`));
     const message = {
         body: { text },
-        footer: { text: 'SUKUNA MD · choose an action' },
-        header: { title: 'SUKUNA MD', hasMediaAttachment: false },
+        footer: { text: 'NEXTY MINI · choose an action' },
+        header: { title: 'NEXTY MINI', hasMediaAttachment: false },
         nativeFlowMessage: { buttons, messageParamsJson: '' },
     };
     const wrapped = generateWAMessageFromContent(jid, {

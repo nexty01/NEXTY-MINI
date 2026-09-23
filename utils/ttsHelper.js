@@ -10,7 +10,7 @@
  *
  * voiceName mapping (kept compatible with existing callers):
  *   - "Leda"   → soft female English (used for Hinatu)   → /tts/olivia
- *   - "Charon" → deep male  English (used for Sukuna)    → /tts/marcus
+ *   - "Charon" → deep male  English (used for Nexty)    → /tts/marcus
  * Anything else falls back to /tts/tts-en (generic English).
  */
 const axios = require('axios');

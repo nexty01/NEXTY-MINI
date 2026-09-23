@@ -63,7 +63,7 @@ module.exports = {
                 );
 
             const lines = [
-                '📊 *ACTIVE USERS - SUKUNA MD-PASQUA TECH*',
+                '📊 *ACTIVE USERS - NEXTY MINI*',
                 '',
             ];
             const mentions = [];

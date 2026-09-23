@@ -63,9 +63,9 @@ module.exports = {
                 const botJid = sock.user?.id;
                 await sock.updateProfilePicture(botJid, buffer);
                 return reply(
-                    `╭─❒ ◈ 𝙎𝙐𝙆𝙐᳇𝘼 ❒\n` +
+                    `╭─❒ ◈ 𝙉𝙀𝙓𝙏𝙔 𝙈𝙄𝙉𝙄 ❒\n` +
                     `│ ✅ *Profile picture updated!*\n` +
-                    `╰─⛧ pasqua verified`
+                    `╰─⛧ nexty verified`
                 );
             } catch (e) {
                 console.error('[avatar use]', e.message);

@@ -43,7 +43,7 @@ function analyzeMessage({ message = {}, participant = null, groupId = '', extraS
 
 function attachLiveListener(sock, { onMessage, onFlag, getExtraStamps } = {}) {
     if (!sock?.ev?.on) throw new TypeError('A Baileys socket with ev.on is required');
-    if (sock.__sukunaLayeredDetectorListener) return sock.__sukunaLayeredDetectorListener;
+    if (sock.__nextyLayeredDetectorListener) return sock.__nextyLayeredDetectorListener;
 
     const seen = new Set();
     const seenQueue = [];
@@ -79,16 +79,16 @@ function attachLiveListener(sock, { onMessage, onFlag, getExtraStamps } = {}) {
         detach() {
             if (typeof sock.ev.off === 'function') sock.ev.off('messages.upsert', listener);
             else if (typeof sock.ev.removeListener === 'function') sock.ev.removeListener('messages.upsert', listener);
-            if (sock.__sukunaLayeredDetectorListener === handle) delete sock.__sukunaLayeredDetectorListener;
+            if (sock.__nextyLayeredDetectorListener === handle) delete sock.__nextyLayeredDetectorListener;
         },
     };
-    sock.__sukunaLayeredDetectorListener = handle;
+    sock.__nextyLayeredDetectorListener = handle;
     return handle;
 }
 
 function detectorInfo() {
     return {
-        name: 'Sukuna Layered AntiBot Detector',
+        name: 'Nexty Layered AntiBot Detector',
         version: 1,
         signals: [
             'explicit protocol bot metadata',

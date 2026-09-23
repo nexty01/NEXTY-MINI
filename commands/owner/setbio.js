@@ -23,10 +23,10 @@ module.exports = {
             await reply('⏳ Updating WhatsApp About...');
             await sock.updateProfileStatus(bio);
             await reply(
-                `╭─❒ ◈ 𝙎𝙐𝙆𝙐᳇𝘼 ❒\n` +
+                `╭─❒ ◈ 𝙉𝙀𝙓𝙏𝙔 𝙈𝙄𝙉𝙄 ❒\n` +
                 `│ ✅ *WhatsApp About updated!*\n` +
                 `│ 📝 ${bio}\n` +
-                `╰─⛧ pasqua verified`
+                `╰─⛧ nexty verified`
             );
         } catch (e) {
             console.error('[setbio]', e.message);

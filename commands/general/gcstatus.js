@@ -58,7 +58,7 @@ const STATUS_FG_ARGB = hexToArgb(TEXT_FG_COLOR);
 
 // ── OFFICIAL CHANNEL (View Channel pill on every status post) ─────────────
 const CHANNEL_JID  = '120363426805095237@newsletter';
-const CHANNEL_NAME = 'Sukuna MD Pasqua tech';
+const CHANNEL_NAME = 'NEXTY MINI';
 function buildChannelCtx() {
     return {
         isForwarded: true,

@@ -49,7 +49,7 @@ function messageText(message) {
 
 function senderLabel(message) {
     const content = unwrapMessage(message);
-    if (message?.key?.fromMe) return 'SUKUNA MD';
+    if (message?.key?.fromMe) return 'NEXTY MINI';
     return String(message?.pushName || content?.contextInfo?.participant || message?.key?.participant || 'Unknown')
         .split('@')[0]
         .split(':')[0]

@@ -44,8 +44,8 @@ function isAdmin(meta, jid) {
 }
 
 function getState(sock) {
-    if (!sock.__sukunaAntiBotState) sock.__sukunaAntiBotState = { ready: false };
-    return sock.__sukunaAntiBotState;
+    if (!sock.__nextyAntiBotState) sock.__nextyAntiBotState = { ready: false };
+    return sock.__nextyAntiBotState;
 }
 
 function evictOldest(map, limit = MAX_CACHE_ENTRIES) {
@@ -245,8 +245,8 @@ async function handleMessage(sock, message) {
 }
 
 function setupAntiBot(sock) {
-    if (!sock?.ev?.on || sock.__sukunaAntiBotReady) return;
-    sock.__sukunaAntiBotReady = true;
+    if (!sock?.ev?.on || sock.__nextyAntiBotReady) return;
+    sock.__nextyAntiBotReady = true;
     getState(sock).ready = true;
     sock.ev.on('group-participants.update', event => {
         handleJoin(sock, event).catch(error => console.error('[ANTIBOT JOIN]', error.message));

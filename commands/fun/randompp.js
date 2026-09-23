@@ -26,7 +26,7 @@ module.exports = {
 
             for (let i = 0; i < items.length; i++) {
                 const { url, isVideo } = items[i];
-                const caption = `🖼️ *Random Profile Pic* (${i + 1}/${items.length})\n\n> SUKUNA MD`;
+                const caption = `🖼️ *Random Profile Pic* (${i + 1}/${items.length})\n\n> NEXTY MINI`;
                 if (isVideo) {
                     await sock.sendMessage(from, { video: { url }, mimetype: 'video/mp4', caption }, { quoted: msg });
                 } else {

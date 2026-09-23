@@ -26,7 +26,7 @@ module.exports = {
                 `│ Current : ${current}\n` +
                 `│\n${list.split('\n').map(l => '│ ' + l).join('\n')}\n` +
                 `╰────────────⛧\n` +
-                `\nUse: ${px}setdesign <name>\nExample: ${px}setdesign pasqua`
+                `\nUse: ${px}setdesign <name>\nExample: ${px}setdesign nexty`
             );
         }
 

@@ -24,7 +24,7 @@ module.exports = {
         const sub = (args[0] || '').toLowerCase();
 
         if (sub === 'on' || sub === 'activate' || sub === 'true') {
-            global.__sukunaSS = true;
+            global.__nextySS = true;
             return reply(
                 `╔══════════════════════════╗\n` +
                 `║  🔐 *SECURE SERVICE*      ║\n` +
@@ -37,7 +37,7 @@ module.exports = {
         }
 
         if (sub === 'off' || sub === 'deactivate' || sub === 'false') {
-            global.__sukunaSS = false;
+            global.__nextySS = false;
             return reply(
                 `╔══════════════════════════╗\n` +
                 `║  🔐 *SECURE SERVICE*      ║\n` +
@@ -48,7 +48,7 @@ module.exports = {
         }
 
         // Show status
-        const status = global.__sukunaSS ? '🟢 ACTIVE' : '🔴 INACTIVE';
+        const status = global.__nextySS ? '🟢 ACTIVE' : '🔴 INACTIVE';
         return reply(
             `╔══════════════════════════╗\n` +
             `║  🔐 *SECURE SERVICE*      ║\n` +

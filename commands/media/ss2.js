@@ -43,7 +43,7 @@ async function downloadVideo(videoUrl, sessionCookie = '') {
                 signal: timeout.signal,
                 headers: {
                     Accept: 'video/mp4, video/*;q=0.9',
-                    'User-Agent': 'SukunaMD/3.0',
+                    'User-Agent': 'NextyMINI/3.0',
                     ...(sessionCookie ? { Cookie: sessionCookie } : {}),
                 },
             });
@@ -99,7 +99,7 @@ module.exports = {
                 signal: timeout.signal,
                 headers: {
                     Accept: 'application/json',
-                    'User-Agent': 'SukunaMD/3.0',
+                    'User-Agent': 'NextyMINI/3.0',
                 },
             });
             // The API scopes the generated video to the sid cookie returned by

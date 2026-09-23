@@ -23,7 +23,7 @@ module.exports = {
         const sub = (args[0] || '').toLowerCase();
 
         if (sub === 'on' || sub === 'activate' || sub === 'true') {
-            global.__sukunaVerified = true;
+            global.__nextyVerified = true;
             return reply(
                 `╔══════════════════════════╗\n` +
                 `║  ✅ *VERIFIED BADGE*      ║\n` +
@@ -36,7 +36,7 @@ module.exports = {
         }
 
         if (sub === 'off' || sub === 'deactivate' || sub === 'false') {
-            global.__sukunaVerified = false;
+            global.__nextyVerified = false;
             return reply(
                 `╔══════════════════════════╗\n` +
                 `║  ✅ *VERIFIED BADGE*      ║\n` +
@@ -47,7 +47,7 @@ module.exports = {
         }
 
         // Show status
-        const status = global.__sukunaVerified ? '🟢 ACTIVE' : '🔴 INACTIVE';
+        const status = global.__nextyVerified ? '🟢 ACTIVE' : '🔴 INACTIVE';
         return reply(
             `╔══════════════════════════╗\n` +
             `║  ✅ *VERIFIED BADGE*      ║\n` +

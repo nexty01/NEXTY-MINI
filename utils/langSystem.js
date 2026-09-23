@@ -1,5 +1,5 @@
 /**
- * langSystem.js — Global language / i18n system for SUKUNA MD
+ * langSystem.js — Global language / i18n system for NEXTY MINI
  *
  * Add a new language by adding an entry to DICTIONARY below.
  * Every key in 'english' MUST also exist in every other language block.
@@ -824,7 +824,7 @@ function _protectTranslationTokens(text) {
     const protectedParts = [];
     const tokenRe = /https?:\/\/[^\s<>]+|www\.[^\s<>]+|`[^`]*`|\.([a-z][a-z0-9_-]*)|@[0-9][0-9:._-]*(?:@[a-z.]+)?/gi;
     const protectedText = String(text).replace(tokenRe, token => {
-        const marker = `ZXQ_SUKUNA_TOKEN_${protectedParts.length}_QXZ`;
+        const marker = `ZXQ_NEXTY_TOKEN_${protectedParts.length}_QXZ`;
         protectedParts.push([marker, token]);
         return marker;
     });
@@ -849,7 +849,7 @@ async function _translateChunk(protectedText, target) {
             `?q=${encodeURIComponent(protectedText)}&langpair=${encodeURIComponent(langPair)}`;
         const response = await fetch(url, {
             signal: controller.signal,
-            headers: { 'User-Agent': 'SUKUNA-MD/3.0' },
+            headers: { 'User-Agent': 'NEXTY-MINI/3.0' },
         });
         if (!response.ok) throw new Error(`translation HTTP ${response.status}`);
         const data = await response.json();

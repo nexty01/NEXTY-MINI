@@ -14,7 +14,7 @@ module.exports = {
     async execute({ reply, phoneNumber }) {
         const currentFont = database.getFont(phoneNumber);
         const fontName = fontSystem.getFontName(currentFont);
-        const sampleText = fontSystem.convert('SUKUNA MD BOT', currentFont);
+        const sampleText = fontSystem.convert('NEXTY MINI BOT', currentFont);
         
         reply(
             `📝 *Current Font*\n\n` +

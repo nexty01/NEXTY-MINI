@@ -221,7 +221,7 @@ class Database {
             introcardTheme: 'default',
             introcardVideo: null,
             mute: false,
-            pasquaai: false,
+            nextyai: false,
             antiedit: false,
             antidelete: false,
             antihijack: false,

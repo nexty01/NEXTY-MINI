@@ -9,7 +9,7 @@ async function geocode(query) {
     try {
         const res = await axios.get(`https://nominatim.openstreetmap.org/search`, {
             params: { q: query, format: 'json', limit: 1 },
-            headers: { 'User-Agent': 'SukunaMD-Bot/3.0' }
+            headers: { 'User-Agent': 'NextyMINI-Bot/3.0' }
         });
         if (res.data && res.data.length > 0) {
             return {

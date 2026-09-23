@@ -73,7 +73,7 @@ module.exports = {
         await sock.sendMessage(from, {
             image: { url: imageUrl },
             mimetype: "image/jpeg", // Assuming most images will be jpeg or can be sent as such
-            caption: `🖼️ *Image Search Result*\n\n🔍 *Query:* ${query}\n🚀 *Engine:* ${usedApi}\n\n> Searched by SUKUNA MD`,
+            caption: `🖼️ *Image Search Result*\n\n🔍 *Query:* ${query}\n🚀 *Engine:* ${usedApi}\n\n> Searched by NEXTY MINI`,
         }, { quoted: msg });
 
         await sock.sendMessage(from, { react: { text: "✅", key: msg.key } });

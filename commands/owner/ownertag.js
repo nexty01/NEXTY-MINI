@@ -26,7 +26,7 @@ module.exports = {
 
         if (action === 'status' || !args[0]) {
             return reply(
-                `╭─⌈ 🩸 *SUKUNA OWNER TAG* ⌋\n` +
+                `╭─⌈ 🩸 *NEXTY OWNER TAG* ⌋\n` +
                 `│\n` +
                 `│ Status : ${current.enabled ? '✅ ON' : '❌ OFF'}\n` +
                 `│ Emoji  : ${current.emoji || DEFAULT_EMOJI}\n` +

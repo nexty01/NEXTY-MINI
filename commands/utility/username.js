@@ -77,7 +77,7 @@ module.exports = {
     async execute({ sock, args, reply }) {
         const usernames = [...new Set(args.map(normalizeUsername).filter(Boolean))];
         if (!usernames.length) {
-            return reply('🔎 Usage: `.username @pasqua` or `.username name1 name2`');
+            return reply('🔎 Usage: `.username @nexty` or `.username name1 name2`');
         }
 
         const invalid = usernames.filter(name => !USERNAME_RE.test(name));

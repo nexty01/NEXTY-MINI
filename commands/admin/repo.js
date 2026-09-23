@@ -5,16 +5,17 @@ const path = require('path');
 const https = require('https');
 
 const REPO_OWNER = 'pasquawisdom2007-beep';
-const REPO_NAME = 'SUKUNA_MD';
+const REPO_NAME = 'NEXTY_MINI';
 const REPO_URL = `https://github.com/${REPO_OWNER}/${REPO_NAME}`;
-const CREATOR = 'PASQUA';
-const IMAGE_PATH = path.join(__dirname, '../../assets/repo/sukuna-repo.png');
+const LIVE_URL = 'https://nexty-mini-production-fabc.up.railway.app';
+const CREATOR = 'ISAGI777';
+const IMAGE_PATH = path.join(__dirname, '../../assets/repo/nexty-repo.png');
 
 function githubRepoStats() {
     return new Promise((resolve, reject) => {
         const request = https.get(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}`, {
             headers: {
-                'User-Agent': 'SUKUNA-MD-Repo-Command',
+                'User-Agent': 'NEXTY-MINI-Repo-Command',
                 Accept: 'application/vnd.github+json',
             },
         }, response => {
@@ -66,11 +67,11 @@ function formatUpdated(value) {
     });
 }
 
-function caption(stats, mention = 'SUKUNA MD') {
+function caption(stats, mention = 'NEXTY MINI') {
     return [
-        '╭─⌈ `SUKUNA MD` ⌋',
+        '╭─⌈ `NEXTY MINI` ⌋',
         '│',
-        '│ ✧ *Name* : SUKUNA_MD',
+        '│ ✧ *Name* : NEXTY_MINI',
         `│ ✧ *Owner* : ${CREATOR}`,
         `│ ✧ *Stars* : ${number(stats.stars)} ⭐`,
         `│ ✧ *Forks* : ${number(stats.forks)} 🍴`,
@@ -78,6 +79,7 @@ function caption(stats, mention = 'SUKUNA MD') {
         `│ ✧ *Size* : ${formatSize(stats.size)}`,
         `│ ✧ *Updated* : ${formatUpdated(stats.updatedAt)}`,
         `│ ✧ *Repo* : ${REPO_URL}`,
+        `│ ✧ *Live* : ${LIVE_URL}`,
         `│ *Description* : ${stats.description || 'WhatsApp multi-device bot.'}`,
         `│ Hey @${mention}! 👋`,
         '│ _*Don\'t forget*_ 🎉',
@@ -113,8 +115,8 @@ async function sendRepo({ sock, msg, from, sender, phoneNumber, reply }) {
 module.exports = {
     name: 'repo',
     aliases: ['repository', 'source', 'github'],
-    description: 'Show the official GitHub repository, live stats, creator, and PASQUA artwork',
+    description: 'Show the official GitHub repository, live stats, creator, and ISAGI777 artwork',
     category: 'admin',
     execute: sendRepo,
-    __test: { caption, githubRepoStats, REPO_URL, CREATOR, IMAGE_PATH, formatSize, formatUpdated },
+    __test: { caption, githubRepoStats, REPO_URL, LIVE_URL, CREATOR, IMAGE_PATH, formatSize, formatUpdated },
 };

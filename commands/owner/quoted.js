@@ -16,7 +16,7 @@
  *      explicitly deleted-for-everyone are downloaded and cached at
  *      delete-time (2h TTL), so they survive after WhatsApp's own copy
  *      of the media is gone.
- *   2. The live message store (sock.__sukunaMessageCache in
+ *   2. The live message store (sock.__nextyMessageCache in
  *      lib/sessionManager.js) — every message the bot has seen is cached
  *      here (500 per chat), so a still-undeleted ancestor in the chain
  *      can be re-read in full, including ITS OWN quotedMessage context —

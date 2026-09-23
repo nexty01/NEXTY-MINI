@@ -62,7 +62,7 @@ async function upscaleWithUpscayl(buffer, mimeType = 'image/jpeg', scale = 4) {
     if (!hasUpscayl()) throw new Error('Upscayl is not configured; set UPSCAYL_BIN and UPSCAYL_MODELS_DIR');
     if (!Buffer.isBuffer(buffer) || !buffer.length) throw new Error('empty image buffer');
     const factor = clampScale(scale);
-    const workDir = await fs.mkdtemp(path.join(os.tmpdir(), 'sukuna-upscale-'));
+    const workDir = await fs.mkdtemp(path.join(os.tmpdir(), 'nexty-upscale-'));
     const inputPath = path.join(workDir, `input-${crypto.randomUUID()}${extensionForMime(mimeType)}`);
     const outputPath = path.join(workDir, 'output.png');
     const args = [

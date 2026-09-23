@@ -14,9 +14,9 @@ module.exports = {
             await sock.sendMessage(from, {
                 image: { url: ppUrl },
                 caption:
-                    `╭─❒ ◈ 𝙎𝙐𝙆𝙐᳇𝘼 ❒\n` +
+                    `╭─❒ ◈ 𝙉𝙀𝙓𝙏𝙔 𝙈𝙄𝙉𝙄 ❒\n` +
                     `│ 🖼️ *Group Profile Picture*\n` +
-                    `╰─⛧ 𝓹𝓪𝓼𝓺𝓾𝓪 𝓿𝓮𝓻𝓲𝓯𝓲𝓮𝓭`,
+                    `╰─⛧ 𝓷𝓮𝔁𝓽𝔂 𝓿𝓮𝓻𝓲𝓯𝓲𝓮𝓭`,
             }, { quoted: msg });
         } catch (_) {
             reply('❌ This group has no profile picture set.');

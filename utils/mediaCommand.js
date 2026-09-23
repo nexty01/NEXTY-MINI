@@ -18,7 +18,7 @@ try {
 } catch (_) {}
 
 function tempPath(extension = '') {
-    return path.join(os.tmpdir(), `sukuna-${Date.now()}-${crypto.randomBytes(6).toString('hex')}${extension}`);
+    return path.join(os.tmpdir(), `nexty-${Date.now()}-${crypto.randomBytes(6).toString('hex')}${extension}`);
 }
 
 function mediaContext(msg) {
@@ -95,7 +95,7 @@ async function fetchUrlBuffer(url, maxBytes = MAX_MEDIA_BYTES) {
         if (isPrivateHost(parsed.hostname)) throw new Error('private or local redirect target blocked');
         response = await fetch(current, {
             redirect: 'manual',
-            headers: { 'User-Agent': 'SUKUNA-MD/3.0' },
+            headers: { 'User-Agent': 'NEXTY-MINI/3.0' },
             signal: AbortSignal.timeout(TIMEOUT_MS),
         });
         if (response.status >= 300 && response.status < 400 && response.headers.get('location')) {

@@ -1,5 +1,5 @@
 /**
- * Economy Manager — PASQUA Bucks 💵 economy system
+ * Economy Manager — NEXTY Bucks 💵 economy system
  * Persistent JSON storage for wallets, banks, inventories, cooldowns
  */
 
@@ -9,7 +9,7 @@ const cloudSync = (() => { try { return require('./cloudSync'); } catch { return
 
 
 const DATA_FILE = path.join(__dirname, '..', 'data', 'economy.json');
-const CURRENCY = 'PASQUA Bucks 💵';
+const CURRENCY = 'NEXTY Bucks 💵';
 const SYMBOL = '💵';
 
 // Shop items

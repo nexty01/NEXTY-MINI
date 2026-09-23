@@ -27,7 +27,7 @@ const http = axios.create({
 async function ddg(query) {
     try {
         const { status, data } = await http.get('https://api.duckduckgo.com/', {
-            params: { q: query, format: 'json', no_html: 1, skip_disambig: 1, t: 'sukunamd' },
+            params: { q: query, format: 'json', no_html: 1, skip_disambig: 1, t: 'nextymini' },
         });
         if (status !== 200 || !data) return null;
 
@@ -174,7 +174,7 @@ module.exports = {
         } else {
             caption += `_No extra links available._\n`;
         }
-        caption += `\n> _Powered by SUKUNA MD · Google Search_`;
+        caption += `\n> _Powered by NEXTY MINI · Google Search_`;
 
         // Resolve a preview image (a MUST). Try, in order:
         //   wiki image → ddg image → og:image of top result → generated image.

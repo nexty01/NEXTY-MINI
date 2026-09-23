@@ -40,7 +40,7 @@ async function fetchJson(url, ms = 12000) {
     const ctrl = new AbortController();
     const t = setTimeout(() => ctrl.abort(), ms);
     try {
-        const r = await fetch(url, { signal: ctrl.signal, headers: { 'User-Agent': 'SukunaMD/3.0' } });
+        const r = await fetch(url, { signal: ctrl.signal, headers: { 'User-Agent': 'NextyMINI/3.0' } });
         return await r.json();
     } finally { clearTimeout(t); }
 }

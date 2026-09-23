@@ -86,7 +86,7 @@ module.exports = {
 
     async execute({ sock, msg, from, args, reply }) {
         const { quoted } = getQuoted(msg);
-        const packName  = args.join(' ') || 'SUKUNA MD';
+        const packName  = args.join(' ') || 'NEXTY MINI';
 
         // ── Quoted sticker — forward as-is ───────────────────────────────────
         if (quoted?.stickerMessage) {

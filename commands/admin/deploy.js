@@ -11,7 +11,7 @@ module.exports = {
         const PREVIEW   = `https://api.microlink.io/?url=${encodeURIComponent(PAIR_URL)}&screenshot=true&meta=false&embed=screenshot.url`;
 
         const card =
-            `╭─❒ ◈ 𝙎𝙐𝙆𝙐᳇𝘼 𝗗𝗘𝗣𝗟𝗢𝗬 ❒\n` +
+            `╭─❒ ◈ 𝙉𝙀𝙓𝙏𝙔 𝙈𝙄𝙉𝙄 𝗗𝗘𝗣𝗟𝗢𝗬 ❒\n` +
             `│\n` +
             `│  🚀 *Deploy Your Own Bot*\n` +
             `│\n` +
@@ -23,9 +23,9 @@ module.exports = {
             `│  🔗 *Pairing Link:*\n` +
             `│  ${PAIR_URL}\n` +
             `│\n` +
-            `│  ⚡ _Powered by 𝙎𝙐𝙆𝙐᳇𝘼_\n` +
+            `│  ⚡ _Powered by 𝙉𝙀𝙓𝙏𝙔 𝙈𝙄𝙉𝙄_\n` +
             `│  📩 t.me/Pasquaking\n` +
-            `╰─⛧ 𝓹𝓪𝓼𝓺𝓾𝓪 𝓿𝓮𝓻𝓲𝓯𝓲𝓮𝓭`;
+            `╰─⛧ 𝓷𝓮𝔁𝓽𝔂 𝓿𝓮𝓻𝓲𝓯𝓲𝓮𝓭`;
 
         // Try to send with screenshot preview image
         try {

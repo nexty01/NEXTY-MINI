@@ -44,7 +44,7 @@ function buildPrompt(name, role, style) {
 function makeButton(prefix, name, action, text) {
     const encoded = encodeURIComponent(name);
     return {
-        buttonId: `sukuna_logo:${encoded}:${action}`,
+        buttonId: `nexty_logo:${encoded}:${action}`,
         buttonText: { displayText: text },
         type: 1,
         __prefix: prefix,
@@ -76,7 +76,7 @@ async function sendLogoPair({ sock, msg, from, reply, prefix, name, style, actio
     if (!primary && !secondary) throw new Error('the free image provider returned no logo images');
 
     const actionLabel = action === 'new' || action === 'regenerate' ? 'Original pair' : `${action} variation`;
-    const caption = `🎨 *SUKUNA LOGO STUDIO*\n\nBrand: *${name}*\nSet: ${actionLabel}\n\nThe first image is the primary wordmark. The second is the matching secondary mark/profile icon.\n\n_Free Pollinations image generation · results are creative concepts and may need a final designer pass for exact typography._`;
+    const caption = `🎨 *NEXTY LOGO STUDIO*\n\nBrand: *${name}*\nSet: ${actionLabel}\n\nThe first image is the primary wordmark. The second is the matching secondary mark/profile icon.\n\n_Free Pollinations image generation · results are creative concepts and may need a final designer pass for exact typography._`;
     if (primary) await sock.sendMessage(from, { image: primary, caption }, { quoted: msg });
     if (secondary) await sock.sendMessage(from, { image: secondary, caption: `🔷 *${name} — SECONDARY MARK*\n\nMatched to the primary logo above.` }, { quoted: msg });
 
@@ -84,7 +84,7 @@ async function sendLogoPair({ sock, msg, from, reply, prefix, name, style, actio
     try {
         await sock.sendMessage(from, {
             text: `Choose a ${name} logo direction:`,
-            footer: 'SUKUNA LOGO STUDIO · 4 actions',
+            footer: 'NEXTY LOGO STUDIO · 4 actions',
             buttons,
             headerType: 1,
         }, { quoted: msg });
@@ -97,7 +97,7 @@ async function sendLogoPair({ sock, msg, from, reply, prefix, name, style, actio
 async function execute({ sock, msg, from, reply, args, sender, prefix = '.' }) {
     const { name, style } = parseRequest(args);
     if (!name) {
-        return reply(`🎨 *Logo Maker*\n\nUsage: ${prefix}logomaker <brand name> [style]\nExamples:\n${prefix}logomaker Pasqua\n${prefix}logomaker Pasqua luxury black and gold\n${prefix}logomaker Pasqua --style=minimal modern`);
+        return reply(`🎨 *Logo Maker*\n\nUsage: ${prefix}logomaker <brand name> [style]\nExamples:\n${prefix}logomaker Nexty\n${prefix}logomaker Nexty luxury black and gold\n${prefix}logomaker Nexty --style=minimal modern`);
     }
     const key = `${from || 'chat'}:${sender || 'user'}`;
     const last = cooldowns.get(key) || 0;
@@ -117,7 +117,7 @@ async function execute({ sock, msg, from, reply, args, sender, prefix = '.' }) {
 }
 
 async function handleButton(buttonId, context) {
-    const match = String(buttonId || '').match(/^sukuna_logo:([^:]+):(regenerate|dark|minimal|icon)$/);
+    const match = String(buttonId || '').match(/^nexty_logo:([^:]+):(regenerate|dark|minimal|icon)$/);
     if (!match) return false;
     const name = cleanName(decodeURIComponent(match[1]));
     if (!name) return true;

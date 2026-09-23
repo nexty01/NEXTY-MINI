@@ -456,7 +456,7 @@ module.exports = {
             return reply(
                 `🎬 *TikTok Search*\n\n` +
                 `Usage: ${px}tiksearch <search query>\n` +
-                `Example: ${px}tiksearch Sukuna edit`
+                `Example: ${px}tiksearch Nexty edit`
             );
         }
 
@@ -505,7 +505,7 @@ module.exports = {
                 `🎬 *${chosen.title}*\n\n` +
                 `👤 ${chosen.author}\n` +
                 `⏱️ ${chosen.duration}s   👁️ ${chosen.plays.toLocaleString()}   ❤️ ${chosen.likes.toLocaleString()}\n\n` +
-                `> SUKUNA-MD 🔥`;
+                `> NEXTY-MINI 🔥`;
 
             await sock.sendMessage(from, {
                 video: buffer,

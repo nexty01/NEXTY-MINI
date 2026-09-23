@@ -71,10 +71,10 @@ function buildRichContent(html, quoted) {
     });
 }
 
-function textHtml(text, title = 'SUKUNA MD') {
+function textHtml(text, title = 'NEXTY MINI') {
     const safeTitle = escapeHtml(title);
     const safeText = escapeHtml(text);
-    return `<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>*{box-sizing:border-box}html,body{margin:0;background:transparent;font-family:Arial,sans-serif}body{padding:6px;background:radial-gradient(circle at 50% 5%,#174936,#061812 72%)}.card{padding:14px;border:2px solid #b9954d;border-radius:16px;background:linear-gradient(145deg,#0a2e22,#123e2f 55%,#061812);color:#e3dfbb;box-shadow:inset 0 0 0 3px #163f31,0 7px 18px #000b}.title{text-align:center;color:#f1e3a2;font:bold 17px Arial Black,sans-serif;letter-spacing:.7px}.rule{height:2px;margin:9px 0;background:linear-gradient(90deg,transparent,#b9954d,transparent)}.body{white-space:pre-wrap;overflow-wrap:anywhere;color:#e8f4e5;font:13px/1.45 monospace}.footer{margin-top:11px;text-align:center;color:#8fbea0;font:10px monospace}</style></head><body><div class="card"><div class="title">${safeTitle}</div><div class="rule"></div><div class="body">${safeText}</div><div class="footer">SUKUNA MD · GENAI RICH RESPONSE</div></div></body></html>`;
+    return `<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>*{box-sizing:border-box}html,body{margin:0;background:transparent;font-family:Arial,sans-serif}body{padding:6px;background:radial-gradient(circle at 50% 5%,#174936,#061812 72%)}.card{padding:14px;border:2px solid #b9954d;border-radius:16px;background:linear-gradient(145deg,#0a2e22,#123e2f 55%,#061812);color:#e3dfbb;box-shadow:inset 0 0 0 3px #163f31,0 7px 18px #000b}.title{text-align:center;color:#f1e3a2;font:bold 17px Arial Black,sans-serif;letter-spacing:.7px}.rule{height:2px;margin:9px 0;background:linear-gradient(90deg,transparent,#b9954d,transparent)}.body{white-space:pre-wrap;overflow-wrap:anywhere;color:#e8f4e5;font:13px/1.45 monospace}.footer{margin-top:11px;text-align:center;color:#8fbea0;font:10px monospace}</style></head><body><div class="card"><div class="title">${safeTitle}</div><div class="rule"></div><div class="body">${safeText}</div><div class="footer">NEXTY MINI · GENAI RICH RESPONSE</div></div></body></html>`;
 }
 
 function htmlToPlainText(html) {
@@ -102,7 +102,7 @@ function escapeXml(value) {
 }
 
 async function sendCanvasFallback({ sock, jid, quoted, html, canvasText, title, caption, theme = 'default', mentions = [] }) {
-    const text = canvasText || htmlToPlainText(html) || 'SUKUNA MD';
+    const text = canvasText || htmlToPlainText(html) || 'NEXTY MINI';
     const lines = [];
     for (const paragraph of text.split(/\n+/)) {
         let line = '';
@@ -119,13 +119,13 @@ async function sendCanvasFallback({ sock, jid, quoted, html, canvasText, title, 
     const textSvg = lines.map((line, index) =>
         `<text x="96" y="${190 + index * lineHeight}" class="body">${escapeXml(line)}</text>`
     ).join('');
-    const sukuna = theme === 'sukuna';
-    const bgStart = sukuna ? '#050204' : '#250b35';
-    const bgMid = sukuna ? '#580914' : '#43123f';
-    const bgEnd = sukuna ? '#1a0308' : '#12091d';
-    const accent = sukuna ? '#ff3158' : '#ee4fa3';
-    const titleText = title || (sukuna ? '☠ SUKUNA BAN CHECKER ☠' : 'SUKUNA MD · IPHONE MODE');
-    const footerText = sukuna ? 'BARON API · CURSED VERIFICATION' : 'COLOURED CANVAS FALLBACK';
+    const nexty = theme === 'nexty';
+    const bgStart = nexty ? '#050204' : '#250b35';
+    const bgMid = nexty ? '#580914' : '#43123f';
+    const bgEnd = nexty ? '#1a0308' : '#12091d';
+    const accent = nexty ? '#ff3158' : '#ee4fa3';
+    const titleText = title || (nexty ? '☠ NEXTY BAN CHECKER ☠' : 'NEXTY MINI · IPHONE MODE');
+    const footerText = nexty ? 'BARON API · CURSED VERIFICATION' : 'COLOURED CANVAS FALLBACK';
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="${height}">
       <defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="${bgStart}"/><stop offset=".52" stop-color="${bgMid}"/><stop offset="1" stop-color="${bgEnd}"/></linearGradient></defs>
       <rect width="100%" height="100%" rx="34" fill="url(#bg)"/>
@@ -138,10 +138,10 @@ async function sendCanvasFallback({ sock, jid, quoted, html, canvasText, title, 
       <style>.title{font:700 48px Arial,sans-serif;fill:#fff0f7;letter-spacing:4px}.body{font:700 38px monospace;fill:#fff5fa}.footer{font:600 23px monospace;fill:#f0a8c5;letter-spacing:4px}</style>
     </svg>`;
     const image = await sharp(Buffer.from(svg)).png().toBuffer();
-    return sock.sendMessage(jid, { image, caption: caption || 'SUKUNA MD · iPhone mode', ...(mentions.length ? { mentions } : {}) }, { quoted });
+    return sock.sendMessage(jid, { image, caption: caption || 'NEXTY MINI · iPhone mode', ...(mentions.length ? { mentions } : {}) }, { quoted });
 }
 
-async function sendSukunaTTTCanvas({ sock, jid, quoted, board, players = [], status = '', mentions = [] }) {
+async function sendNextyTTTCanvas({ sock, jid, quoted, board, players = [], status = '', mentions = [] }) {
     const cells = Array.isArray(board) ? board : Array(9).fill('');
     const cellSize = 220;
     const boardX = 150;
@@ -161,28 +161,28 @@ async function sendSukunaTTTCanvas({ sock, jid, quoted, board, players = [], sta
       <defs><linearGradient id="arena" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#050204"/><stop offset=".5" stop-color="#5c0916"/><stop offset="1" stop-color="#180309"/></linearGradient></defs>
       <rect width="1200" height="1100" rx="40" fill="url(#arena)"/>
       <rect x="24" y="24" width="1152" height="1052" rx="34" fill="none" stroke="#ff3158" stroke-width="6"/>
-      <text x="600" y="92" text-anchor="middle" class="title">☠ SUKUNA TTT ☠</text>
+      <text x="600" y="92" text-anchor="middle" class="title">☠ NEXTY TTT ☠</text>
       <text x="600" y="145" text-anchor="middle" class="players">${escapeXml(playerLine)}</text>
       <path d="M90 172H1110" stroke="#ff3158" stroke-width="3"/>
       <rect x="${boardX - 14}" y="${boardY - 14}" width="${boardSize + 28}" height="${boardSize + 28}" rx="22" fill="#100207" stroke="#ff3158" stroke-width="5"/>
       <path d="M${boardX + cellSize} ${boardY}V${boardY + boardSize} M${boardX + cellSize * 2} ${boardY}V${boardY + boardSize} M${boardX} ${boardY + cellSize}H${boardX + boardSize} M${boardX} ${boardY + cellSize * 2}H${boardX + boardSize}" stroke="#ff6686" stroke-width="10" stroke-linecap="round"/>
       ${marks}
       <text x="600" y="${boardY + boardSize + 95}" text-anchor="middle" class="status">${escapeXml(status || 'SEND .TTT 1–9 TO PLAY')}</text>
-      <text x="600" y="${boardY + boardSize + 145}" text-anchor="middle" class="hint">SUKUNA DOMAIN · CHOOSE A SQUARE</text>
+      <text x="600" y="${boardY + boardSize + 145}" text-anchor="middle" class="hint">NEXTY DOMAIN · CHOOSE A SQUARE</text>
       <style>.title{font:900 48px Arial,sans-serif;fill:#fff2f6;letter-spacing:6px}.players{font:700 23px monospace;fill:#ffc6d4;letter-spacing:1px}.mark{font:900 150px Arial,sans-serif;paint-order:stroke;stroke:#25030b;stroke-width:6}.status{font:800 29px monospace;fill:#fff0f4}.hint{font:600 17px monospace;fill:#f094ab;letter-spacing:3px}</style>
     </svg>`;
     const image = await sharp(Buffer.from(svg)).jpeg({ quality: 88, chromaSubsampling: '4:4:4' }).toBuffer();
-    return sock.sendMessage(jid, { image, caption: status || 'SUKUNA TTT', ...(mentions.length ? { mentions } : {}) }, { quoted });
+    return sock.sendMessage(jid, { image, caption: status || 'NEXTY TTT', ...(mentions.length ? { mentions } : {}) }, { quoted });
 }
 
-async function sendSukunaBanCanvas({ sock, jid, quoted, number, banned, caption }) {
+async function sendNextyBanCanvas({ sock, jid, quoted, number, banned, caption }) {
     const status = banned ? 'BANNED' : 'NOT BANNED';
     const statusColor = banned ? '#ff3158' : '#65ffad';
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1100">
       <defs><linearGradient id="banBg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#050204"/><stop offset=".5" stop-color="#5c0916"/><stop offset="1" stop-color="#180309"/></linearGradient></defs>
       <rect width="1200" height="1100" rx="40" fill="url(#banBg)"/>
       <rect x="24" y="24" width="1152" height="1052" rx="34" fill="none" stroke="#ff3158" stroke-width="6"/>
-      <text x="600" y="94" text-anchor="middle" class="title">☠ SUKUNA BAN CHECK ☠</text>
+      <text x="600" y="94" text-anchor="middle" class="title">☠ NEXTY BAN CHECK ☠</text>
       <text x="600" y="142" text-anchor="middle" class="sub">CURSED ACCOUNT VERIFICATION</text>
       <path d="M90 174H1110" stroke="#ff3158" stroke-width="3"/>
       <rect x="90" y="225" width="1020" height="245" rx="24" fill="#110207" stroke="#b51d3d" stroke-width="4"/>
@@ -193,11 +193,11 @@ async function sendSukunaBanCanvas({ sock, jid, quoted, number, banned, caption 
       <text x="600" y="735" text-anchor="middle" class="status" fill="${statusColor}">${status}</text>
       <path d="M240 780H960" stroke="${statusColor}" stroke-width="3" opacity=".8"/>
       <text x="600" y="910" text-anchor="middle" class="footer">BARON API · CURSED VERIFICATION</text>
-      <text x="600" y="972" text-anchor="middle" class="hint">SUKUNA MD · BAN CHECKER</text>
+      <text x="600" y="972" text-anchor="middle" class="hint">NEXTY MINI · BAN CHECKER</text>
       <style>.title{font:900 48px Arial,sans-serif;fill:#fff2f6;letter-spacing:6px}.sub{font:700 20px monospace;fill:#f094ab;letter-spacing:4px}.label{font:700 24px monospace;fill:#ff9bb0;letter-spacing:5px}.number{font:900 67px monospace;fill:#fff5f8;letter-spacing:3px}.status{font:900 92px Arial,sans-serif;letter-spacing:7px}.footer{font:700 22px monospace;fill:#ffc4d2;letter-spacing:3px}.hint{font:600 18px monospace;fill:#e987a3;letter-spacing:3px}</style>
     </svg>`;
     const image = await sharp(Buffer.from(svg)).jpeg({ quality: 88, chromaSubsampling: '4:4:4' }).toBuffer();
-    return sock.sendMessage(jid, { image, caption: caption || 'SUKUNA BAN CHECK' }, { quoted });
+    return sock.sendMessage(jid, { image, caption: caption || 'NEXTY BAN CHECK' }, { quoted });
 }
 
 function labelForCanvas(jid) {
@@ -208,7 +208,7 @@ async function sendRichHtml({ sock, jid, quoted, html, canvasText, title, captio
     // Read the persisted deployment setting as a second source of truth. This
     // covers button/interactive dispatch paths that do not rebuild the normal
     // command context before calling a GenAI renderer.
-    const deviceMode = sock?.__sukunaDeviceMode || database.getDeviceMode();
+    const deviceMode = sock?.__nextyDeviceMode || database.getDeviceMode();
     if (deviceMode === 'iphone') {
         return sendCanvasFallback({ sock, jid, quoted, html, canvasText, title, caption, theme, mentions });
     }
@@ -243,4 +243,4 @@ function createEconomyGenAISock(sock, { title = 'ECONOMY' } = {}) {
     });
 }
 
-module.exports = { escapeHtml, buildRichContent, htmlToPlainText, sendCanvasFallback, sendSukunaTTTCanvas, sendSukunaBanCanvas, sendRichHtml, sendRichText, createEconomyGenAISock };
+module.exports = { escapeHtml, buildRichContent, htmlToPlainText, sendCanvasFallback, sendNextyTTTCanvas, sendNextyBanCanvas, sendRichHtml, sendRichText, createEconomyGenAISock };

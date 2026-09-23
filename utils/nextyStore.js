@@ -336,7 +336,7 @@ async function runApkScan(context) {
         const buffer = Buffer.concat(chunks);
         if (!buffer.length) throw new Error('APK was empty');
         const hash = crypto.createHash('sha256').update(buffer).digest('hex');
-        const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'sukuna-apk-'));
+        const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'nexty-apk-'));
         const apkPath = path.join(tempDir, 'scan.apk');
         fs.writeFileSync(apkPath, buffer, { mode: 0o600 });
         const listing = await runCommand('unzip', ['-l', apkPath]);
@@ -370,7 +370,7 @@ async function runAction(action, context) {
             const apps = await searchApps(term);
             rememberSearch(context.from, context.sender, apps);
             if (!apps.length) return reply(`🔎 No Google Play apps found for “${clip(term, 90)}”.`);
-            return reply(`🛍️ *SUKUNA STORE SEARCH*\n\nQuery: _${escapeText(term)}_\n\n${apps.map(appLine).join('\n\n')}\n\nUse your prefix with appinfo <number>, appqr <number>, or appdownload <number>.`);
+            return reply(`🛍️ *NEXTY STORE SEARCH*\n\nQuery: _${escapeText(term)}_\n\n${apps.map(appLine).join('\n\n')}\n\nUse your prefix with appinfo <number>, appqr <number>, or appdownload <number>.`);
         }
 
         if (action === 'info') {

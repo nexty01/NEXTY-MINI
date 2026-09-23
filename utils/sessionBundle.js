@@ -4,7 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const zlib = require('zlib');
 
-const BUNDLE_TYPE = 'sukuna-baileys-auth-bundle';
+const BUNDLE_TYPE = 'nexty-baileys-auth-bundle';
 
 function decodeBase64Session(value) {
     let raw = String(value || '')
@@ -12,7 +12,7 @@ function decodeBase64Session(value) {
         .replace(/```(?:text|base64|json)?/gi, '')
         .replace(/```/g, '')
         .replace(/(?:SESSION\s*ID|SESSION_ID|AUTH\s*BUNDLE)\s*[:=]\s*/i, '')
-        .replace(/^Pasqua\s*[:~]+\s*/i, '')
+        .replace(/^(Pasqua|Nexty)\s*[:~]+\s*/i, '')
         .replace(/\s+/g, '')
         .replace(/-/g, '+')
         .replace(/_/g, '/');

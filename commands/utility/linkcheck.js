@@ -26,7 +26,7 @@ module.exports = {
             response = await fetch(target, {
                 redirect: 'manual',
                 headers: {
-                    'User-Agent': 'SUKUNA-MD/3.0',
+                    'User-Agent': 'NEXTY-MINI/3.0',
                     Range: 'bytes=0-524287',
                 },
                 signal: controller.signal,

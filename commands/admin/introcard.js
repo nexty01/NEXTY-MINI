@@ -77,20 +77,20 @@ module.exports = {
             database.setGroup(from, 'introcard', true);
             const hasVid = fs.existsSync(introVideoPath(from));
             return reply(
-                `╭─❒ ◈ 𝙎𝙐𝙆𝙐᳇𝘼 ❒\n` +
+                `╭─❒ ◈ 𝙉𝙀𝙓𝙏𝙔 𝙈𝙄𝙉𝙄 ❒\n` +
                 `│ ✅ *Intro Card Enabled*\n` +
                 `│ New members get a welcome ${hasVid ? 'video 🎬' : 'card 🖼️'} + short message.\n` +
                 (hasVid ? '' : `│ 💡 Tip: reply to a video with *.introcard video* to attach a welcome clip.\n`) +
-                `╰─⛧ 𝓹𝓪𝓼𝓺𝓪 𝓿𝓮𝓻𝓲𝓯𝓲𝓮𝓭`
+                `╰─⛧ 𝓷𝓮𝔁𝓽𝔂 𝓿𝓮𝓻𝓲𝓯𝓲𝓮𝓭`
             );
         }
 
         if (sub === 'off') {
             database.setGroup(from, 'introcard', false);
             return reply(
-                `╭─❒ ◈ 𝙎𝙐𝙆𝙐᳇𝘼 ❒\n` +
+                `╭─❒ ◈ 𝙉𝙀𝙓𝙏𝙔 𝙈𝙄𝙉𝙄 ❒\n` +
                 `│ ❌ *Intro Card Disabled*\n` +
-                `╰─⛧ 𝓹𝓪𝓼𝓺𝓪 𝓿𝓮𝓻𝓲𝓯𝓲𝓮𝓭`
+                `╰─⛧ 𝓷𝓮𝔁𝓽𝔂 𝓿𝓮𝓻𝓲𝓯𝓲𝓮𝓭`
             );
         }
 
@@ -173,10 +173,10 @@ module.exports = {
             if (!customMsg) return reply('❌ Please provide a message.\nUse @user and @group as placeholders.');
             database.setGroup(from, 'introcardMessage', customMsg);
             return reply(
-                `╭─❒ ◈ 𝙎𝙐𝙆𝙐᳇𝘼 ❒\n` +
+                `╭─❒ ◈ 𝙉𝙀𝙓𝙏𝙔 𝙈𝙄𝙉𝙄 ❒\n` +
                 `│ ✅ *Intro Message Set*\n` +
                 `│ ${customMsg}\n` +
-                `╰─⛧ 𝓹𝓪𝓼𝓺𝓪 𝓿𝓮𝓻𝓲𝓯𝓲𝓮𝓭`
+                `╰─⛧ 𝓷𝓮𝔁𝓽𝔂 𝓿𝓮𝓻𝓲𝓯𝓲𝓮𝓭`
             );
         }
 
@@ -228,7 +228,7 @@ module.exports = {
         const grp    = database.getGroup(from);
         const hasVid = fs.existsSync(introVideoPath(from));
         return reply(
-            `╭─❒ ◈ 𝙎𝙐𝙆𝙐᳇𝘼 — 𝗜𝗡𝗧𝗥𝗢 𝗖𝗔𝗥𝗗 ❒\n` +
+            `╭─❒ ◈ 𝙉𝙀𝙓𝙏𝙔 𝙈𝙄𝙉𝙄 — 𝗜𝗡𝗧𝗥𝗢 𝗖𝗔𝗥𝗗 ❒\n` +
             `│\n` +
             `│ 📌 *Status:* ${grp.introcard ? '✅ ON' : '❌ OFF'}\n` +
             `│ 🎬 *Video:*  ${hasVid ? '✅ set (rectangle)' : '❌ none'}\n` +
@@ -244,7 +244,7 @@ module.exports = {
             `│ • .introcard color <light|dark|fire|ocean|royal>\n` +
             `│ • .introcard preview  (alias: .introcard test)\n` +
             `│ • .introcard reset\n` +
-            `╰─⛧ 𝓹𝓪𝓼𝓺𝓪 𝓿𝓮𝓻𝓲𝓯𝓲𝓮𝓭`
+            `╰─⛧ 𝓷𝓮𝔁𝓽𝔂 𝓿𝓮𝓻𝓲𝓯𝓲𝓮𝓭`
         );
     },
 };

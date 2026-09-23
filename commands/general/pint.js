@@ -18,7 +18,7 @@ const COOLDOWN_MS = 45_000;
 const FETCH_DELAY_MS = 500; // polite stagger between Wikimedia requests, not a send delay
 const MAX_RESULTS = 6; // matches the command's own description ("six image results")
 const MAX_IMAGE_BYTES = 7 * 1024 * 1024;
-const USER_AGENT = 'SUKUNA-MD/3.0 image-search';
+const USER_AGENT = 'NEXTY-MINI/3.0 image-search';
 const FETCH_TIMEOUT_MS = 15_000;
 const cooldowns = new Map();
 
@@ -360,7 +360,7 @@ async function buildCard({ sock, buffer, index, total, query, title, pinterestUr
             text: `📌 *${query}*\n${index}/${total}${title ? `\n_${title.slice(0, 120)}_` : ''}`,
         }),
         footer: proto.Message.InteractiveMessage.Footer.fromObject({
-            text: 'Pinterest · SUKUNA MD',
+            text: 'Pinterest · NEXTY MINI',
         }),
         nativeFlowMessage: proto.Message.InteractiveMessage.NativeFlowMessage.fromObject({
             buttons: [ctaUrl('Open in Pinterest', pinterestUrl)],
@@ -378,7 +378,7 @@ async function sendCarousel({ sock, msg, from, query, cards }) {
 
     const interactiveMessage = proto.Message.InteractiveMessage.fromObject({
         body: { text: `📌 *${query}*\nSwipe through ${cards.length} results below.` },
-        footer: { text: 'SUKUNA MD · PINTEREST-STYLE SEARCH' },
+        footer: { text: 'NEXTY MINI · PINTEREST-STYLE SEARCH' },
         header: { title: '✦ PINTEREST-STYLE SEARCH ✦', hasMediaAttachment: false },
         carouselMessage: proto.Message.InteractiveMessage.CarouselMessage.fromObject({ cards }),
     });

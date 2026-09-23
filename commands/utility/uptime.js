@@ -39,7 +39,7 @@ module.exports = {
             const buf = await renderUptimeCard({
                 botUptime, sysUptime, platform, arch,
                 totalMem, freeMem, botMem,
-                botName: (config.botName || 'SUKUNA · MD').toUpperCase(),
+                botName: (config.botName || 'NEXTY · MD').toUpperCase(),
                 labels,
             });
             const caption =

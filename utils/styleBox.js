@@ -1,5 +1,5 @@
 /**
- * styleBox — Sukuna MD shared text styling helpers.
+ * styleBox — Nexty MINI shared text styling helpers.
  * Bold-italic Unicode + boxed reply wrapper used across every command.
  */
 
@@ -33,9 +33,9 @@ function boldSans(str) {
     return out;
 }
 
-// Wrap plain text into the signature Sukuna MD boxed card.
+// Wrap plain text into the signature Nexty MINI boxed card.
 // If the text already looks like a box (starts with ╭ or ╔), pass it through.
-function boxify(text, title = 'SUKUNA MD') {
+function boxify(text, title = 'NEXTY MINI') {
     const raw = String(text == null ? '' : text);
     const trimmed = raw.trim();
     if (!trimmed) return raw;
@@ -51,7 +51,7 @@ function boxify(text, title = 'SUKUNA MD') {
         if (line.trim() === '') { out += `│\n`; continue; }
         out += `│ ${line}\n`;
     }
-    out += `╰─⛧ ${boldItalic('Sukuna MD')}`;
+    out += `╰─⛧ ${boldItalic('Nexty MINI')}`;
     return out;
 }
 

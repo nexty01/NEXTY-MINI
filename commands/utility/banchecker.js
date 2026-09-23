@@ -11,7 +11,7 @@
  */
 'use strict';
 
-const { sendRichHtml, sendSukunaBanCanvas, escapeHtml } = require('../../utils/genaiRich');
+const { sendRichHtml, sendNextyBanCanvas, escapeHtml } = require('../../utils/genaiRich');
 const database = require('../../utils/database');
 
 const BARON_API_BASE = 'https://baron0.com';
@@ -119,7 +119,7 @@ function renderBanGenAI({ target, country, result, extras, registered, devices, 
     const profile = result.profile ? `<div class="profile">PROFILE: ${safe(result.profile)}</div>` : '';
     return `<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>
 *{box-sizing:border-box}html,body{margin:0;background:transparent;font-family:Arial,sans-serif}body{padding:6px;background:#08040a;color:#f7e8ef}.card{padding:13px;border:2px solid #ff3158;border-radius:20px;background:#16070e;color:#f7e8ef;box-shadow:inset 0 0 0 3px #3e0d1c,0 8px 20px #000b}.title{text-align:center;color:#fff;font:bold 22px Arial Black,Arial,sans-serif;letter-spacing:1px;text-shadow:0 0 10px #ff1744}.sub{text-align:center;margin:2px 0 8px;color:#d58b9d;font:10px monospace}.scan{height:4px;margin:0 12px 8px;background:#ff1744;box-shadow:0 0 10px #ff1744;animation:scan 1.8s linear infinite}.verdict{display:flex;align-items:center;gap:9px;padding:9px;border:1px solid #ff3158;border-radius:10px;background:#090307}.verdict.alive{border-color:#36e58a}.verdict.warning{border-color:#ffbf55}.sig{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:#3b0714;color:#ff3158;font-size:20px}.alive .sig{background:#062b1b;color:#36e58a}.warning .sig{background:#2e2108;color:#ffbf55}.label{color:#a7687a;font:8px monospace;letter-spacing:1px}.value{margin-top:2px;color:#fff;font:bold 13px monospace}.number{text-align:center;margin:9px 0;color:#ffdce5;font:bold 16px monospace}.profile{text-align:center;margin:-4px 0 8px;color:#ff9cb1;font:9px monospace}.grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}.metric{padding:7px;border:1px solid #5d1b2b;border-radius:8px;background:#0b0307}.metric .value{font-size:10px;color:#ffb1c1}.detail{margin-top:8px;padding:8px;border-left:3px solid #ff1744;background:#210710;color:#f2d8df;white-space:pre-wrap;overflow-wrap:anywhere;font:10px/1.4 monospace}.extras{margin-top:7px;color:#b98b99;white-space:pre-wrap;font:9px/1.35 monospace}.buttons{display:flex;gap:6px;margin-top:9px}.buttons button{flex:1;height:36px;border:1px solid #a71b3c;border-radius:8px;background:#3a0c1b;color:#ffdce5;font:bold 9px monospace}.buttons button:active{transform:scale(.95)}.footer{text-align:center;margin-top:8px;color:#884455;font:8px monospace;letter-spacing:1px}@keyframes scan{50%{opacity:.35}100%{opacity:1}}
-</style></head><body><div class="card"><div class="title">☠ BAN CHECKER ☠</div><div class="sub">SUKUNA MD // WHATSAPP ACCOUNT FORENSICS</div><div class="scan"></div><div class="verdict ${tone}"><div class="sig">${icon}</div><div><div class="label">FINAL VERDICT</div><div class="value">${safe(status)}</div></div></div><div class="number">${safeNumber}</div>${profile}<div class="grid"><div class="metric"><div class="label">REGISTRY</div><div class="value">${registry}</div></div><div class="metric"><div class="label">KEY DEVICES</div><div class="value">${deviceCount}</div></div><div class="metric"><div class="label">PUBLIC PROFILE</div><div class="value">${profileState}</div></div><div class="metric"><div class="label">REGION</div><div class="value">${safeCountry}</div></div></div><div class="detail">${safe(result.detail)}</div><div class="extras">${safe(extras || 'No carrier data returned.')}</div><div class="buttons"><button id="pulse">PULSE SCAN</button><button id="copy">COPY NUMBER</button><button id="evidence">EVIDENCE</button></div><div class="footer">GENAI RICH RESPONSE · ${result.source === 'BARON' ? 'BARON API VERIFICATION' : 'REGISTRY + PROFILE + KEY CHECK'}</div></div><script>(function(){var card=document.querySelector('.card'),pulse=document.getElementById('pulse'),copy=document.getElementById('copy'),evidence=document.getElementById('evidence');pulse.onclick=function(){card.style.opacity='.45';setTimeout(function(){card.style.opacity='1'},180)};copy.onclick=function(){copy.textContent='COPIED ✓';setTimeout(function(){copy.textContent='COPY NUMBER'},1200)};evidence.onclick=function(){evidence.textContent='CHECKS COMPLETE';setTimeout(function(){evidence.textContent='EVIDENCE'},1400)}})();</script></body></html>`;
+</style></head><body><div class="card"><div class="title">☠ BAN CHECKER ☠</div><div class="sub">NEXTY MINI // WHATSAPP ACCOUNT FORENSICS</div><div class="scan"></div><div class="verdict ${tone}"><div class="sig">${icon}</div><div><div class="label">FINAL VERDICT</div><div class="value">${safe(status)}</div></div></div><div class="number">${safeNumber}</div>${profile}<div class="grid"><div class="metric"><div class="label">REGISTRY</div><div class="value">${registry}</div></div><div class="metric"><div class="label">KEY DEVICES</div><div class="value">${deviceCount}</div></div><div class="metric"><div class="label">PUBLIC PROFILE</div><div class="value">${profileState}</div></div><div class="metric"><div class="label">REGION</div><div class="value">${safeCountry}</div></div></div><div class="detail">${safe(result.detail)}</div><div class="extras">${safe(extras || 'No carrier data returned.')}</div><div class="buttons"><button id="pulse">PULSE SCAN</button><button id="copy">COPY NUMBER</button><button id="evidence">EVIDENCE</button></div><div class="footer">GENAI RICH RESPONSE · ${result.source === 'BARON' ? 'BARON API VERIFICATION' : 'REGISTRY + PROFILE + KEY CHECK'}</div></div><script>(function(){var card=document.querySelector('.card'),pulse=document.getElementById('pulse'),copy=document.getElementById('copy'),evidence=document.getElementById('evidence');pulse.onclick=function(){card.style.opacity='.45';setTimeout(function(){card.style.opacity='1'},180)};copy.onclick=function(){copy.textContent='COPIED ✓';setTimeout(function(){copy.textContent='COPY NUMBER'},1200)};evidence.onclick=function(){evidence.textContent='CHECKS COMPLETE';setTimeout(function(){evidence.textContent='EVIDENCE'},1400)}})();</script></body></html>`;
 }
 
 // ── Command ──────────────────────────────────────────────────────────
@@ -177,15 +177,15 @@ module.exports = {
             };
             const bannedLabel = isBanned ? 'BANNED' : 'NOT BANNED';
             const detailText =
-                `🛡️ SUKUNA BAN CHECK REPORT\n\n` +
+                `🛡️ NEXTY BAN CHECK REPORT\n\n` +
                 `Number: +${target}\n` +
                 `Country: ${getCountry(target)}\n` +
                 `Status: ${isBanned ? '🔴 BANNED' : '🟢 UNBANNED — ACTIVE'}\n` +
                 (baron.reason ? `Reason: ${String(baron.reason)}\n` : '') +
                 `Source: Baron Ban Checker API\n` +
                 `Verification: Baron API response successfully validated.`;
-            if ((sock?.__sukunaDeviceMode || database.getDeviceMode()) === 'iphone') {
-                return sendSukunaBanCanvas({
+            if ((sock?.__nextyDeviceMode || database.getDeviceMode()) === 'iphone') {
+                return sendNextyBanCanvas({
                     sock,
                     jid: from,
                     quoted: msg,
@@ -208,9 +208,9 @@ module.exports = {
                     page: null,
                 }),
                 canvasText: `NUMBER\n+${target}\n\nFINAL STATUS\n${bannedLabel}`,
-                title: '☠ SUKUNA BAN CHECK ☠',
+                title: '☠ NEXTY BAN CHECK ☠',
                 caption: detailText,
-                theme: 'sukuna',
+                theme: 'nexty',
             });
         } catch (error) {
             console.error('[banchecker] Baron API failed:', error.message);

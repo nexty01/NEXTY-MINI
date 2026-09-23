@@ -27,9 +27,9 @@ module.exports = {
             await sock.updateProfilePicture(botJid, buffer);
             await sock.sendMessage(from, { react: { text: '✅', key: msg.key } });
             reply(
-                `╭─❒ ◈ 𝙎𝙐𝙆𝙐᳇𝘼 ❒\n` +
+                `╭─❒ ◈ 𝙉𝙀𝙓𝙏𝙔 𝙈𝙄𝙉𝙄 ❒\n` +
                 `│ ✅ *Bot profile picture updated!*\n` +
-                `╰─⛧ 𝓹𝓪𝓼𝓺𝓾𝓪 𝓿𝓮𝓻𝓲𝓯𝓲𝓮𝓭`
+                `╰─⛧ 𝓷𝓮𝔁𝓽𝔂 𝓿𝓮𝓻𝓲𝓯𝓲𝓮𝓭`
             );
         } catch (e) {
             console.error('[setownerpp]', e.message);

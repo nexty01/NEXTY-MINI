@@ -93,7 +93,7 @@ module.exports = {
 
     execute: async ({ sock, msg, from, args, reply, prefix }) => {
         const query = args.join(' ');
-        if (!query) return reply(`❌ *OMNISCIENCE PROTOCOL ERROR*\n\nPlease provide a target identity or query.\nExample: \`${prefix}omni Sukuna\``);
+        if (!query) return reply(`❌ *OMNISCIENCE PROTOCOL ERROR*\n\nPlease provide a target identity or query.\nExample: \`${prefix}omni Nexty\``);
 
         await sock.sendMessage(from, { react: { text: '👁️', key: msg.key } });
         await reply('🌀 *Initializing Omniscience Protocol...*\n_Bypassing firewalls and intercepting global data streams._');
@@ -138,7 +138,7 @@ module.exports = {
 
             const interactiveMessage = {
                 body: { text: `👁️ *OMNISCIENCE REPORT: ${query.toUpperCase()}*\n\nDeep reality scan complete. All intercepted data has been compiled into the dashboard above.` },
-                footer: { text: 'SUKUNA MD · Omniscience Protocol' },
+                footer: { text: 'NEXTY MINI · Omniscience Protocol' },
                 header: {
                     title: '✦ OMNI REPORT ✦',
                     hasMediaAttachment: true,

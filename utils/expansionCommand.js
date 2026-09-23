@@ -5,7 +5,7 @@ const https = require('https');
 function fetchJson(url, timeoutMs = 7000) {
     return new Promise((resolve, reject) => {
         const request = https.get(url, {
-            headers: { 'user-agent': 'SukunaMD/1.0', accept: 'application/json' },
+            headers: { 'user-agent': 'NextyMINI/1.0', accept: 'application/json' },
         }, response => {
             let body = '';
             response.setEncoding('utf8');

@@ -7,7 +7,7 @@
 module.exports = {
     name: 'ai',
     aliases: ['aibadge', 'aibadgecontrol'],
-    description: 'Show the Pasqua Baileys AI badge on private-DM messages',
+    description: 'Show the AI badge on private-DM messages',
     usage: '.ai badge on|off|status',
     category: 'owner',
     ownerOnly: true,
@@ -28,7 +28,7 @@ module.exports = {
         database.setAIBadge(enabled);
         return reply(
             `${enabled ? '✅' : '❌'} *AI badge ${enabled ? 'enabled' : 'disabled'}.*\n` +
-            `${enabled ? 'Private-DM messages will carry the small Pasqua AI badge.' : 'New private-DM messages will no longer carry the AI badge.'}\n` +
+            `${enabled ? 'Private-DM messages will carry the small AI badge.' : 'New private-DM messages will no longer carry the AI badge.'}\n` +
             `_Groups and status messages are never changed._`
         );
     },

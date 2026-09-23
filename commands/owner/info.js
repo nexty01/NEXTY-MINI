@@ -11,7 +11,7 @@
  */
 
 const CHANNEL_JID  = '120363424109748354@newsletter';
-const CHANNEL_NAME = 'Sukuna MD Pasqua tech';
+const CHANNEL_NAME = 'NEXTY MINI';
 
 function buildChannelCtx() {
     return {

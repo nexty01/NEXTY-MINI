@@ -27,7 +27,7 @@ module.exports = {
                 const response = await fetch(current, {
                     method: 'HEAD',
                     redirect: 'manual',
-                    headers: { 'User-Agent': 'SUKUNA-MD/3.0' },
+                    headers: { 'User-Agent': 'NEXTY-MINI/3.0' },
                     signal: controller.signal,
                 });
                 status = response.status;

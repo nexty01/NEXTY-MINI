@@ -55,7 +55,7 @@ async function fetchWithTimeout(url, options = {}, timeout = 25000) {
             ...options,
             redirect: 'follow',
             signal: controller.signal,
-            headers: { 'user-agent': 'SukunaStore/1.0', ...(options.headers || {}) },
+            headers: { 'user-agent': 'NextyStore/1.0', ...(options.headers || {}) },
         });
     } finally {
         clearTimeout(timer);
@@ -173,7 +173,7 @@ async function downloadApk(app) {
     if (declaredSize > MAX_APK_BYTES) throw new Error('APK is larger than the 200 MB limit');
     if (!response.body) throw new Error('F-Droid returned no download body');
 
-    const tempDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'sukuna-fdroid-'));
+    const tempDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'nexty-fdroid-'));
     const filePath = path.join(tempDir, filename);
     const handle = await fs.promises.open(filePath, 'w', 0o600);
     const hash = crypto.createHash('sha256');

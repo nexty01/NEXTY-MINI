@@ -1,7 +1,7 @@
 'use strict';
 
 const { checkWithBaron, normalizeNumber, getCountry } = require('./banchecker');
-const { sendSukunaBanCanvas } = require('../../utils/genaiRich');
+const { sendNextyBanCanvas } = require('../../utils/genaiRich');
 const database = require('../../utils/database');
 
 module.exports = {
@@ -29,13 +29,13 @@ module.exports = {
             const isBanned = baron.banned === true;
             const reason = baron.reason ? `\nReason: ${String(baron.reason)}` : '';
             const resultText =
-                `🛡️ SUKUNA BAN CHECK REPORT\n\n` +
+                `🛡️ NEXTY BAN CHECK REPORT\n\n` +
                 `Number: +${target}\n` +
                 `Country: ${getCountry(target)}\n` +
                 `Status: ${isBanned ? '🔴 BANNED' : '🟢 UNBANNED — ACTIVE'}\n` +
                 `Source: Baron Ban Checker API${reason}`;
-            if ((sock?.__sukunaDeviceMode || database.getDeviceMode()) === 'iphone') {
-                return sendSukunaBanCanvas({
+            if ((sock?.__nextyDeviceMode || database.getDeviceMode()) === 'iphone') {
+                return sendNextyBanCanvas({
                     sock,
                     jid: from,
                     quoted: msg,

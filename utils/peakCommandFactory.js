@@ -7,7 +7,7 @@ const dns = require('dns').promises;
 async function getJson(url, config = {}) {
     const response = await axios.get(url, {
         timeout: 12000,
-        headers: { Accept: 'application/json', 'User-Agent': 'SUKUNA-MD/1.0' },
+        headers: { Accept: 'application/json', 'User-Agent': 'NEXTY-MINI/1.0' },
         ...config,
     });
     return response.data;
@@ -150,7 +150,7 @@ async function externalResult(name, input) {
     }
     if (['sitehealth', 'urlpreview', 'linkunshorten', 'redirecttrace', 'statuswatch', 'watchpage', 'scrape'].includes(name)) {
         const url = /^https?:\/\//i.test(query) ? query : `https://${query}`;
-        const response = await axios.get(url, { timeout: 15000, maxRedirects: name === 'redirecttrace' ? 0 : 5, validateStatus: () => true, headers: { 'User-Agent': 'SUKUNA-MD/1.0' } });
+        const response = await axios.get(url, { timeout: 15000, maxRedirects: name === 'redirecttrace' ? 0 : 5, validateStatus: () => true, headers: { 'User-Agent': 'NEXTY-MINI/1.0' } });
         const finalUrl = response.request?.res?.responseUrl || response.headers?.location || url;
         if (name === 'urlpreview') return `🔗 ${response.status} ${finalUrl}\n${String(response.data || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 300)}…`;
         if (name === 'linkunshorten' || name === 'redirecttrace') return `↪️ ${response.status}: ${finalUrl}`;
@@ -206,7 +206,7 @@ async function externalResult(name, input) {
     if (name === 'keywordalert') {
         const [url, ...words] = query.split(/\s+/);
         if (!url || !words.length) return '🔔 Usage: `.keywordalert https://example.com keyword`';
-        const html = String((await axios.get(url, { timeout: 15000, headers: { 'User-Agent': 'SUKUNA-MD/1.0' } })).data).toLowerCase();
+        const html = String((await axios.get(url, { timeout: 15000, headers: { 'User-Agent': 'NEXTY-MINI/1.0' } })).data).toLowerCase();
         const found = words.map(word => [word, html.includes(word.toLowerCase())]);
         return `🔔 ${found.map(([word, ok]) => `${ok ? '✅' : '❌'} ${word}`).join('\n')}`;
     }
@@ -275,11 +275,11 @@ async function externalResult(name, input) {
         return `🧑‍🎨 Avatar ready:\nhttps://api.dicebear.com/9.x/adventurer/png?seed=${seed}&size=512`;
     }
     if (name === 'wallpaper') {
-        const seed = encodeURIComponent(query || 'sukuna');
+        const seed = encodeURIComponent(query || 'nexty');
         return `🖼️ Wallpaper concept:\nhttps://image.pollinations.ai/prompt/${seed}%20phone%20wallpaper?width=1080&height=1920&nologo=true`;
     }
     if (name === 'posterforge' || name === 'thumbnail' || name === 'comicstrip') {
-        const prompt = encodeURIComponent(query || 'futuristic SUKUNA MD technology poster');
+        const prompt = encodeURIComponent(query || 'futuristic NEXTY MINI technology poster');
         return `🎨 Generated visual:\nhttps://image.pollinations.ai/prompt/${prompt}?width=1280&height=720&nologo=true`;
     }
     if (name === 'stickersearch') {
@@ -294,7 +294,7 @@ async function externalResult(name, input) {
     if (name === 'pricewatch' || name === 'dealalert') {
         const url = /^https?:\/\//i.test(query) ? query : null;
         if (!url) return `💸 Usage: .${name} https://product-page-url`;
-        const response = await axios.get(url, { timeout: 15000, headers: { 'User-Agent': 'Mozilla/5.0 (SUKUNA-MD price checker)' } });
+        const response = await axios.get(url, { timeout: 15000, headers: { 'User-Agent': 'Mozilla/5.0 (NEXTY-MINI price checker)' } });
         const html = String(response.data);
         const prices = [...html.matchAll(/(?:₦|\$|€|£)\s?[0-9][0-9,.]*/g)].slice(0, 5).map(match => match[0]);
         const titleMatch = html.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
@@ -302,7 +302,7 @@ async function externalResult(name, input) {
     }
     if (name === 'linkdigest' || name === 'scrape') {
         const url = /^https?:\/\//i.test(query) ? query : `https://${query}`;
-        const response = await axios.get(url, { timeout: 15000, headers: { 'User-Agent': 'SUKUNA-MD/1.0' } });
+        const response = await axios.get(url, { timeout: 15000, headers: { 'User-Agent': 'NEXTY-MINI/1.0' } });
         const text = String(response.data).replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>/gi, ' ').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 4000);
         if (name === 'scrape') return `🕷️ Page text:\n${text.slice(0, 1200)}${text.length > 1200 ? '…' : ''}`;
         const { ask } = require('./smartAI');

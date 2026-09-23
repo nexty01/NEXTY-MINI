@@ -7,7 +7,7 @@
  *   .update force    → discard local changes, hard reset to origin/main
  *   .update restart  → run .update then exit (panel/PM2 auto-restarts)
  *
- * Repo: https://github.com/pasquawisdom2007-beep/SUKUNA_MD.git
+ * Repo: https://github.com/pasquawisdom2007-beep/NEXTY_MINI.git
  *
  * Safe by design:
  *   - Owner-only via category gate (sessionManager enforces).
@@ -30,9 +30,9 @@ const execAsync     = promisify(exec);
 
 const commandLoader = require('../../utils/commandLoader');
 
-const REPO_URL      = 'https://github.com/pasquawisdom2007-beep/SUKUNA_MD.git';
+const REPO_URL      = 'https://github.com/pasquawisdom2007-beep/NEXTY_MINI.git';
 const REPO_OWNER    = 'pasquawisdom2007-beep';
-const REPO_NAME     = 'SUKUNA_MD';
+const REPO_NAME     = 'NEXTY_MINI';
 const REPO_BRANCH   = 'main';
 const TARBALL_URL   = `https://codeload.github.com/${REPO_OWNER}/${REPO_NAME}/tar.gz/refs/heads/${REPO_BRANCH}`;
 
@@ -167,7 +167,7 @@ function getJson(url) {
     return new Promise((resolve, reject) => {
         const req = https.get(url, {
             headers: {
-                'User-Agent': 'SUKUNA-MD-UpdateCheck',
+                'User-Agent': 'NEXTY-MINI-UpdateCheck',
                 Accept: 'application/vnd.github+json',
             },
         }, res => {
@@ -322,7 +322,7 @@ function compareLocalTree(remoteTree) {
 // ── tarball fallback (used when .git is missing) ────────────────────────────
 function download(url) {
     return new Promise((resolve, reject) => {
-        const req = https.get(url, { headers: { 'User-Agent': 'SUKUNA-MD-Updater' } }, (res) => {
+        const req = https.get(url, { headers: { 'User-Agent': 'NEXTY-MINI-Updater' } }, (res) => {
             if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
                 resolve(download(res.headers.location));
                 return;
@@ -356,7 +356,7 @@ async function tarballUpdate() {
     fs.writeFileSync(tarPath.replace(/\.gz$/, ''), tar);
 
     await run(`tar -xf "${tarPath.replace(/\.gz$/, '')}" -C "${tmpDir}"`);
-    // Extracted top-level dir: SUKUNA_MD-main
+    // Extracted top-level dir: NEXTY_MINI-main
     const extractedRoot = path.join(tmpDir, `${REPO_NAME}-${REPO_BRANCH}`);
     if (!fs.existsSync(extractedRoot)) {
         throw new Error('Tarball did not contain expected directory ' + `${REPO_NAME}-${REPO_BRANCH}`);

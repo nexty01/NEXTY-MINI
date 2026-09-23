@@ -42,7 +42,7 @@ async function tryPrexzyvillaDirect(text) {
         const res = await axios.get(url, {
             responseType: 'arraybuffer',
             timeout: 30000,
-            headers: { 'User-Agent': 'Mozilla/5.0 (SUKUNA-MD)' },
+            headers: { 'User-Agent': 'Mozilla/5.0 (NEXTY-MINI)' },
             validateStatus: () => true,
         });
         if (res.status >= 400) return null;

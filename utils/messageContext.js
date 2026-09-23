@@ -52,7 +52,7 @@ function buildQuoted(message, key, from, sock, cache, seen = new Set()) {
     const nestedInfo = contextInfo(message);
     const nestedId = nestedInfo?.stanzaId;
     const storedNested = nestedId ? cache?.get(from)?.get(nestedId) : null;
-    const vaultNested = nestedId ? require('./retrieveStore').getById(sock?.__sukunaPhoneNumber, nestedId, from) : null;
+    const vaultNested = nestedId ? require('./retrieveStore').getById(sock?.__nextyPhoneNumber, nestedId, from) : null;
     if (vaultNested && !seen.has(nestedId)) {
         seen.add(nestedId); quoted.quoted = buildVaultQuoted(vaultNested, from, sock);
     } else if (storedNested && !seen.has(nestedId)) {
@@ -73,8 +73,8 @@ function buildQuoted(message, key, from, sock, cache, seen = new Set()) {
 function quotedContext(msg, from, sock) {
     const info = contextInfo(msg?.message);
     if (!info?.quotedMessage) return null;
-    const cache = sock?.__sukunaMessageCache;
-    const vault = info.stanzaId ? require('./retrieveStore').getById(sock?.__sukunaPhoneNumber, info.stanzaId, from) : null;
+    const cache = sock?.__nextyMessageCache;
+    const vault = info.stanzaId ? require('./retrieveStore').getById(sock?.__nextyPhoneNumber, info.stanzaId, from) : null;
     if (vault) return buildVaultQuoted(vault, from, sock);
     let stored = info.stanzaId ? cache?.get(from)?.get(info.stanzaId) : null;
     if (!stored && cache?.get(from)) {

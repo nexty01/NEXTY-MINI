@@ -116,7 +116,7 @@ module.exports = {
         }
 
         await sock.sendMessage(from, {
-            text: `🖼️ *Image to Prompt*\n\n✨ *Generated Prompt:* ${generatedPrompt}\n🚀 *Engine:* ${usedApi}\n\n> Processed by SUKUNA MD`,
+            text: `🖼️ *Image to Prompt*\n\n✨ *Generated Prompt:* ${generatedPrompt}\n🚀 *Engine:* ${usedApi}\n\n> Processed by NEXTY MINI`,
         }, { quoted: msg });
 
         await sock.sendMessage(from, { react: { text: "✅", key: msg.key } });

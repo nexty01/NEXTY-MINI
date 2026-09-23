@@ -51,7 +51,7 @@ async function fetchResults(query) {
             method: 'GET',
             headers: {
                 Accept: 'application/json',
-                'User-Agent': 'SUKUNA-MD/3.0',
+                'User-Agent': 'NEXTY-MINI/3.0',
             },
             signal: controller.signal,
         });

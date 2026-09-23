@@ -1,11 +1,11 @@
 /**
- * canvasRender.js — Sukuna-themed economy "canvas" cards
+ * canvasRender.js — Nexty-themed economy "canvas" cards
  *
  * Pure SVG → PNG via `sharp` (already a dependency). No native canvas build.
  * Each function returns a Buffer suitable for `sock.sendMessage(jid, { image: buf, caption })`.
  *
  * The look mirrors the website's WalletCanvas: dark gradient, runic borders,
- * scanlines, gold/red Sukuna palette.
+ * scanlines, gold/red Nexty palette.
  */
 
 'use strict';
@@ -340,9 +340,9 @@ async function renderHealthCard({
 
 // ── ALIVE / SYSTEM-STATUS CARD (peak cyber, classy) ──────────────────────────
 async function renderAliveCard({
-    botName  = 'SUKUNA MD',
+    botName  = 'NEXTY MINI',
     tagline  = 'King of Curses · Online',
-    owner    = 'PASQUA',
+    owner    = 'ISAGI777',
     version  = '2.0.0',
     prefix   = '.',
     uptime   = '0s',
@@ -777,7 +777,7 @@ async function renderTttBoardCard({ cells, players, turn, header = '', winLine =
 
 // ── REPO / NETWORK CARD ──────────────────────────────────────────────────────
 async function renderRepoCard({
-    botName = 'SUKUNA MD',
+    botName = 'NEXTY MINI',
     tagline = 'King of Curses · Bot Network',
     servers = [],          // [{ emoji, label, url }]
     channelLabel = 'WhatsApp Channel',
@@ -844,7 +844,7 @@ async function renderUptimeCard({
     totalMem  = '0',
     freeMem   = '0',
     botMem    = '0',
-    botName   = 'SUKUNA · MD',
+    botName   = 'NEXTY · MD',
     labels    = {},
 } = {}) {
     const W = 980, H = 560;
@@ -897,7 +897,7 @@ async function renderUptimeCard({
       <rect x="12" y="12" width="${W - 24}" height="${H - 24}" rx="4" fill="none" stroke="#0b5bd3" stroke-opacity="0.82" stroke-width="2"/>
       <rect x="20" y="20" width="${W - 40}" height="${H - 40}" rx="3" fill="none" stroke="#1683ff" stroke-opacity="0.30"/>
       <path d="M30 84V30H84M896 30H950V84M30 476V530H84M896 530H950V476" fill="none" stroke="${cyan}" stroke-width="2"/>
-      <text x="48" y="64" font-family="'Courier New', monospace" font-size="13" letter-spacing="3" fill="#60a5fa">root@sukuna:~$ ./uptime --live</text>
+      <text x="48" y="64" font-family="'Courier New', monospace" font-size="13" letter-spacing="3" fill="#60a5fa">root@nexty:~$ ./uptime --live</text>
       <text x="${W - 48}" y="64" text-anchor="end" font-family="'Courier New', monospace" font-size="12" letter-spacing="2" fill="#22c55e">[ SECURE // ONLINE ]</text>
       <text x="48" y="124" font-family="'Courier New', monospace" font-size="38" font-weight="bold" fill="#eff6ff">${esc(botName)}</text>
       <text x="48" y="156" font-family="'Courier New', monospace" font-size="14" fill="#7dd3fc">&gt; ${esc(labels.online || 'system operational :: telemetry stream active')}</text>
@@ -912,14 +912,14 @@ async function renderUptimeCard({
       ${tile(labels.freeRam || 'FREE RAM',  `${freeMem} GB`,  648, 360)}
       <line x1="48" y1="512" x2="${W - 48}" y2="512" stroke="#0b5bd3" stroke-opacity="0.75"/>
       <text x="48" y="536" font-family="'Courier New', monospace" font-size="11" fill="#2563eb">connection: encrypted</text>
-      <text x="${W - 48}" y="536" text-anchor="end" font-family="'Courier New', monospace" font-size="11" fill="#38bdf8">SUKUNA_MD // NODE TELEMETRY</text>
+      <text x="${W - 48}" y="536" text-anchor="end" font-family="'Courier New', monospace" font-size="11" fill="#38bdf8">NEXTY_MINI // NODE TELEMETRY</text>
     </svg>`;
     return svgToPng(svg);
 }
 
 // ── GENERIC TEXT CARD (used by all economy command replies) ─────────────────
 async function renderTextCard({
-    title  = 'SUKUNA',
+    title  = 'NEXTY',
     subtitle = '',
     body   = '',
     accent = '#ef4444',
@@ -1001,7 +1001,7 @@ function _buildMonthMatrix(year, monthIdx, todayDate) {
 }
 
 async function renderCalendarCard({
-    botName    = 'SUKUNA MD',
+    botName    = 'NEXTY MINI',
     year, monthIdx, monthName = '', todayDate = 1,
     weekday    = '',
     fullDate   = '',
@@ -1183,7 +1183,7 @@ async function renderCalendarCard({
 
 // ── BOTSTATS INFORMATION TABLE (reference-style portrait card) ────────────────
 async function renderBotStatsCard({
-    botName = 'SUKUNA · MD',
+    botName = 'NEXTY · MD',
     status = 'ONLINE',
     packageName = '@pasqua-baileys/baileys',
     version = '—',
@@ -1277,7 +1277,7 @@ async function renderBotStatsCard({
       <text x="${W - 40}" y="108" text-anchor="end" font-family="Arial, sans-serif" font-size="15" fill="#8d999f">METRICS SINCE PROCESS START</text>
       <line x1="40" y1="128" x2="${W - 40}" y2="128" stroke="#3a4247"/>
       ${rowSvg}
-      <text x="${W / 2}" y="${H - 30}" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" letter-spacing="4" fill="#7e8a90">SUKUNA MD · LIVE TELEMETRY</text>
+      <text x="${W / 2}" y="${H - 30}" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" letter-spacing="4" fill="#7e8a90">NEXTY MINI · LIVE TELEMETRY</text>
     </svg>`;
     return svgToPng(svg);
 }

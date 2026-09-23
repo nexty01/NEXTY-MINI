@@ -21,7 +21,7 @@ module.exports = {
         const timer = setTimeout(() => controller.abort(), 45_000);
         try {
             const response = await fetch(`${SCREENSHOT_API}${encodeURIComponent(target.toString())}`, {
-                headers: { 'User-Agent': 'SUKUNA-MD/3.0' },
+                headers: { 'User-Agent': 'NEXTY-MINI/3.0' },
                 signal: controller.signal,
             });
             if (!response.ok) return reply(`⚠️ Screenshot service returned HTTP ${response.status}.`);

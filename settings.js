@@ -6,7 +6,7 @@
 
 module.exports = {
     // ═══ Owner Info ═══
-    ownerName: 'NEXTY',                    // ← Ye change karo
+    ownerName: 'ISAGI777',                 // ← Ye change karo
     ownerNumber: '923XXXXXXXXX',           // ← Apna number daalo (country code +, no spaces)
     
     // ═══ Bot Info ═══
@@ -18,7 +18,7 @@ module.exports = {
     startimage: 'https://files.catbox.moe/o0798k.png',
     
     // ═══ Channels ═══
-    whatsappChannel: 'https://whatsapp.com/channel/0029Vb8RIvDHVvTgHqEiRY1N',
+    whatsappChannel: 'https://whatsapp.com/channel/0029VbDEriB30LKRn6gniN3U',
     
     // ═══ Telegram ═══
     tgOwnerId: 'YOUR_TELEGRAM_ID',

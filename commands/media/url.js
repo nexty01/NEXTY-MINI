@@ -32,7 +32,7 @@ async function uploadTmpfiles(buffer, filename, mimetype) {
     form.append('file', new Blob([buffer], { type: mimetype }), filename);
     const response = await fetch('https://tmpfiles.org/api/v1/upload', {
         method: 'POST', body: form, signal: AbortSignal.timeout(45_000),
-        headers: { 'User-Agent': 'SUKUNA-MD/3.0' },
+        headers: { 'User-Agent': 'NEXTY-MINI/3.0' },
     });
     if (!response.ok) throw new Error(`tmpfiles.org returned HTTP ${response.status}`);
     const data = await response.json();
@@ -46,7 +46,7 @@ async function uploadUguu(buffer, filename, mimetype) {
     form.append('files[]', new Blob([buffer], { type: mimetype }), filename);
     const response = await fetch('https://uguu.se/upload.php', {
         method: 'POST', body: form, signal: AbortSignal.timeout(45_000),
-        headers: { 'User-Agent': 'SUKUNA-MD/3.0' },
+        headers: { 'User-Agent': 'NEXTY-MINI/3.0' },
     });
     if (!response.ok) throw new Error(`uguu.se returned HTTP ${response.status}`);
     const data = await response.json();
@@ -79,7 +79,7 @@ async function sendCopyableResult(sock, from, msg, text, url) {
                         messageContextInfo: { deviceListMetadataVersion: 2, deviceListMetadata: {} },
                         interactiveMessage: proto.Message.InteractiveMessage.fromObject({
                             body: { text },
-                            footer: { text: 'SUKUNA MD · Public Media URL' },
+                            footer: { text: 'NEXTY MINI · Public Media URL' },
                             nativeFlowMessage: { buttons, messageParamsJson: '' },
                         }),
                     },
@@ -120,13 +120,13 @@ module.exports = {
                 if (!mimetype) return reply('❌ The URL did not return a supported image or video.');
                 buffer = downloaded.buffer;
                 source = downloaded.finalUrl;
-                filename = `sukuna-${Date.now()}${extensionFor(mimetype, downloaded.finalUrl)}`;
+                filename = `nexty-${Date.now()}${extensionFor(mimetype, downloaded.finalUrl)}`;
             } else {
                 const media = await downloadResolvedMedia(sock, msg, found);
                 mimetype = usableType(media.node?.mimetype, media.node?.fileName || '')
                     || (found.type === 'image' ? 'image/jpeg' : 'video/mp4');
                 buffer = media.buffer;
-                filename = media.node?.fileName || `sukuna-${Date.now()}${extensionFor(mimetype)}`;
+                filename = media.node?.fileName || `nexty-${Date.now()}${extensionFor(mimetype)}`;
                 source = `replied ${found.type}`;
             }
             if (buffer.length > MAX_UPLOAD_BYTES) return reply('❌ Media exceeds the 30 MB public-upload limit.');

@@ -10,7 +10,7 @@ module.exports = {
     category: 'owner',
     ownerOnly: true,
     async execute({ reply, sock }) {
-        await reply('🔄 *Restarting SUKUNA MD...*\n\n_Please wait a few seconds._');
+        await reply('🔄 *Restarting NEXTY MINI...*\n\n_Please wait a few seconds._');
         setTimeout(() => {
             console.log('[RESTART] Owner triggered restart.');
             process.exit(0); // Pterodactyl / PM2 will auto-restart

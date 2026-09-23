@@ -33,7 +33,7 @@ module.exports = {
 
         try {
             await reply(`📸 Capturing *${target}* ... please wait`);
-            const res = await fetch(apiUrl, { signal: ctrl.signal, headers: { 'User-Agent': 'SukunaMD/3.0' } });
+            const res = await fetch(apiUrl, { signal: ctrl.signal, headers: { 'User-Agent': 'NextyMINI/3.0' } });
             const ct = res.headers.get('content-type') || '';
 
             if (!res.ok) {

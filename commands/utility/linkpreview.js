@@ -66,11 +66,11 @@ async function sendCard({ sock, msg, from, prefix, url, title, description, site
         quickReply('Summarize', `${prefix}summarizeurl ${url.toString()}`),
         quickReply('Check link', `${prefix}linkcheck ${url.toString()}`),
     ];
-    let header = { title: 'SUKUNA MD · LINK PREVIEW', hasMediaAttachment: false };
+    let header = { title: 'NEXTY MINI · LINK PREVIEW', hasMediaAttachment: false };
     if (image && sock.waUploadToServer) {
         try {
             const media = await generateWAMessageContent({ image }, { upload: sock.waUploadToServer });
-            if (media?.imageMessage) header = { title: 'SUKUNA MD · LINK PREVIEW', hasMediaAttachment: true, imageMessage: media.imageMessage };
+            if (media?.imageMessage) header = { title: 'NEXTY MINI · LINK PREVIEW', hasMediaAttachment: true, imageMessage: media.imageMessage };
         } catch (error) {
             console.error('[linkpreview image]', error.message);
         }
@@ -82,7 +82,7 @@ async function sendCard({ sock, msg, from, prefix, url, title, description, site
                     messageContextInfo: { deviceListMetadataVersion: 2, deviceListMetadata: {} },
                     interactiveMessage: proto.Message.InteractiveMessage.fromObject({
                         body: { text: lines.join('\n') },
-                        footer: { text: 'SUKUNA MD · public metadata preview' },
+                        footer: { text: 'NEXTY MINI · public metadata preview' },
                         header,
                         nativeFlowMessage: { buttons, messageParamsJson: '' },
                     }),
@@ -112,7 +112,7 @@ module.exports = {
                 timeout: 15000,
                 maxContentLength: MAX_HTML,
                 responseType: 'text',
-                headers: { 'User-Agent': 'SUKUNA-MD-LinkPreview/1.0' },
+                headers: { 'User-Agent': 'NEXTY-MINI-LinkPreview/1.0' },
                 validateStatus: status => status >= 200 && status < 400,
             });
             const source = String(response.data || '');

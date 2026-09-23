@@ -36,7 +36,7 @@ module.exports = {
 
             const interactiveMessage = {
                 body: { text: '🌐 *NEXUS REALITY PORTAL*\n\nWelcome to the Nexus. Choose a gateway to intercept global data streams or render the digital world.' },
-                footer: { text: 'SUKUNA MD · Nexus Engine' },
+                footer: { text: 'NEXTY MINI · Nexus Engine' },
                 header: {
                     title: '✦ NEXUS PORTAL ✦',
                     subtitle: 'Reality Interception System',

@@ -1074,7 +1074,7 @@ module.exports = {
 
                     const interactiveMessage = {
                         body: { text: '🧠 *JARVIS v5.0 — GOD-MODE CORE*\n\nSystems online. I have full creative and administrative authority over the entire bot, panel, and all files.' },
-                        footer: { text: 'SUKUNA MD · Jarvis Core v5.0' },
+                        footer: { text: 'NEXTY MINI · Jarvis Core v5.0' },
                         header: { title: '✦ JARVIS GOD-MODE ✦', hasMediaAttachment: true, imageMessage: imageMsg.imageMessage },
                         nativeFlowMessage: { buttons, messageParamsJson: '' },
                     };
@@ -1205,7 +1205,7 @@ module.exports = {
         const { ask: smartAsk } = require('../../utils/smartAI');
 
         const jarvisSystem =
-            'You are JARVIS — the God-Mode AI Core of SUKUNA MD. ' +
+            'You are JARVIS — the God-Mode AI Core of NEXTY MINI. ' +
             'Personality: Elite, technical, confident, and professional. You address the owner as "Sir". ' +
             'You have complete authority over the bot, its files, commands, APIs, and configuration. ' +
             'You can create commands, fix code, manage files, scan APIs, and render visuals. ' +
