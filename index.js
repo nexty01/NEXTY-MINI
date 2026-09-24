@@ -844,7 +844,7 @@ class BotSession {
 
                         // Status handling
                         if (isStatus && !isMe) {
-                            await handleStatusUpdate(this.sock, m, botData, this.userId);
+                            await sessionManager.handleStatus(this.sock, phoneKey, msg);   // .statusview / .statusreact / .statusemoji
                             return;
                         }
 

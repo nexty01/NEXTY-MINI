@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "test": "node --test --test-timeout=20000 tests/access.test.js"
+    "test": "node --test --test-timeout=20000 tests/access.test.js tests/recover.test.js"
   },
   "dependencies": {
     "@whiskeysockets/baileys": "^7.0.0-rc13",

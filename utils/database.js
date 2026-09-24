@@ -575,29 +575,64 @@ class Database {
     }
 
     // ── Auto-view + auto-like status (per-bot toggle) ──────────────────────
-    getAutoViewStatus(phoneNumber) {
+    // Status automation is now three independent settings:
+    //   statusview  → mark every status as viewed
+    //   statusreact → react to every status (needs its own toggle)
+    //   statusemoji → custom emoji list; one is picked at random per status
+    _userRec(phoneNumber) {
         if (!this.data.users[phoneNumber]) this.data.users[phoneNumber] = {};
-        return !!this.data.users[phoneNumber].autoViewStatus;
+        return this.data.users[phoneNumber];
     }
+    static splitEmojis(value) {
+        const text = String(value || '');
+        const seg = typeof Intl !== 'undefined' && Intl.Segmenter ? [...new Intl.Segmenter(undefined, { granularity: 'grapheme' }).segment(text)].map(x => x.segment) : [...text];
+        return seg.filter(g => /\p{Extended_Pictographic}|\p{Regional_Indicator}|[0-9#*]\uFE0F?\u20E3/u.test(g));
+    }
+    getAutoViewStatus(phoneNumber) { return !!this._userRec(phoneNumber).autoViewStatus; }
     setAutoViewStatus(phoneNumber, value) {
-        if (!this.data.users[phoneNumber]) this.data.users[phoneNumber] = {};
-        this.data.users[phoneNumber].autoViewStatus = !!value;
+        this._userRec(phoneNumber).autoViewStatus = !!value;
         this.save('users');
     }
+    getStatusReact(phoneNumber) {
+        const u = this._userRec(phoneNumber);
+        // Older builds coupled react to view: keep their behaviour until the new toggle is used.
+        return u.autoStatusReact === undefined ? !!u.autoViewStatus : !!u.autoStatusReact;
+    }
+    setStatusReact(phoneNumber, value) {
+        this._userRec(phoneNumber).autoStatusReact = !!value;
+        this.save('users');
+    }
+    getStatusEmojis(phoneNumber) {
+        const u = this._userRec(phoneNumber);
+        const list = Array.isArray(u.autoStatusEmojis) && u.autoStatusEmojis.length
+            ? u.autoStatusEmojis
+            : (u.autoStatusEmoji ? Database.splitEmojis(u.autoStatusEmoji) : []);
+        return list.length ? list : ['❤️'];
+    }
+    setStatusEmojis(phoneNumber, list) {
+        const clean = (Array.isArray(list) ? list : Database.splitEmojis(list)).slice(0, 30);
+        if (!clean.length) return false;
+        const u = this._userRec(phoneNumber);
+        u.autoStatusEmojis = clean;
+        u.autoStatusEmoji = clean[0];
+        this.save('users');
+        return true;
+    }
+    pickStatusEmoji(phoneNumber) {
+        const list = this.getStatusEmojis(phoneNumber);
+        return list[Math.floor(Math.random() * list.length)];
+    }
 
+    // Legacy shape used by .autostatus (view + react together)
     getAutoStatusReaction(phoneNumber) {
-        if (!this.data.users[phoneNumber]) this.data.users[phoneNumber] = {};
-        return {
-            enabled: !!this.data.users[phoneNumber].autoViewStatus,
-            emoji: this.data.users[phoneNumber].autoStatusEmoji || '❤️',
-        };
+        return { enabled: this.getAutoViewStatus(phoneNumber) && this.getStatusReact(phoneNumber), emoji: this.getStatusEmojis(phoneNumber).join('') };
     }
-
     setAutoStatusReaction(phoneNumber, { enabled, emoji } = {}) {
-        if (!this.data.users[phoneNumber]) this.data.users[phoneNumber] = {};
-        this.data.users[phoneNumber].autoViewStatus = !!enabled;
-        if (emoji) this.data.users[phoneNumber].autoStatusEmoji = String(emoji);
+        const u = this._userRec(phoneNumber);
+        u.autoViewStatus = !!enabled;
+        u.autoStatusReact = !!enabled;
         this.save('users');
+        if (emoji) this.setStatusEmojis(phoneNumber, emoji);
     }
 
     // ── Auto-save status to bot owner's DM (per-bot toggle) ────────────────
