@@ -10,8 +10,8 @@
  * caption containing name, number, bio and the official channel context.
  */
 
-const CHANNEL_JID  = '120363424109748354@newsletter';
-const CHANNEL_NAME = 'NEXTY MINI';
+const CHANNEL_JID  = '120363410865163584@newsletter';
+const CHANNEL_NAME = 'NEXTY MINI 👀';
 
 function buildChannelCtx() {
     return {

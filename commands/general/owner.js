@@ -16,7 +16,7 @@ module.exports = {
     async execute({ sock, msg, from, reply }) {
         const ownerName   = config.owner?.name   || 'NEXTY';
         const ownerNumber = config.owner?.number || '923372588634';
-        const botName     = config.botName       || 'NEXTY MINI';
+        const botName     = config.botName       || 'NEXTY MINI 👀';
 
         const vcard = [
             'BEGIN:VCARD',
@@ -25,7 +25,7 @@ module.exports = {
             `N:${ownerName};;;`,
             `ORG:${botName}`,
             `TEL;type=CELL;type=VOICE;waid=${ownerNumber}:+${ownerNumber}`,
-            'URL:https://t.me/Pasquaking',
+            'URL:https://nextyxmini-production.up.railway.app/',
             `NOTE:${botName} Owner`,
             'END:VCARD'
         ].join('\n');

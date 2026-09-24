@@ -1,5 +1,5 @@
 /**
- * 📘 NEXTY MINI — Facebook Downloader (FastSaver API)
+ * 📘 NEXTY MINI 👀 — Facebook Downloader (FastSaver API)
  * ─────────────────────────────────────────────────────
  * Direct API integration with FastSaver.
  * Downloads Facebook videos & reels.
@@ -40,7 +40,7 @@ async function facebookCommand(sock, from, msg, q) {
         // ─── Processing message ───
         await sock.sendMessage(from, {
             text: `╭━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╮\n` +
-                  `┃  📘 *NEXTY MINI FB DL* 📘      ┃\n` +
+                  `┃  📘 *NEXTY MINI 👀 FB DL* 📘      ┃\n` +
                   `╰━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╯\n\n` +
                   `╭─「 🔄 *PROCESSING* 」──────────\n` +
                   `│ ▸ Engine: FastSaver API\n` +
@@ -100,14 +100,14 @@ async function facebookCommand(sock, from, msg, q) {
 
         // ─── Send media ───
         const botCaption = `╭━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╮\n` +
-                          `┃  📘 *NEXTY MINI FB* 📘         ┃\n` +
+                          `┃  📘 *NEXTY MINI 👀 FB* 📘         ┃\n` +
                           `╰━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╯\n\n` +
                           `✅ *Downloaded Successfully*\n` +
                           `▸ Engine: FastSaver API\n` +
                           `▸ Type: Video 🎬\n` +
                           `${data.duration ? `▸ Duration: ${data.duration}s\n` : ''}` +
                           `${caption ? `▸ Caption: ${caption.substring(0, 80)}${caption.length > 80 ? '...' : ''}\n` : ''}` +
-                          `\n> 👀 *POWERED BY NEXTY MINI*`;
+                          `\n> 👀 *POWERED BY NEXTY MINI 👀*`;
 
         await sock.sendMessage(from, {
             video: mediaBuffer,

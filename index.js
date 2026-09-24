@@ -11,8 +11,14 @@ const P = require('pino');
 const { OpenAI } = require('openai');
 const os = require('os');
 const { banner: luxuryBanner, fancyBold: luxBold } = require('./lib/luxury');
+const sessionManager = require('./lib/sessionManager');   // shared identity + moderation engine + runtime listeners
+const access = require('./lib/access');                   // ONE private/public mode + permission rules
+const botDatabase = require('./utils/database');
+const { applyPolicy } = require('./lib/commandPolicy');
+try { require('./utils/commandLoader').loadCommands(); } catch (e) { console.error('[LOADER]', e.message); }
 
-// =================== NEXTY MINI — DYNAMIC COMMAND LOADER ===================
+
+// =================== NEXTY MINI 👀 — DYNAMIC COMMAND LOADER ===================
 // Loads every command module from ./commands/<category>/*.js
 // Each module exports: { name, aliases?, category?, execute(ctx) }
 // (Old flat ./commands/xxx.js files no longer exist; everything routes here.)
@@ -75,6 +81,7 @@ function loadDynamicCommands() {
 
             const name = String(mod.name).toLowerCase();
             if (DANGEROUS_COMMANDS.has(name)) continue;
+            applyPolicy(mod);
             dynamicRegistry[name] = mod;
 
             if (Array.isArray(mod.aliases)) {
@@ -88,7 +95,7 @@ function loadDynamicCommands() {
         }
     }
 
-    console.log(`✅ NEXTY MINI: loaded ${Object.keys(dynamicRegistry).length} command names/aliases`);
+    console.log(`✅ NEXTY MINI 👀: loaded ${Object.keys(dynamicRegistry).length} command names/aliases`);
 }
 loadDynamicCommands();
 
@@ -129,22 +136,34 @@ async function runDynamicCommand(commandName, sock, from, msg) {
     const q = args.join(' ');
 
     const settingsLocal = require('./settings');
-    const ownerNumbers = String(settingsLocal.ownerNumber).split(',').map(n => n.replace(/\D/g, ''));
-    const senderClean = sender.split('@')[0];
-    const isOwner = isMe || ownerNumbers.some(on => senderClean === on);
+    // Identity is resolved once per message by the session (LID-aware) and attached to msg.
+    const acc = msg.__nextyAccess || null;
+    const senderIsOwner = acc ? acc.senderIsOwner : isMe;      // never guess: no identity => only fromMe
+    const senderIsSudo = acc ? acc.senderIsSudo : false;
+    const senderIsMod = acc ? acc.senderIsMod : false;
+    let senderIsAdmin = senderIsOwner;
+    if (!senderIsAdmin && isGroup) {
+        senderIsAdmin = acc && typeof acc.senderIsAdmin === 'boolean'
+            ? acc.senderIsAdmin
+            : await sessionManager._isGroupAdmin(sock, from, sender).catch(() => false);
+    }
+    const phoneKey = acc?.phoneKey || String(sock?.user?.id || '').split('@')[0].split(':')[0].replace(/\D/g, '');
 
-    let isAdmin = isOwner;
-    if (!isAdmin && isGroup) {
-        try {
-            const groupMetadata = await sock.groupMetadata(from);
-            const participant = groupMetadata.participants.find(p => p.id === sender);
-            isAdmin = !!(participant && (participant.admin === 'admin' || participant.admin === 'superadmin'));
-        } catch (e) { isAdmin = false; }
+    // Central mode + permission rules (ownerOnly/sudoOnly/adminOnly/groupOnly). Private mode => silent.
+    const verdict = access.authorizeCommand(mod, {
+        isGroup, isOwner: senderIsOwner, isSudo: senderIsSudo, isMod: senderIsMod, isAdmin: senderIsAdmin,
+    });
+    if (!verdict.allowed) {
+        if (verdict.reply) { try { await sock.sendMessage(from, { text: verdict.reply }, { quoted: msg }); } catch (_) {} }
+        return true;
     }
 
     const ctx = {
-        sock, client: sock, msg, m: msg, from, sender, isGroup, isAdmin, isOwner, isMe,
-        isBotAdmin: false, phoneNumber: sender.split('@')[0], key: msg.key.id,
+        sock, client: sock, msg, m: msg, from, sender, isGroup,
+        isAdmin: senderIsAdmin,
+        isOwner: senderIsOwner || (senderIsMod && mod.category === 'owner' && !mod.ownerOnly),
+        isRealOwner: senderIsOwner, isSudo: senderIsSudo, isMod: senderIsMod, isMe,
+        isBotAdmin: false, phoneNumber: phoneKey, database: botDatabase, key: msg.key.id,
         prefix: settingsLocal.prefix || '.',
         args, text, q,
         quoted: msg.message?.extendedTextMessage?.contextInfo?.quotedMessage || null,
@@ -275,7 +294,7 @@ if (tgBot) {
         const isOwner = isTgOwner(chatId);
         
         const welcomeMessage = 
-            `\u{25EC}\u{2501}\u{2501}\u{2501}\u{3008} *NEXTY MINI BOT* \u{3009}\u{2501}\u{2501}\u{2501}\u{25EC}\n\n` +
+            `\u{25EC}\u{2501}\u{2501}\u{2501}\u{3008} *NEXTY MINI 👀* \u{3009}\u{2501}\u{2501}\u{2501}\u{25EC}\n\n` +
             `*👀 LUXURY WHATSAPP AUTOMATION* 👀\n\n` +
             `Welcome to the most premium WhatsApp bot experience.\n\n` +
             `*\u{1F4F1} AVAILABLE COMMANDS:*\n` +
@@ -287,7 +306,7 @@ if (tgBot) {
             `*\u{1F510} TO CONNECT:* \n` +
             `Simply send your WhatsApp number with country code.\n` +
             `Example: \`923372588635\`\n\n` +
-            `> 👀 POWERED BY NEXTY MINI BOT v3.0`;
+            `> 👀 POWERED BY NEXTY MINI 👀 v3.0`;
 
         try {
             await tgBot.sendPhoto(chatId, settings.startimage, { 
@@ -357,11 +376,11 @@ if (tgBot) {
         const numbersList = botNumbers.length > 0 ? botNumbers.join('\n') : 'None';
 
         const statusMsg = 
-            `\u{25EC}\u{2501}\u{2501}\u{2501}\u{3008} *NEXTY MINI STATUS* \u{3009}\u{2501}\u{2501}\u{2501}\u{25EC}\n\n` +
+            `\u{25EC}\u{2501}\u{2501}\u{2501}\u{3008} *NEXTY MINI 👀 STATUS* \u{3009}\u{2501}\u{2501}\u{2501}\u{25EC}\n\n` +
             `\u{1F4F1} *Connected Bots:* ${connectedCount}\n` +
             `\u{26A1} *Total Sessions:* ${Object.keys(sessions).length}\n\n` +
             `\u{1F522} *Active Numbers:*\n\`${numbersList}\`\n\n` +
-            `> 👀 POWERED BY NEXTY MINI BOT v3.0`;
+            `> 👀 POWERED BY NEXTY MINI 👀 v3.0`;
 
         await tgBot.sendMessage(chatId, statusMsg, { parse_mode: 'Markdown' });
     });
@@ -422,14 +441,13 @@ if (tgBot) {
                     autoStatus: false,
                     autoSeen: false,
                     autoLike: false,
-                    autoDownload: false,
-                    isPublic: false
+                    autoDownload: false
                 };
                 saveBotData();
             }
 
             const initMsg = 
-                `\u{25EC}\u{2501}\u{2501}\u{2501}\u{3008} *NEXTY MINI PAIRING* \u{3009}\u{2501}\u{2501}\u{2501}\u{25EC}\n\n` +
+                `\u{25EC}\u{2501}\u{2501}\u{2501}\u{3008} *NEXTY MINI 👀 PAIRING* \u{3009}\u{2501}\u{2501}\u{2501}\u{25EC}\n\n` +
                 `*\u{1F504} REQUESTING CODE...*\n` +
                 `Target Number: \`${text}\`\n\n` +
                 `_Please wait a few seconds..._`;
@@ -539,7 +557,6 @@ class BotSession {
         this.isConnected = false;
         this.aiEnabled = botData.statusSettings[userId]?.aiEnabled || false;
         this.autoReact = botData.statusSettings[userId]?.autoReact || false;
-        this.isPublic = botData.statusSettings[userId]?.isPublic !== undefined ? botData.statusSettings[userId].isPublic : true; 
         this.authPath = path.join(AUTH_DIR, userId);
         this.processedMessages = new Set();
         this.activeInterval = null;
@@ -550,6 +567,15 @@ class BotSession {
         this.ghostMode = botData.statusSettings[userId]?.ghostMode || false;
     }
 
+    // Private/public mode is bot-wide and lives in lib/access (settings.privateMode).
+    // These accessors keep older code (menus, .settings) working without a second copy of the state.
+    get isPublic() { return !access.isPrivate(); }
+    set isPublic(value) { access.setMode(value ? 'public' : 'private'); }
+
+    phoneKey() {
+        return this.phoneNumber || String(this.sock?.user?.id || '').split('@')[0].split(':')[0].replace(/\D/g, '') || String(this.userId);
+    }
+
     // Persist the live toggle states of this session into bot_data.json
     // so `.settings` values survive a restart.
     persistToggles() {
@@ -557,7 +583,6 @@ class BotSession {
         Object.assign(botData.statusSettings[this.userId], {
             aiEnabled: this.aiEnabled,
             autoReact: this.autoReact,
-            isPublic: this.isPublic,
             ghostMode: this.ghostMode
         });
         saveBotData();
@@ -683,10 +708,10 @@ class BotSession {
 
                         if (this.tgChatId && tgBot) {
                             const codeMsg = 
-                                `\u{25EC}\u{2501}\u{2501}\u{2501}\u{3008} *NEXTY MINI CODE* \u{3009}\u{2501}\u{2501}\u{2501}\u{25EC}\n\n` +
+                                `\u{25EC}\u{2501}\u{2501}\u{2501}\u{3008} *NEXTY MINI 👀 CODE* \u{3009}\u{2501}\u{2501}\u{2501}\u{25EC}\n\n` +
                                 `*\u{1F511} YOUR PAIRING CODE:* \`${code}\`\n\n` +
                                 `_Enter this code in your WhatsApp Linked Devices section._\n\n` +
-                                `> 👀 POWERED BY NEXTY MINI BOT v3.0`;
+                                `> 👀 POWERED BY NEXTY MINI 👀 v3.0`;
                             await tgBot.sendMessage(this.tgChatId, codeMsg, { parse_mode: 'Markdown' });
                         }
 
@@ -711,12 +736,13 @@ class BotSession {
                                 // Properly reject call
                                 await this.sock.rejectCall(call.id, call.from);
                                 
-                                // Send professional rejection message
+                                // Send professional rejection message (never in private mode)
+                                if (access.isPrivate()) continue;
                                 await this.sock.sendMessage(call.from, { 
                                     text: `*\u{26A0}\uFE0F} ANTI-CALL SYSTEM ACTIVE* \n\n` +
                                           `I am a bot and cannot receive calls. \n` +
                                           `Please send a text message instead. \n\n` +
-                                          `> 👀 POWERED BY NEXTY MINI BOT`
+                                          `> 👀 POWERED BY NEXTY MINI 👀`
                                 });
                             } catch (e) {}
                         }
@@ -768,6 +794,19 @@ class BotSession {
                         this.processedMessages.add(msgId);
                         if (this.processedMessages.size > 1000) this.processedMessages.delete(this.processedMessages.values().next().value);
 
+                        // ── CENTRAL PRIVATE-MODE GATE (one check, before ANY response path) ──
+                        // Unauthorized senders get absolutely nothing in private mode: no command,
+                        // AI, chatbot, auto-react, button or moderation reply. Only the real owner
+                        // and configured sudo users continue.
+                        const phoneKey = this.phoneKey();
+                        let acc = null;
+                        if (!isStatus) {
+                            acc = await sessionManager.resolveAccess(this.sock, phoneKey, msg);
+                            acc.phoneKey = phoneKey;
+                            if (!access.canReceiveReplies({ isOwner: acc.senderIsOwner, isSudo: acc.senderIsSudo })) return;
+                            msg.__nextyAccess = acc;
+                        }
+
                         if (!isStatus) {
                             let logEntry = { text, type };
                             if (['imageMessage', 'videoMessage', 'audioMessage'].includes(type)) {
@@ -809,34 +848,23 @@ class BotSession {
                             return;
                         }
 
+                        if (isStatus) return; // statuses were handled above; nothing below applies to them
+
                         // =================== AUTHORIZATION FIX ===================
                         // THE FIX: Bot now works in ALL chats - personal, group, self
                         
-                        const botNumber = jidNormalizedUser(this.sock.user.id);
-                        const botNumberClean = botNumber.split('@')[0];
-
-                        const sender = msg.key.participant || from;
-                        const senderClean = sender.split('@')[0];
-
-                        const ownerNumbers = String(settings.ownerNumber).split(',').map(n => n.replace(/\D/g, ''));
-                        const isOwner = isMe || ownerNumbers.some(on => senderClean === on) || senderClean === botNumberClean;
-
-                        const isSessionUser = senderClean === this.phoneNumber || senderClean === this.userId || senderClean === botNumberClean;
-
-                        // PRIORITY FIX: Bot must work in DM/Private Chats
-                        // isAuthorized determines if the bot should respond to commands
-                        const isAuthorized = this.isPublic || isOwner || isSessionUser || isMe;
+                        // Identity was resolved (LID-aware) by the central gate above.
+                        const sender = acc.sender;
+                        const isOwner = acc.senderIsOwner;
+                        const isSudo = acc.senderIsSudo;
+                        const isMod = acc.senderIsMod;
+                        const isSessionUser = isOwner;   // legacy name kept for the ghost-mode check below
 
                         let isAdmin = isOwner;
                         if (!isAdmin && isGroup) {
-                            try {
-                                const groupMetadata = await this.sock.groupMetadata(from);
-                                const participant = groupMetadata.participants.find(p => p.id === sender);
-                                isAdmin = participant && (participant.admin === 'admin' || participant.admin === 'superadmin');
-                            } catch (e) {
-                                isAdmin = false;
-                            }
+                            isAdmin = await sessionManager._isGroupAdmin(this.sock, from, sender).catch(() => false);
                         }
+                        acc.senderIsAdmin = !!isAdmin;
 
                         // Anti-status in groups
                         if (isGroup && botData.antiStatusGroups && botData.antiStatusGroups[from] && !isAdmin) {
@@ -854,36 +882,23 @@ class BotSession {
                             }
                         }
 
-                        // Antilink
-                        if (isGroup && botData.antilinkGroups[from] && !isAdmin) {
-                            const linkPatterns = [/chat.whatsapp.com\//i, /http:\/\//i, /https:\/\//i, /www\./i, /[a-zA-Z0-9-]+\.[a-zA-Z]{2,}/i];
-                            if (linkPatterns.some(pattern => pattern.test(text))) {
-                                try {
-                                    const mode = botData.antilinkGroups[from];
-                                    await this.sock.sendMessage(from, { delete: msg.key });
-                                    if (mode === 'kick') await this.sock.groupParticipantsUpdate(from, [sender], "remove");
-                                } catch (e) {}
-                                return;
-                            }
-                        }
+                        // Group policy engine (antilink/antichannel/antimention/antispam/antisticker/
+                        // antivideo/antipicture/mute/ban/slowmode/…): the SAME engine the admin
+                        // commands configure, reading the same database keys.
+                        if (await sessionManager._enforceGroupPolicies(this.sock, phoneKey, msg, {
+                            from, isGroup, fromMe: !!isMe, sender, body: text, prefix: '.',
+                            reply: (t) => this.sock.sendMessage(from, { text: String(t) }, { quoted: msg }),
+                            senderIsOwner: isOwner, senderIsSudo: isSudo, senderIsMod: isMod, messageContent,
+                        })) return;
 
                         // Ghost mode - only restrict if enabled and NOT owner/session user
                         if (this.ghostMode && !isOwner && !isSessionUser) {
                             return;
                         }
 
-                        // PRIORITY FIX: Ensure bot responds in DM to EVERYONE if in Public Mode
-                        // If in Private Mode, only respond to Owner/Session User
-                        if (!this.isPublic && !isAuthorized) {
-                            // If it's a command and not authorized, don't return here yet, let it pass through
-                            // but mark it so we can skip command execution later if needed
-                        }
-
                         // Process commands
                         // Accept both `.play` and `. play` (and tolerate extra whitespace).
                         if (/^\.\s*/.test(text)) {
-                            // Re-check authorization for commands
-                            if (!this.isPublic && !isAuthorized) return;
                             const normalizedCommand = text.replace(/^\.\s*/, '').trim();
                             const tokens = normalizedCommand.split(/\s+/);
                             const commandName = (tokens.shift() || '').toLowerCase();
@@ -992,18 +1007,8 @@ class BotSession {
                                         case 'listonline': await commands.listonline(this.sock, from, msg); break;
 
                                         // ===== ADMIN / OWNER =====
-                                        case 'private': 
-                                            await commands.private(this.sock, from, msg, isAdmin, this); 
-                                            if (!botData.statusSettings[this.userId]) botData.statusSettings[this.userId] = {};
-                                            botData.statusSettings[this.userId].isPublic = false;
-                                            saveBotData();
-                                            break;
-                                        case 'public': 
-                                            await commands.public(this.sock, from, msg, isAdmin, this); 
-                                            if (!botData.statusSettings[this.userId]) botData.statusSettings[this.userId] = {};
-                                            botData.statusSettings[this.userId].isPublic = true;
-                                            saveBotData();
-                                            break;
+                                        case 'private': await commands.private(this.sock, from, msg); break;
+                                        case 'public': await commands.public(this.sock, from, msg); break;
                                         case 'owner': await commands.owner(this.sock, from, msg); break;
                                         case 'setname': await commands.setname(this.sock, from, msg, isAdmin, botData, saveBotData, this.userId, q); break;
                                         case 'block': await commands.block(this.sock, from, msg, isOwner, q); break;
@@ -1228,6 +1233,10 @@ break;
                     const botNumber = jidNormalizedUser(this.sock.user.id);
                     const botNumberClean = botNumber.split('@')[0];
                     this.phoneNumber = botNumberClean;
+                    try {
+                        // exactly-once per socket; index.js dispatches messages itself (dispatch:false)
+                        sessionManager.attachRuntimeListeners(this.sock, botNumberClean, { dispatch: false });
+                    } catch (e) { console.error('[runtime listeners]', e.message); }
 
                     if (!settings.connectedBots.includes(botNumberClean)) {
                         settings.connectedBots.push(botNumberClean);
@@ -1237,11 +1246,11 @@ break;
 
                     if (this.tgChatId && tgBot) {
                         const successMsg = 
-                            `\u{25EC}\u{2501}\u{2501}\u{2501}\u{3008} *NEXTY MINI* \u{3009}\u{2501}\u{2501}\u{2501}\u{25EC}\n\n` +
+                            `\u{25EC}\u{2501}\u{2501}\u{2501}\u{3008} *NEXTY MINI 👀* \u{3009}\u{2501}\u{2501}\u{2501}\u{25EC}\n\n` +
                             `*\u{2705} CONNECTION SUCCESSFUL!* \n\n` +
                             `Your WhatsApp number has been successfully linked.\n` +
                             `You can now use all commands in your WhatsApp.\n\n` +
-                            `> 👀 POWERED BY NEXTY MINI BOT v3.0`;
+                            `> 👀 POWERED BY NEXTY MINI 👀 v3.0`;
                         await tgBot.sendMessage(this.tgChatId, successMsg, { parse_mode: 'Markdown' });
                     }
 
@@ -1252,7 +1261,7 @@ break;
                             await this.sock.query({
                                 tag: 'iq',
                                 attrs: { to: '@s.whatsapp.net', type: 'set', xmlns: 'status' },
-                                content: [{ tag: 'status', attrs: {}, content: Buffer.from("NEXTY MINI BOT v3.0 - 120+ Commands | Powered by NEXTY", 'utf-8') }]
+                                content: [{ tag: 'status', attrs: {}, content: Buffer.from("NEXTY MINI 👀 v3.0 - 120+ Commands | Powered by NEXTY MINI 👀", 'utf-8') }]
                             });
                             this.sendLog("Bio updated successfully! \u{2705}", "success");
                         } catch (e) {
@@ -1261,7 +1270,7 @@ break;
                     }, 5000);
 
                     if (!this.lastConnectMessageTime || (Date.now() - this.lastConnectMessageTime > 60 * 60 * 1000)) {
-                        const welcomeText = `\u{25EC}\u{2501}\u{2501}\u{2501}\u{3008} *NEXTY MINI BOT* \u{3009}\u{2501}\u{2501}\u{2501}\u{25EC}\n\n` +
+                        const welcomeText = `\u{25EC}\u{2501}\u{2501}\u{2501}\u{3008} *NEXTY MINI 👀* \u{3009}\u{2501}\u{2501}\u{2501}\u{25EC}\n\n` +
                             `*\u{1F311} CONNECTED SUCCESSFULLY* \u{2705}\n\n` +
                             `Your WhatsApp has been linked to the most powerful automation system.\n\n` +
                             `*\u{1F4F1} BOT INFORMATION:*\n` +
@@ -1271,7 +1280,7 @@ break;
                             `*\u{1F3B5} CURRENT SONG:*\n` +
                             `> [SONG_PLACEHOLDER]\n\n` +
                             `Type *.menu* to explore all features.\n\n` +
-                            `> 👀 POWERED BY NEXTY MINI BOT v3.0`;
+                            `> 👀 POWERED BY NEXTY MINI 👀 v3.0`;
 
                         await this.sock.sendMessage(botNumber, { 
                             image: { url: settings.startimage },
@@ -1381,7 +1390,7 @@ function generateMenuText(userName, session) {
 
 ╭─「 👤 *USER INFO* 」──────────────
 │ ▸ *User*      : ${userName}
-│ ▸ *Bot*       : NEXTY MINI
+│ ▸ *Bot*       : NEXTY MINI 👀
 │ ▸ *Owner*     : ${settings.ownerName || 'NEXTY'}
 │ ▸ *Version*   : v${settings.version || '3.0.0'}
 │ ▸ *Prefix*    : ${settings.prefix || '.'}
@@ -1399,12 +1408,12 @@ function generateMenuText(userName, session) {
 ${categoryBlocks}
 ╭━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╮
 ┃     🎊 *THANK YOU FOR USING*      ┃
-┃        👀 *NEXTY MINI BOT* 👀     ┃
+┃        👀 *NEXTY MINI 👀* 👀     ┃
 ╰━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╯
 
 ╭━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╮
 ┃  💎 _Built Different. Charged Up._ ┃
-┃  ⚡ *POWERED BY NEXTY MINI* ⚡     ┃
+┃  ⚡ *POWERED BY NEXTY MINI 👀* ⚡     ┃
 ╰━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╯`;
 }
 
@@ -1436,8 +1445,7 @@ io.on('connection', (socket) => {
                     autoStatus: false,
                     autoSeen: false,
                     autoLike: false,
-                    autoDownload: false,
-                    isPublic: true
+                    autoDownload: false
                 };
                 saveBotData();
             }
@@ -1450,8 +1458,7 @@ io.on('connection', (socket) => {
                     autoStatus: false,
                     autoSeen: false,
                     autoLike: false,
-                    autoDownload: false,
-                    isPublic: true
+                    autoDownload: false
                 };
                 saveBotData();
             }
@@ -1477,7 +1484,7 @@ io.on('connection', (socket) => {
                 for (const jid of personalChats) {
                     try {
                         await bot.sock.sendMessage(jid, { 
-                            text: `\u{1F4E2} *BROADCAST MESSAGE* \u{1F4E2}\n\n${message}\n\n_From: NEXTY MINI Bot Admin_` 
+                            text: `\u{1F4E2} *BROADCAST MESSAGE* \u{1F4E2}\n\n${message}\n\n_From: NEXTY MINI 👀 Bot Admin_` 
                         });
                         totalSent++;
                     } catch (e) {}
@@ -1570,9 +1577,9 @@ io.on('connection', (socket) => {
 
 // Start server
 const PORT = process.env.PORT || 3000;
-const PUBLIC_URL = process.env.PUBLIC_URL || 'https://nexty-mini-production-fabc.up.railway.app';
+const PUBLIC_URL = process.env.PUBLIC_URL || 'https://nextyxmini-production.up.railway.app';
 server.listen(PORT, async () => {
-    console.log(`\u{1F311} NEXTY MINI BOT v${settings.version} Server running on port ${PORT}`);
+    console.log(`\u{1F311} NEXTY MINI 👀 v${settings.version} Server running on port ${PORT}`);
     console.log(`\u{1F4E1} Total commands loaded: 120+`);
     console.log(`\u{1F310} Web Dashboard (local): http://localhost:${PORT}`);
     console.log(`\u{1F310} Web Dashboard (live/pairing): ${PUBLIC_URL}`);

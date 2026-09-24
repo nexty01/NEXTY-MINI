@@ -340,8 +340,8 @@ async function renderHealthCard({
 
 // ── ALIVE / SYSTEM-STATUS CARD (peak cyber, classy) ──────────────────────────
 async function renderAliveCard({
-    botName  = 'NEXTY MINI',
-    tagline  = 'King of Curses · Online',
+    botName  = 'NEXTY MINI 👀',
+    tagline  = 'NEXTY MINI 👀 · Online',
     owner    = 'NEXTY',
     version  = '2.0.0',
     prefix   = '.',
@@ -777,8 +777,8 @@ async function renderTttBoardCard({ cells, players, turn, header = '', winLine =
 
 // ── REPO / NETWORK CARD ──────────────────────────────────────────────────────
 async function renderRepoCard({
-    botName = 'NEXTY MINI',
-    tagline = 'King of Curses · Bot Network',
+    botName = 'NEXTY MINI 👀',
+    tagline = 'NEXTY MINI 👀 · Bot Network',
     servers = [],          // [{ emoji, label, url }]
     channelLabel = 'WhatsApp Channel',
     channelUrl   = '',
@@ -1001,7 +1001,7 @@ function _buildMonthMatrix(year, monthIdx, todayDate) {
 }
 
 async function renderCalendarCard({
-    botName    = 'NEXTY MINI',
+    botName    = 'NEXTY MINI 👀',
     year, monthIdx, monthName = '', todayDate = 1,
     weekday    = '',
     fullDate   = '',
@@ -1277,7 +1277,7 @@ async function renderBotStatsCard({
       <text x="${W - 40}" y="108" text-anchor="end" font-family="Arial, sans-serif" font-size="15" fill="#8d999f">METRICS SINCE PROCESS START</text>
       <line x1="40" y1="128" x2="${W - 40}" y2="128" stroke="#3a4247"/>
       ${rowSvg}
-      <text x="${W / 2}" y="${H - 30}" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" letter-spacing="4" fill="#7e8a90">NEXTY MINI · LIVE TELEMETRY</text>
+      <text x="${W / 2}" y="${H - 30}" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" letter-spacing="4" fill="#7e8a90">NEXTY MINI 👀 · LIVE TELEMETRY</text>
     </svg>`;
     return svgToPng(svg);
 }

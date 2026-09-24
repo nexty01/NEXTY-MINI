@@ -108,6 +108,7 @@ function antibotAction(config) {
 }
 
 async function sendNotice(sock, groupId, jid, text) {
+    if (require('../lib/access').isPrivate()) return; // private mode: enforcement stays silent
     await sock.sendMessage(groupId, { text, mentions: jid ? [jid] : [] }).catch(() => {});
 }
 

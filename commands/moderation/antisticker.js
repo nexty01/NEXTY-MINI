@@ -30,7 +30,7 @@ module.exports = {
             (next
                 ? `✅ *ON* — _All stickers sent in this group will now be auto-deleted._\n_Admins and the bot owner are exempt._`
                 : `🔴 *OFF* — _Stickers are allowed again._`) +
-            `\n\n> _Nexty MINI · King of Curses_`
+            `\n\n> _Nexty MINI · NEXTY MINI 👀_`
         );
     },
 };

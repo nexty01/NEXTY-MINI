@@ -81,7 +81,7 @@ module.exports = {
                   `*Original URL:* ${longUrl}\n` +
                   `*Shortened URL:* ${shortUrl}\n` +
                   `🚀 *Engine:* ${usedApi}\n\n` +
-                  `> Shortened by NEXTY MINI`,
+                  `> Shortened by NEXTY MINI 👀`,
         }, { quoted: msg });
 
         await sock.sendMessage(from, { react: { text: "✅", key: msg.key } });

@@ -13,7 +13,7 @@ module.exports = {
     async execute({ sock, msg, from, reply, args }) {
         const username = args[0];
         if (!username) {
-            return reply('🐙 Please provide a GitHub username.\nExample: .githubinfo pasquawisdom2007-beep');
+            return reply('🐙 Please provide a GitHub username.\nExample: .githubinfo octocat');
         }
 
         try {

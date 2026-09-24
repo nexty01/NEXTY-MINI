@@ -279,7 +279,7 @@ async function externalResult(name, input) {
         return `🖼️ Wallpaper concept:\nhttps://image.pollinations.ai/prompt/${seed}%20phone%20wallpaper?width=1080&height=1920&nologo=true`;
     }
     if (name === 'posterforge' || name === 'thumbnail' || name === 'comicstrip') {
-        const prompt = encodeURIComponent(query || 'futuristic NEXTY MINI technology poster');
+        const prompt = encodeURIComponent(query || 'futuristic NEXTY MINI 👀 technology poster');
         return `🎨 Generated visual:\nhttps://image.pollinations.ai/prompt/${prompt}?width=1280&height=720&nologo=true`;
     }
     if (name === 'stickersearch') {

@@ -14,7 +14,7 @@ module.exports = {
             await sock.sendMessage(from, {
                 image: { url: ppUrl },
                 caption:
-                    `╭─❒ ◈ 𝙉𝙀𝙓𝙏𝙔 𝙈𝙄𝙉𝙄 ❒\n` +
+                    `╭─❒ ◈ 𝙉𝙀𝙓𝙏𝙔 𝙈𝙄𝙉𝙄 👀 ❒\n` +
                     `│ 🖼️ *Group Profile Picture*\n` +
                     `╰─⛧ 𝓷𝓮𝔁𝓽𝔂 𝓿𝓮𝓻𝓲𝓯𝓲𝓮𝓭`,
             }, { quoted: msg });

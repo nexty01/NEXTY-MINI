@@ -1,8 +1,8 @@
 /**
- * .menu — NEXTY MINI main menu
+ * .menu — NEXTY MINI 👀 main menu
  *
  * - Honors .setdesign (reads database.getMenuDesign + buildCaption from
- *   utils/menuDesigns). Falls back to the original NEXTY MINI layout if
+ *   utils/menuDesigns). Falls back to the original NEXTY MINI 👀 layout if
  *   the design module fails for any reason.
  * - Sends the menu video as a REAL video (with audio). The previous
  *   version forced gifPlayback:true, which made WhatsApp render it as a
@@ -78,7 +78,7 @@ function buildFallbackCaption(ctx) {
 
     // Peak header
     c += `◤${RULE}◥\n`;
-    c += `      ✦ *${ctx.botName || 'NEXTY MINI'}* ✦\n`;
+    c += `      ✦ *${ctx.botName || 'NEXTY MINI 👀'}* ✦\n`;
     c += `◣${RULE}◢\n`;
 
     // Info rail
@@ -110,7 +110,7 @@ function buildFallbackCaption(ctx) {
     c += `◤${RULE}◥\n`;
     c += `   ${cmdCount} commands loaded\n`;
     c += `◣${RULE}◢\n`;
-    c += `\n> *${ctx.botName || 'NEXTY MINI'}* · King of Curses · by ${ownerName}`;
+    c += `\n> *${ctx.botName || 'NEXTY MINI 👀'}* · NEXTY MINI 👀 · by ${ownerName}`;
 
     return c;
 }
@@ -118,7 +118,7 @@ function buildFallbackCaption(ctx) {
 module.exports = {
     name: 'menu',
     aliases: ['help', 'list', 'commands'],
-    description: 'Show the NEXTY MINI command menu',
+    description: 'Show the NEXTY MINI 👀 command menu',
     category: 'admin',
 
     async execute({ sock, msg, from, sender, reply, phoneNumber, args = [], t: _t }) {
@@ -168,10 +168,10 @@ module.exports = {
         // Build identity / runtime info
         const senderJid    = sender || msg?.key?.participant || msg?.key?.remoteJid || '';
         const senderNumber = String(phoneNumber || senderJid).replace(/[^0-9]/g, '') || 'user';
-        const botName      = config.botName || 'NEXTY MINI';
+        const botName      = config.botName || 'NEXTY MINI 👀';
         const ownerName    = (config.owner && config.owner.name) || 'NEXTY';
         const prefix       = config.prefix || '.';
-        const mode         = (global.botMode || config.mode || 'private').toLowerCase();
+        const mode         = database.getSelfMode(phoneNumber) ? 'private' : 'public';
         const version      = config.version || '3.0.0';
 
         const uptime = fmtUptime(process.uptime());
@@ -194,8 +194,10 @@ module.exports = {
 
         // ── Resolve current menu design ──
         let designKey = 'default';
-        try { designKey = (database.getMenuDesign(phoneNumber) || 'default').toLowerCase(); }
-        catch (_) {}
+        try {
+            const designOwner = String(phoneNumber || senderNumber || '').trim();
+            designKey = (database.getMenuDesign(designOwner) || 'default').toLowerCase();
+        } catch (_) {}
 
         // ── Resolve the active font once so every text path uses it ──
         let activeFontNum = 1;

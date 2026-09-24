@@ -1,5 +1,5 @@
 /**
- * langSystem.js — Global language / i18n system for NEXTY MINI
+ * langSystem.js — Global language / i18n system for NEXTY MINI 👀
  *
  * Add a new language by adding an entry to DICTIONARY below.
  * Every key in 'english' MUST also exist in every other language block.
@@ -42,15 +42,15 @@ const DICTIONARY = {
         'alive.prefix':         'Prefix',
         'alive.version':        'Version',
         'alive.owner':          'Owner',
-        'alive.powered':        'Powered by the King of Curses',
+        'alive.powered':        'Powered by the NEXTY MINI 👀',
 
         // Menu
-        'menu.domainIntro':     '🔮 *Domain Expansion........*\n\n_Malevolent Shrine — Unlimited Void_\n\n> 👹 The King of Curses opens the menu...',
+        'menu.domainIntro':     '🔮 *Domain Expansion........*\n\n_Malevolent Shrine — Unlimited Void_\n\n> 👹 The NEXTY MINI 👀 opens the menu...',
         'menu.prefix':          '⚡  *Prefix* › `{prefix}`',
         'menu.version':         '📦  *Version* › {version}',
         'menu.creator':         '👑  *Creator* › {creator}',
         'menu.totalCommands':   '📊  *Total Commands:* {count}',
-        'menu.powered':         '> 🔥 _{botName} — Powered by the King of Curses_',
+        'menu.powered':         '> 🔥 _{botName} — Powered by the NEXTY MINI 👀_',
         'menu.commands':        'COMMANDS',
         'menu.buttonFooter':    'Tap a button below for quick actions!',
 

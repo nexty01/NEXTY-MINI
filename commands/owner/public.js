@@ -1,25 +1,13 @@
-/**
- * Public Command — Open bot to everyone
- * Usage: .public
- */
+/** Public Command — open the bot to everyone (per-command permissions still apply). Owner only. */
+'use strict';
+const { setModeReply } = require('./mode');
 
 module.exports = {
     name: 'public',
-    aliases: ['everyone', 'unlock'],
-    description: 'Set bot to public mode — everyone can use commands',
+    aliases: ['unlockbot'],
+    description: 'Set bot to public mode — owner only',
     usage: '.public',
     category: 'owner',
-
-    async execute({ reply, database, phoneNumber }) {
-        if (!phoneNumber) {
-            return reply('⚠️ Session not ready — phone number missing. Try again in a moment.');
-        }
-
-        if (!database.getSelfMode(phoneNumber)) {
-            return reply(`🌍 Already *PUBLIC*. Use *.private* to lock.`);
-        }
-
-        database.setSelfMode(phoneNumber, false);
-        reply(`🌍 *PUBLIC MODE ON* — everyone can use commands.\n_Use *.private* to lock._`);
-    }
+    ownerOnly: true,
+    async execute(ctx) { return setModeReply(ctx, 'public'); },
 };

@@ -1,5 +1,5 @@
 /**
- * 🎵 NEXTY MINI — YouTube Audio Downloader (Tornado API)
+ * 🎵 NEXTY MINI 👀 — YouTube Audio Downloader (Tornado API)
  * ──────────────────────────────────────────────────────
  * Search by name OR direct URL — auto downloads.
  * 
@@ -11,7 +11,7 @@ const axios = require('axios');
 const yts = require('yt-search');
 
 // ═══ Tornado API Config ═══
-const TORNADO_API_KEY = 'sk_tornadoapi_trial_LH58MaBxJ7Gh5LUskXp7Tp0kZCCTyeXZPS5lhbJOK10m5ge__mwir6Vv5sfuUdn1nAQRGbLcITmn2txGu2hDFg'; // ← Nayi key yahan
+const TORNADO_API_KEY = 'sk_tornadoapi_trial_atYdtaua5QJ4GrZiOjKonmmTi0qaR7M7aEgQOhiSeHcLX0kPGJScwI0Nre1L66ES9VVZ6KLFLpAdwBHm5dwfWQ'; // ← Nayi key yahan
 const TORNADO_API_URL = 'https://api.tornadoapi.io/jobs';
 const R2_BASE_URL = 'https://r2.tornadoapi.io'; // ← Base URL confirm karo
 
@@ -82,7 +82,7 @@ async function playCommand(sock, from, msg, q) {
         await sock.sendMessage(from, {
             image: { url: videoThumb },
             caption: `╭━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╮\n` +
-                     `┃  🎵 *NEXTY MINI MUSIC* 🎵      ┃\n` +
+                     `┃  🎵 *NEXTY MINI 👀 MUSIC* 🎵      ┃\n` +
                      `╰━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╯\n\n` +
                      `╭─「 📀 *NOW DOWNLOADING* 」──────\n` +
                      `│ ▸ *Title*  : ${videoTitle.substring(0, 45)}${videoTitle.length > 45 ? '...' : ''}\n` +
@@ -93,7 +93,7 @@ async function playCommand(sock, from, msg, q) {
                      `╰──────────────────────────────────\n\n` +
                      `⏳ _Please wait, downloading..._\n\n` +
                      `╭━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╮\n` +
-                     `┃  ⚡ *POWERED BY NEXTY MINI* ⚡    ┃\n` +
+                     `┃  ⚡ *POWERED BY NEXTY MINI 👀* ⚡    ┃\n` +
                      `╰━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╯`
         }, { quoted: msg });
 
@@ -201,13 +201,13 @@ async function playCommand(sock, from, msg, q) {
         // ═══ Send Audio ═══
         const botCaption = 
             `╭━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╮\n` +
-            `┃  🎵 *NEXTY MINI MUSIC* 🎵      ┃\n` +
+            `┃  🎵 *NEXTY MINI 👀 MUSIC* 🎵      ┃\n` +
             `╰━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╯\n\n` +
             `✅ *Downloaded Successfully*\n` +
             `▸ Engine: NEXTYAPI\n` +
             `▸ Type: Audio 🎵\n` +
             `${videoTitle ? `▸ Title: ${videoTitle.substring(0, 50)}${videoTitle.length > 50 ? '...' : ''}\n` : ''}` +
-            `\n> 👀 *POWERED BY NEXTY MINI*`;
+            `\n> 👀 *POWERED BY NEXTY MINI 👀*`;
 
         await sock.sendMessage(from, {
             audio: { url: downloadUrl },

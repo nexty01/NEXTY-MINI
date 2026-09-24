@@ -1,5 +1,5 @@
 /**
- * AFK Command — NEXTY MINI
+ * AFK Command — NEXTY MINI 👀
  * Usage : .afk [reason]
  *
  * How it works:

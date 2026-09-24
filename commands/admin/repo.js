@@ -4,15 +4,16 @@ const fs = require('fs');
 const path = require('path');
 const https = require('https');
 
-const REPO_OWNER = 'pasquawisdom2007-beep';
-const REPO_NAME = 'NEXTY_MINI';
-const REPO_URL = `https://github.com/${REPO_OWNER}/${REPO_NAME}`;
-const LIVE_URL = 'https://nexty-mini-production-fabc.up.railway.app';
-const CREATOR = 'NEXTY';
+const REPO_OWNER = '';
+const REPO_NAME = '';
+const REPO_URL = '';
+const LIVE_URL = 'https://nextyxmini-production.up.railway.app';
+const CREATOR = 'NEXTY MINI 👀';
 const IMAGE_PATH = path.join(__dirname, '../../assets/repo/nexty-repo.png');
 
 function githubRepoStats() {
     return new Promise((resolve, reject) => {
+        if (!REPO_OWNER || !REPO_NAME) return reject(new Error('no repo configured'));
         const request = https.get(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}`, {
             headers: {
                 'User-Agent': 'NEXTY-MINI-Repo-Command',
@@ -67,18 +68,21 @@ function formatUpdated(value) {
     });
 }
 
-function caption(stats, mention = 'NEXTY MINI') {
+const PROMO = '⚡ 𝗡𝗘𝗫𝗧𝗬 𝗠𝗜𝗡𝗜 👀 ⚡\n𝗢𝗳𝗳𝗶𝗰𝗶𝗮𝗹 𝗖𝗵𝗮𝗻𝗻𝗲𝗹\n𝗖𝗼𝗻𝗻𝗲𝗰𝘁 𝘆𝗼𝘂𝗿 𝗯𝗼𝘁 in seconds and unlock 𝟲𝟬𝟬+ 𝗰𝗼𝗺𝗺𝗮𝗻𝗱𝘀 — automation, media tools, AI, games & more, all in one bot.\n🔗 𝗖𝗼𝗻𝗻𝗲𝗰𝘁 𝗻𝗼𝘄:\nhttps://nextyxmini-production.up.railway.app/\n𝗦𝘁𝗮𝘆 𝗨𝗽𝗱𝗮𝘁𝗲𝗱 — new features, releases & maintenance alerts posted here first.\n𝗙𝗮𝘀𝘁 𝗦𝘂𝗽𝗽𝗼𝗿𝘁 — drop your questions, we reply quick.\n👀 𝗣𝗼𝘄𝗲𝗿𝗲𝗱 𝗯𝘆 𝗡𝗘𝗫𝗧𝗬 𝗠𝗜𝗡𝗜 👀';
+
+function caption(stats, mention = 'NEXTY MINI 👀') {
     return [
-        '╭─⌈ `NEXTY MINI` ⌋',
+        PROMO,
+        '',
+        '╭─⌈ `NEXTY MINI 👀` ⌋',
         '│',
-        '│ ✧ *Name* : NEXTY_MINI',
+        '│ ✧ *Name* : NEXTY MINI 👀',
         `│ ✧ *Owner* : ${CREATOR}`,
         `│ ✧ *Stars* : ${number(stats.stars)} ⭐`,
         `│ ✧ *Forks* : ${number(stats.forks)} 🍴`,
         `│ ✧ *Watchers* : ${number(stats.watchers)} 👁️`,
         `│ ✧ *Size* : ${formatSize(stats.size)}`,
         `│ ✧ *Updated* : ${formatUpdated(stats.updatedAt)}`,
-        `│ ✧ *Repo* : ${REPO_URL}`,
         `│ ✧ *Live* : ${LIVE_URL}`,
         `│ *Description* : ${stats.description || 'WhatsApp multi-device bot.'}`,
         `│ Hey @${mention}! 👋`,
@@ -115,7 +119,7 @@ async function sendRepo({ sock, msg, from, sender, phoneNumber, reply }) {
 module.exports = {
     name: 'repo',
     aliases: ['repository', 'source', 'github'],
-    description: 'Show the official GitHub repository, live stats, creator, and owner artwork',
+    description: 'Show the official NEXTY MINI 👀 GitHub repository, live stats, and deployment link',
     category: 'admin',
     execute: sendRepo,
     __test: { caption, githubRepoStats, REPO_URL, LIVE_URL, CREATOR, IMAGE_PATH, formatSize, formatUpdated },

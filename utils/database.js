@@ -7,7 +7,7 @@ const path = require('path');
 
 class Database {
     constructor() {
-        this.dataDir = path.join(__dirname, '..', 'data');
+        this.dataDir = process.env.NEXTY_DATA_DIR || path.join(__dirname, '..', 'data');
         this.ensureDataDir();
 
         this.data = {
@@ -275,28 +275,83 @@ class Database {
         this.setGroup(groupId, key, value);
     }
 
-    // Session mode (private/public per bot number)
-    getSelfMode(phoneNumber) {
-        if (!this.data.users[phoneNumber]) this.data.users[phoneNumber] = {};
-        return !!this.data.users[phoneNumber].selfMode;
+    // ── Bot mode (private/public) — ONE bot-wide state ───────────────────
+    // Stored in settings.privateMode (boolean). Older builds kept per-session
+    // `users[<phone or lid>].selfMode` flags and index.js kept
+    // `bot_data.json → statusSettings[*].isPublic`; those are migrated once by
+    // _migrateLegacyMode() and never read again, so every code path sees the
+    // same value. Nothing here throws when the data files are missing/empty.
+    _migrateLegacyMode() {
+        if (!this.data.settings || typeof this.data.settings !== 'object') this.data.settings = {};
+        if (typeof this.data.settings.privateMode === 'boolean') return this.data.settings.privateMode;
+
+        let legacyPrivate = false;
+        let source = null;
+        try {
+            const users = this.data.users || {};
+            if (Object.values(users).some(u => u && u.selfMode === true)) { legacyPrivate = true; source = 'users.selfMode'; }
+        } catch (_) {}
+        if (!legacyPrivate) {
+            try {
+                const legacy = this.load('bot_data');
+                const st = (legacy && legacy.statusSettings) || {};
+                if (Object.values(st).some(v => v && v.isPublic === false)) { legacyPrivate = true; source = 'bot_data.isPublic'; }
+            } catch (_) {}
+        }
+        if (!legacyPrivate) {
+            const env = String(process.env.BOT_MODE || '').trim().toLowerCase();
+            if (env === 'private' || env === 'self') { legacyPrivate = true; source = 'env.BOT_MODE'; }
+        }
+        // Safe default: PUBLIC only when private mode was never configured anywhere.
+        this.data.settings.privateMode = legacyPrivate;
+        this.data.settings.modeMigratedFrom = source || 'default';
+        try { this.save('settings'); } catch (_) {}
+        return legacyPrivate;
     }
 
-    setSelfMode(phoneNumber, value) {
-        if (!this.data.users[phoneNumber]) this.data.users[phoneNumber] = {};
-        this.data.users[phoneNumber].selfMode = value;
-        this.save('users');
+    getBotMode() {
+        return this._migrateLegacyMode() === true ? 'private' : 'public';
     }
+
+    isPrivateMode() {
+        return this.getBotMode() === 'private';
+    }
+
+    setBotMode(mode) {
+        const enabled = String(mode || '').toLowerCase() === 'private';
+        if (!this.data.settings || typeof this.data.settings !== 'object') this.data.settings = {};
+        this.data.settings.privateMode = enabled;
+        this.data.settings.modeUpdatedAt = Date.now();
+        // Drop legacy per-session flags so they can never disagree again.
+        let usersChanged = false;
+        for (const user of Object.values(this.data.users || {})) {
+            if (user && 'selfMode' in user) { delete user.selfMode; usersChanged = true; }
+        }
+        this.save('settings');
+        if (usersChanged) this.save('users');
+        return enabled ? 'private' : 'public';
+    }
+
+    // Backwards-compatible wrappers (old commands still call these). The
+    // phoneNumber argument is ignored on purpose: mode is bot-wide.
+    getSelfMode(_phoneNumber) { return this.isPrivateMode(); }
+    setSelfMode(_phoneNumber, value) { this.setBotMode(value === true ? 'private' : 'public'); return value === true; }
 
     // ── Menu design (per session) ────────────────────────────────────
     getMenuDesign(phoneNumber) {
-        if (!this.data.users[phoneNumber]) this.data.users[phoneNumber] = {};
-        return this.data.users[phoneNumber].menuDesign || 'default';
+        const key = String(phoneNumber || '').trim();
+        if (!key) return 'default';
+        if (!this.data.users[key]) this.data.users[key] = {};
+        return this.data.users[key].menuDesign || 'default';
     }
 
     setMenuDesign(phoneNumber, value) {
-        if (!this.data.users[phoneNumber]) this.data.users[phoneNumber] = {};
-        this.data.users[phoneNumber].menuDesign = String(value || 'default').toLowerCase();
+        const key = String(phoneNumber || '').trim();
+        if (!key) return false;
+        if (!this.data.users[key]) this.data.users[key] = {};
+        this.data.users[key].menuDesign = String(value || 'default').toLowerCase();
         this.save('users');
+        return this.data.users[key].menuDesign;
     }
 
     // ── Auto-Typing toggle (per session) ─────────────────────────────
@@ -488,6 +543,7 @@ class Database {
     }
 
     isSudoUser(phoneNumber, userJid) {
+        if (!userJid) return false;
         const list = this.getSudoUsers(phoneNumber);
         const base = userJid.split(':')[0] + '@s.whatsapp.net';
         return list.some(j => j === userJid || j === base);
@@ -892,4 +948,6 @@ class Database {
 
 }
 
-module.exports = new Database();
+const instance = new Database();
+instance.Database = Database;
+module.exports = instance;

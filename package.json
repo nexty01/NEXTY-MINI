@@ -1,11 +1,12 @@
 {
   "name": "nexty-mini-bot",
   "version": "3.0.0",
-  "description": "NEXTY MINI BOT - Ultimate WhatsApp Automation Tool with 120+ Commands",
+  "description": "NEXTY MINI \ud83d\udc40 \u2014 WhatsApp automation bot with 600+ commands, AI, media tools, games, and automation",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "dev": "nodemon index.js"
+    "dev": "nodemon index.js",
+    "test": "node --test --test-timeout=20000 tests/access.test.js"
   },
   "dependencies": {
     "@whiskeysockets/baileys": "^7.0.0-rc13",
@@ -56,6 +57,6 @@
     "whatsapp-automation",
     "bot"
   ],
-  "author": "NEXTY",
+  "author": "NEXTY MINI \ud83d\udc40",
   "license": "MIT"
 }

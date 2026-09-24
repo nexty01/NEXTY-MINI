@@ -142,7 +142,7 @@ module.exports = {
 
             // Add EXIF metadata
             try {
-                stickerBuffer = await addExif(stickerBuffer, 'NEXTY MINI', 'nexty', ['🔥']);
+                stickerBuffer = await addExif(stickerBuffer, 'NEXTY MINI 👀', 'nexty', ['🔥']);
             } catch (err) {
                 console.error('[exif]', err.message);
                 // Continue with untagged sticker if exif fails

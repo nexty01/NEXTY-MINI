@@ -73,7 +73,7 @@ async function sendSeeDetailsButton({ sock, msg, from, detailsId }) {
     try {
         const interactive = {
             body: { text: 'Tap below to open the sources and details.' },
-            footer: { text: 'NEXTY MINI · STREAM SEARCH' },
+            footer: { text: 'NEXTY MINI 👀 · STREAM SEARCH' },
             header: { title: '⌕ Search details', hasMediaAttachment: false },
             nativeFlowMessage: { buttons: [button], messageParamsJson: '' },
         };

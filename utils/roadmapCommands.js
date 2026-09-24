@@ -357,7 +357,7 @@ async function executeOwner(kind, ctx) {
         return maybeButtons(ctx, text, [{ text: 'Bot stats', id: 'botstat' }, { text: 'Command usage', id: 'commandusage' }, { text: 'Update check', id: 'updatecheck' }]);
     }
     if (kind === 'configdiff') return ctx.reply('🧾 *Configuration diff*\n\nUse the group status commands to compare saved policy values. Secrets and private data are intentionally excluded.');
-    if (kind === 'configexport') return ctx.reply(`📤 *Safe configuration export*\n\n${JSON.stringify({ bot: 'NEXTY MINI', version: require('../config').version || 'unknown', exportedAt: new Date().toISOString() }, null, 2)}`);
+    if (kind === 'configexport') return ctx.reply(`📤 *Safe configuration export*\n\n${JSON.stringify({ bot: 'NEXTY MINI 👀', version: require('../config').version || 'unknown', exportedAt: new Date().toISOString() }, null, 2)}`);
     if (kind === 'configimport') return ctx.reply('📥 Reply to a JSON configuration file with this command. Only allow-listed non-secret settings are accepted.');
     if (kind === 'envcheck') return ctx.reply(`🔐 *Environment check*\n\nThe following key names are configured: ${['AGNES_API_KEY', 'GROQ_API_KEY', 'OPENAI_API_KEY', 'OPENROUTER_API_KEY', 'GEMINI_API_KEY'].filter(k => process.env[k]).join(', ') || 'none'}\n\nValues are never displayed.`);
     if (kind === 'dependencycheck') return ctx.reply('📦 *Dependency check*\n\nUse `pnpm install --frozen-lockfile` on the deployment panel to verify the lockfile without running package scripts.');

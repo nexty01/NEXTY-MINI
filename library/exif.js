@@ -5,7 +5,7 @@ const WebP = require('node-webpmux');
 function buildExif(packname, author, emojis) {
     const metadata = JSON.stringify({
         'sticker-pack-id': 'com.nexty.mini',
-        'sticker-pack-name': String(packname || 'NEXTY MINI'),
+        'sticker-pack-name': String(packname || 'NEXTY MINI 👀'),
         'sticker-pack-publisher': String(author || 'NEXTY'),
         emojis: Array.isArray(emojis) ? emojis : [],
     });

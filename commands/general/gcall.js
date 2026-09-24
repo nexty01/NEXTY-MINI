@@ -58,7 +58,7 @@ module.exports = {
 
         const interactiveMessage = {
             body: { text: `${isVideo ? '📹 *Video Call*' : '📞 *Voice Call*'}\n\nTap below to join.` },
-            footer: { text: 'NEXTY MINI · Call Bridge' },
+            footer: { text: 'NEXTY MINI 👀 · Call Bridge' },
             header: {
                 title: isVideo ? '✦ VIDEO CALL ✦' : '✦ VOICE CALL ✦',
                 hasMediaAttachment: false,

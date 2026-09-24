@@ -1,5 +1,5 @@
 /**
- * 📸 NEXTY MINI — Instagram Downloader (FastSaver API)
+ * 📸 NEXTY MINI 👀 — Instagram Downloader (FastSaver API)
  * ─────────────────────────────────────────────────────
  * Direct API integration with FastSaver.
  * Downloads Instagram Reels, Posts, IGTV.
@@ -40,7 +40,7 @@ async function instaCommand(sock, from, msg, q) {
         // ─── Processing message ───
         await sock.sendMessage(from, {
             text: `╭━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╮\n` +
-                  `┃  📸 *NEXTY MINI IG DL* 📸      ┃\n` +
+                  `┃  📸 *NEXTY MINI 👀 IG DL* 📸      ┃\n` +
                   `╰━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╯\n\n` +
                   `╭─「 🔄 *PROCESSING* 」──────────\n` +
                   `│ ▸ Engine: FastSaver API\n` +
@@ -102,7 +102,7 @@ async function instaCommand(sock, from, msg, q) {
 
         // ─── Send media ───
         const botCaption = `╭━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╮\n` +
-                          `┃  📸 *NEXTY MINI IG* 📸         ┃\n` +
+                          `┃  📸 *NEXTY MINI 👀 IG* 📸         ┃\n` +
                           `╰━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╯\n\n` +
                           `✅ *Downloaded Successfully*\n` +
                           `▸ Engine: FastSaver API\n` +
@@ -110,7 +110,7 @@ async function instaCommand(sock, from, msg, q) {
                           `${data.duration ? `▸ Duration: ${data.duration}s\n` : ''}` +
                           `${data.width ? `▸ Resolution: ${data.width}x${data.height}\n` : ''}` +
                           `${caption ? `▸ Caption: ${caption.substring(0, 80)}${caption.length > 80 ? '...' : ''}\n` : ''}` +
-                          `\n> 👀 *POWERED BY NEXTY MINI*`;
+                          `\n> 👀 *POWERED BY NEXTY MINI 👀*`;
 
         if (mediaType === 'video') {
             await sock.sendMessage(from, {

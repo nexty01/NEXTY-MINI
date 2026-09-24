@@ -55,7 +55,7 @@ module.exports = {
             '║      OWNER PANEL         ║',
             '╚══════════════════════════╝',
             '',
-            `Bot       : ${config.botName || 'NEXTY MINI'}`,
+            `Bot       : ${config.botName || 'NEXTY MINI 👀'}`,
             `Version   : ${config.version || 'unknown'}`,
             `Uptime    : ${formatUptime(process.uptime())}`,
             `Memory    : ${formatMemory()}`,

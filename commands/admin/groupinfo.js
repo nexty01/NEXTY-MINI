@@ -19,8 +19,8 @@
 
 const { getGroupPhotoBuffers } = require('../../lib/groupPhoto');
 
-const CHANNEL_JID  = '120363426805095237@newsletter';
-const CHANNEL_NAME = 'NEXTY MINI';
+const CHANNEL_JID  = '120363410865163584@newsletter';
+const CHANNEL_NAME = 'NEXTY MINI 👀';
 
 function buildChannelCtx() {
     return {

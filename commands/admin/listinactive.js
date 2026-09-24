@@ -60,7 +60,7 @@ module.exports = {
 
             const mentions = inactive.slice(0, 30).map((user) => user.jid);
             const lines = [
-                '😴 *INACTIVE MEMBERS - NEXTY MINI*',
+                '😴 *INACTIVE MEMBERS - NEXTY MINI 👀*',
                 '',
                 `Total members: ${participants.length}`,
                 `Inactive for 7+ days: ${inactive.length}`,

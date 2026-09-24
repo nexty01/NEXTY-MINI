@@ -233,7 +233,7 @@ module.exports = {
             `✨ *Edit Image Result*\n\n` +
             `📝 Prompt: ${prompt}\n` +
             `🤖 Provider: NanoBanana (David Cyril)\n\n` +
-            `> Powered by NEXTY MINI`,
+            `> Powered by NEXTY MINI 👀`,
         },
         { quoted: msg }
       );

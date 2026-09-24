@@ -17,7 +17,8 @@ module.exports = {
     async execute({ args, reply, phoneNumber, prefix }) {
         const px = prefix || '.';
         const choice = (args[0] || '').toLowerCase().trim();
-        const current = database.getMenuDesign(phoneNumber);
+        const designOwner = String(phoneNumber || '').trim();
+        const current = database.getMenuDesign(designOwner);
 
         if (!choice) {
             const list = DESIGNS.map(d => d === current ? `• ${d}  ⟵ active` : `• ${d}`).join('\n');
@@ -36,7 +37,7 @@ module.exports = {
             );
         }
 
-        database.setMenuDesign(phoneNumber, choice);
+        database.setMenuDesign(designOwner, choice);
         return reply(
             `✦ ${boldItalic('Menu design updated')}\n` +
             `Now using: ${choice}\n` +

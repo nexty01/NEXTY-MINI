@@ -4,6 +4,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { applyPolicy } = require('../lib/commandPolicy');
 
 class CommandLoader {
     constructor() {
@@ -38,6 +39,7 @@ class CommandLoader {
 
                 if (command.name) {
                     command.category = category;
+                    applyPolicy(command);
                     this.commands.set(command.name, command);
 
                     if (command.aliases && Array.isArray(command.aliases)) {

@@ -71,10 +71,10 @@ function buildRichContent(html, quoted) {
     });
 }
 
-function textHtml(text, title = 'NEXTY MINI') {
+function textHtml(text, title = 'NEXTY MINI 👀') {
     const safeTitle = escapeHtml(title);
     const safeText = escapeHtml(text);
-    return `<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>*{box-sizing:border-box}html,body{margin:0;background:transparent;font-family:Arial,sans-serif}body{padding:6px;background:radial-gradient(circle at 50% 5%,#174936,#061812 72%)}.card{padding:14px;border:2px solid #b9954d;border-radius:16px;background:linear-gradient(145deg,#0a2e22,#123e2f 55%,#061812);color:#e3dfbb;box-shadow:inset 0 0 0 3px #163f31,0 7px 18px #000b}.title{text-align:center;color:#f1e3a2;font:bold 17px Arial Black,sans-serif;letter-spacing:.7px}.rule{height:2px;margin:9px 0;background:linear-gradient(90deg,transparent,#b9954d,transparent)}.body{white-space:pre-wrap;overflow-wrap:anywhere;color:#e8f4e5;font:13px/1.45 monospace}.footer{margin-top:11px;text-align:center;color:#8fbea0;font:10px monospace}</style></head><body><div class="card"><div class="title">${safeTitle}</div><div class="rule"></div><div class="body">${safeText}</div><div class="footer">NEXTY MINI · GENAI RICH RESPONSE</div></div></body></html>`;
+    return `<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>*{box-sizing:border-box}html,body{margin:0;background:transparent;font-family:Arial,sans-serif}body{padding:6px;background:radial-gradient(circle at 50% 5%,#174936,#061812 72%)}.card{padding:14px;border:2px solid #b9954d;border-radius:16px;background:linear-gradient(145deg,#0a2e22,#123e2f 55%,#061812);color:#e3dfbb;box-shadow:inset 0 0 0 3px #163f31,0 7px 18px #000b}.title{text-align:center;color:#f1e3a2;font:bold 17px Arial Black,sans-serif;letter-spacing:.7px}.rule{height:2px;margin:9px 0;background:linear-gradient(90deg,transparent,#b9954d,transparent)}.body{white-space:pre-wrap;overflow-wrap:anywhere;color:#e8f4e5;font:13px/1.45 monospace}.footer{margin-top:11px;text-align:center;color:#8fbea0;font:10px monospace}</style></head><body><div class="card"><div class="title">${safeTitle}</div><div class="rule"></div><div class="body">${safeText}</div><div class="footer">NEXTY MINI 👀 · GENAI RICH RESPONSE</div></div></body></html>`;
 }
 
 function htmlToPlainText(html) {
@@ -102,7 +102,7 @@ function escapeXml(value) {
 }
 
 async function sendCanvasFallback({ sock, jid, quoted, html, canvasText, title, caption, theme = 'default', mentions = [] }) {
-    const text = canvasText || htmlToPlainText(html) || 'NEXTY MINI';
+    const text = canvasText || htmlToPlainText(html) || 'NEXTY MINI 👀';
     const lines = [];
     for (const paragraph of text.split(/\n+/)) {
         let line = '';
@@ -124,7 +124,7 @@ async function sendCanvasFallback({ sock, jid, quoted, html, canvasText, title, 
     const bgMid = nexty ? '#580914' : '#43123f';
     const bgEnd = nexty ? '#1a0308' : '#12091d';
     const accent = nexty ? '#ff3158' : '#ee4fa3';
-    const titleText = title || (nexty ? '☠ NEXTY BAN CHECKER ☠' : 'NEXTY MINI · IPHONE MODE');
+    const titleText = title || (nexty ? '☠ NEXTY BAN CHECKER ☠' : 'NEXTY MINI 👀 · IPHONE MODE');
     const footerText = nexty ? 'BARON API · CURSED VERIFICATION' : 'COLOURED CANVAS FALLBACK';
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="${height}">
       <defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="${bgStart}"/><stop offset=".52" stop-color="${bgMid}"/><stop offset="1" stop-color="${bgEnd}"/></linearGradient></defs>
@@ -138,7 +138,7 @@ async function sendCanvasFallback({ sock, jid, quoted, html, canvasText, title, 
       <style>.title{font:700 48px Arial,sans-serif;fill:#fff0f7;letter-spacing:4px}.body{font:700 38px monospace;fill:#fff5fa}.footer{font:600 23px monospace;fill:#f0a8c5;letter-spacing:4px}</style>
     </svg>`;
     const image = await sharp(Buffer.from(svg)).png().toBuffer();
-    return sock.sendMessage(jid, { image, caption: caption || 'NEXTY MINI · iPhone mode', ...(mentions.length ? { mentions } : {}) }, { quoted });
+    return sock.sendMessage(jid, { image, caption: caption || 'NEXTY MINI 👀 · iPhone mode', ...(mentions.length ? { mentions } : {}) }, { quoted });
 }
 
 async function sendNextyTTTCanvas({ sock, jid, quoted, board, players = [], status = '', mentions = [] }) {
@@ -193,7 +193,7 @@ async function sendNextyBanCanvas({ sock, jid, quoted, number, banned, caption }
       <text x="600" y="735" text-anchor="middle" class="status" fill="${statusColor}">${status}</text>
       <path d="M240 780H960" stroke="${statusColor}" stroke-width="3" opacity=".8"/>
       <text x="600" y="910" text-anchor="middle" class="footer">BARON API · CURSED VERIFICATION</text>
-      <text x="600" y="972" text-anchor="middle" class="hint">NEXTY MINI · BAN CHECKER</text>
+      <text x="600" y="972" text-anchor="middle" class="hint">NEXTY MINI 👀 · BAN CHECKER</text>
       <style>.title{font:900 48px Arial,sans-serif;fill:#fff2f6;letter-spacing:6px}.sub{font:700 20px monospace;fill:#f094ab;letter-spacing:4px}.label{font:700 24px monospace;fill:#ff9bb0;letter-spacing:5px}.number{font:900 67px monospace;fill:#fff5f8;letter-spacing:3px}.status{font:900 92px Arial,sans-serif;letter-spacing:7px}.footer{font:700 22px monospace;fill:#ffc4d2;letter-spacing:3px}.hint{font:600 18px monospace;fill:#e987a3;letter-spacing:3px}</style>
     </svg>`;
     const image = await sharp(Buffer.from(svg)).jpeg({ quality: 88, chromaSubsampling: '4:4:4' }).toBuffer();

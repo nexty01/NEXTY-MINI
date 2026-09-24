@@ -33,7 +33,7 @@ module.exports = {
         return reply([
             '✅ *Default menu image restored.*',
             '',
-            '`.menu` will now use the built-in NEXTY MINI image.',
+            '`.menu` will now use the built-in NEXTY MINI 👀 image.',
             removed ? `Removed ${removed} custom menu media file${removed === 1 ? '' : 's'}.` : 'No custom menu media was active.',
             '',
             'Set a custom image, video, or GIF again at any time with `.setmenuimage`, `.setmenuvideo`, or `.setmenugif`.',

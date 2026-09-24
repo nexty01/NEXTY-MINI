@@ -63,7 +63,7 @@ module.exports = {
                 const botJid = sock.user?.id;
                 await sock.updateProfilePicture(botJid, buffer);
                 return reply(
-                    `╭─❒ ◈ 𝙉𝙀𝙓𝙏𝙔 𝙈𝙄𝙉𝙄 ❒\n` +
+                    `╭─❒ ◈ 𝙉𝙀𝙓𝙏𝙔 𝙈𝙄𝙉𝙄 👀 ❒\n` +
                     `│ ✅ *Profile picture updated!*\n` +
                     `╰─⛧ nexty verified`
                 );

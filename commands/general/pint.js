@@ -360,7 +360,7 @@ async function buildCard({ sock, buffer, index, total, query, title, pinterestUr
             text: `📌 *${query}*\n${index}/${total}${title ? `\n_${title.slice(0, 120)}_` : ''}`,
         }),
         footer: proto.Message.InteractiveMessage.Footer.fromObject({
-            text: 'Pinterest · NEXTY MINI',
+            text: 'Pinterest · NEXTY MINI 👀',
         }),
         nativeFlowMessage: proto.Message.InteractiveMessage.NativeFlowMessage.fromObject({
             buttons: [ctaUrl('Open in Pinterest', pinterestUrl)],
@@ -378,7 +378,7 @@ async function sendCarousel({ sock, msg, from, query, cards }) {
 
     const interactiveMessage = proto.Message.InteractiveMessage.fromObject({
         body: { text: `📌 *${query}*\nSwipe through ${cards.length} results below.` },
-        footer: { text: 'NEXTY MINI · PINTEREST-STYLE SEARCH' },
+        footer: { text: 'NEXTY MINI 👀 · PINTEREST-STYLE SEARCH' },
         header: { title: '✦ PINTEREST-STYLE SEARCH ✦', hasMediaAttachment: false },
         carouselMessage: proto.Message.InteractiveMessage.CarouselMessage.fromObject({ cards }),
     });

@@ -70,7 +70,7 @@ function designNor(ctx) {
 
     // Peak header
     c += `◤${RULE}◥\n`;
-    c += `      ✦ ${boldItalic('NEXTY MINI')} ✦\n`;
+    c += `      ✦ ${boldItalic('NEXTY MINI 👀')} ✦\n`;
     c += `◣${RULE}◢\n`;
 
     // Info rail
@@ -102,7 +102,7 @@ function designNor(ctx) {
     c += `◤${RULE}◥\n`;
     c += `   ${total} commands loaded\n`;
     c += `◣${RULE}◢\n`;
-    c += `\n> ${boldItalic('Nexty MINI')} · King of Curses · by ${creator}`;
+    c += `\n> ${boldItalic('Nexty MINI')} · NEXTY MINI 👀 · by ${creator}`;
     return c;
 }
 
@@ -710,7 +710,7 @@ function designChroma(ctx) {
     out += `┃ ↳ Tap a button below to run a\n`;
     out += `┃   command instantly.\n`;
     out += '╰━━━━━━━━━━━━━━━━━━━━━━━━━━╯\n';
-    out += `       ⛧  ${bi('Powered by NEXTY MINI')}  ⛧`;
+    out += `       ⛧  ${bi('Powered by NEXTY MINI 👀')}  ⛧`;
     return out;
 }
 
@@ -727,7 +727,7 @@ function designCrysnovax(ctx) {
     let c = '';
 
     // ── Header ──
-    c += `⌘ ══〔 ${bi('NEXTY MINI')} 〕══ ⌘\n`;
+    c += `⌘ ══〔 ${bi('NEXTY MINI 👀')} 〕══ ⌘\n`;
     c += `${SEP}\n`;
     c += `𒆜 ✦ ${bi('Hello,')} ${userTag}\n`;
     c += `❏◦ Prefix   ·  ⇆ [ ${prefix} ]\n`;
@@ -759,7 +759,7 @@ function designCrysnovax(ctx) {
 }
 
 // ── Design: nexty — signature system-profile menu ─────────────────
-// Exact NEXTY MINI layout requested by the owner, with the system block kept
+// Exact NEXTY MINI 👀 layout requested by the owner, with the system block kept
 // live and the three visible sections populated from the command registry.
 function designNexty(ctx) {
     const { botName, userTag, creator, total, uptime, version, platform,
@@ -788,7 +788,7 @@ function designNexty(ctx) {
         .sort((a, b) => String(a).localeCompare(String(b)));
 
     let c = '';
-    c += `╼━━━ ${bi(botName || 'NEXTY MINI')} ━━━╾\n`;
+    c += `╼━━━ ${bi(botName || 'NEXTY MINI 👀')} ━━━╾\n`;
     c += `                ${bi(`𝑽${version || '3.0.0'}`)}\n`;
     c += '          ───────────────────\n\n';
     c += `┌─「 ${bi('𝐒𝐘𝐒𝐓𝐄𝐌')} 」\n`;
@@ -817,7 +817,7 @@ function designNexty(ctx) {
         section(bi(label), categoryNames(cat));
     }
     c += '\n────────────────────────────\n';
-    c += `          ${bi('𖤐 NEXTY MINI 𖤐')}\n`;
+    c += `          ${bi('𖤐 NEXTY MINI 👀 𖤐')}\n`;
     c += '────────────────────────────';
     return c;
 }
@@ -835,7 +835,7 @@ function designFreeway(ctx) {
 
     // ── Mile marker header ──
     c += `╔${ROAD}╗\n`;
-    c += `║  🛣  ${bi('F R E E W A Y')}  ·  ${bi('NEXTY MINI')}  🛣  ║\n`;
+    c += `║  🛣  ${bi('F R E E W A Y')}  ·  ${bi('NEXTY MINI 👀')}  🛣  ║\n`;
     c += `╚${ROAD}╝\n`;
     c += `${LANE}\n`;
     c += ` ▸ EXIT 01  ·  USER      ⇒  ${userTag}\n`;
@@ -932,7 +932,7 @@ function designTitanium(ctx) {
     let c = '';
 
     c += `${BAR}\n`;
-    c += `⬡  ${bi('T I T A N I U M')}  ·  ${bi('NEXTY MINI')}  ⬡\n`;
+    c += `⬡  ${bi('T I T A N I U M')}  ·  ${bi('NEXTY MINI 👀')}  ⬡\n`;
     c += `${BAR}\n`;
     c += `⬡  USER      ▸  ${userTag}\n`;
     c += `⬡  CREATOR   ▸  ${creator}\n`;
@@ -980,7 +980,7 @@ function designInferno(ctx) {
     let c = '';
 
     c += `${FIRE}\n`;
-    c += `🔥  ${bi('I N F E R N O')}  ·  ${bi('NEXTY MINI')}  🔥\n`;
+    c += `🔥  ${bi('I N F E R N O')}  ·  ${bi('NEXTY MINI 👀')}  🔥\n`;
     c += `${FIRE}\n`;
     c += `🔥 user      ⟹  ${userTag}\n`;
     c += `🔥 creator   ⟹  ${creator}\n`;
@@ -1059,7 +1059,7 @@ function designCodex(ctx) {
     c += `╔═══〔 𖣘 ${bi('TOTAL')} 𖣘 〕═══❒\n`;
     c += `║╭───────────────◆\n`;
     c += `║│ ✰ ${bi(`${total} commands registered`)}\n`;
-    c += `║│ ✰ ${bi('Powered by NEXTY MINI')}\n`;
+    c += `║│ ✰ ${bi('Powered by NEXTY MINI 👀')}\n`;
     c += `║╰───────────────◆\n`;
     c += `╚══════════════════❒`;
     return c;
@@ -1076,7 +1076,7 @@ function designDark(ctx) {
     let c = '';
 
     // ── Info card (> prefix triggers WhatsApp quote bar) ──
-    c += `> ┏❐  ⌜ *NEXTY MINI*⌟  ❐ \n`;
+    c += `> ┏❐  ⌜ *NEXTY MINI 👀*⌟  ❐ \n`;
     c += `> ┃⭔ user    : ${userTag}\n`;
     c += `> ┃⭔ owner   : ${creator}\n`;
     c += `> ┃⭔ prefix  : ${prefix}\n`;
@@ -1118,7 +1118,7 @@ function designOnyx(ctx) {
     const bi = ctx.boldItalic || ((value) => String(value));
     let c = '';
 
-    c += `> ┏❐  ⌜ *${bi('NEXTY MINI · ONYX')}* ⌟  ❐ \n`;
+    c += `> ┏❐  ⌜ *${bi('NEXTY MINI 👀 · ONYX')}* ⌟  ❐ \n`;
     c += `> ┃⭔ user    : ${userTag}\n`;
     c += `> ┃⭔ owner   : ${creator}\n`;
     c += `> ┃⭔ mode    : ${mode}\n`;
@@ -1207,13 +1207,13 @@ function designKord(ctx) {
     return c;
 }
 
-// ── Design: default — the attached NEXTY MINI boxed command menu ────────
+// ── Design: default — the attached NEXTY MINI 👀 boxed command menu ────────
 function designDefault(ctx) {
     const { userTag, prefix, total, uptime, time, date, mode, version,
             status, platform, sortedCategories, byCategory, CATEGORY_LABELS } = ctx;
     let c = '';
 
-    c += `♲︎☘︎⟨ NEXTY MINI™ ⟩☘︎♲︎\n\n`;
+    c += `♲︎☘︎⟨ NEXTY MINI 👀™ ⟩☘︎♲︎\n\n`;
     c += ` ┌──〔 SYSTEM INFO 〕──┐\n`;
     c += ` 𖥂 User    : ${userTag}\n`;
     c += ` 𖥂 Prefix  : ${prefix}\n`;
@@ -1238,7 +1238,7 @@ function designDefault(ctx) {
         c += `\n`;
     }
 
-    c += `♲︎☘︎⟨ NEXTY MINI™ · ${total} COMMANDS ⟩☘︎♲︎`;
+    c += `♲︎☘︎⟨ NEXTY MINI 👀™ · ${total} COMMANDS ⟩☘︎♲︎`;
     return c;
 }
 
@@ -1291,7 +1291,7 @@ function buildCaption(designKey, ctx) {
     const key = String(designKey || 'nexty').toLowerCase();
     const fn = BUILDERS[key] || BUILDERS.nexty;
     const caption = fn(ctx);
-    const botName = String(ctx?.botName || 'NEXTY MINI').trim() || 'NEXTY MINI';
+    const botName = String(ctx?.botName || 'NEXTY MINI 👀').trim() || 'NEXTY MINI 👀';
     return caption
         .replace(/NEXTY(?:\s+MD)?/gi, () => botName)
         .replace(/\bKord\b/g, () => botName);

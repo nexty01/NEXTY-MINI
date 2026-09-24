@@ -63,7 +63,7 @@ async function sendCopyButton({ sock, msg, from, id, body }) {
                     messageContextInfo: { deviceListMetadataVersion: 2, deviceListMetadata: {} },
                     interactiveMessage: proto.Message.InteractiveMessage.fromObject({
                         body: { text: body },
-                        footer: { text: 'NEXTY MINI · CHANNEL ID' },
+                        footer: { text: 'NEXTY MINI 👀 · CHANNEL ID' },
                         header: { title: '✦ NEWSLETTER ID ✦', hasMediaAttachment: false },
                         nativeFlowMessage: { buttons: [button], messageParamsJson: '' },
                     }),

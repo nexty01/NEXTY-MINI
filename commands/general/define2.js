@@ -5,7 +5,7 @@ module.exports = {
     async execute({ args, reply }) {
         const word = (args[0]||'').toLowerCase();
         const D = {
-            nexty: 'The King of Curses from Jujutsu Kaisen.',
+            nexty: 'The NEXTY MINI 👀 from Jujutsu Kaisen.',
             curse: 'A negative-energy spirit born from human emotion.',
             domain: 'An expanded territory enforcing a sorcerer\'s will.',
             ramen: 'Japanese wheat noodles served in broth.',

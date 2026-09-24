@@ -47,6 +47,7 @@ module.exports = {
     description: "Remove a user's MOD access",
     usage:       '.unsetmod (reply / @tag / number / list)',
     category:    'owner',
+    ownerOnly:   true,   // mods/sudo must never grant themselves or others access
 
     async execute({ sock, msg, from, args, reply, database, phoneNumber, isOwner }) {
         if (!isOwner) return reply('🔒 *This command is for the bot owner only.*');

@@ -16,10 +16,11 @@ module.exports = {
     owner: {
         name: ownerName,
         number: ownerNumber,
+        channel: settings.whatsappChannel,
     },
     ownerName,
     ownerNumber,
-    botName: process.env.BOT_NAME || settings.botName || 'NEXTY MINI',
+    botName: process.env.BOT_NAME || settings.botName || 'NEXTY MINI 👀',
     version: process.env.BOT_VERSION || settings.version || '3.0.0',
     prefix: process.env.PREFIX || settings.prefix || '.',
     mode: process.env.BOT_MODE || 'private',

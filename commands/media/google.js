@@ -174,7 +174,7 @@ module.exports = {
         } else {
             caption += `_No extra links available._\n`;
         }
-        caption += `\n> _Powered by NEXTY MINI · Google Search_`;
+        caption += `\n> _Powered by NEXTY MINI 👀 · Google Search_`;
 
         // Resolve a preview image (a MUST). Try, in order:
         //   wiki image → ddg image → og:image of top result → generated image.

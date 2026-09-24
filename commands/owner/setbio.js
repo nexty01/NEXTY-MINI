@@ -23,7 +23,7 @@ module.exports = {
             await reply('⏳ Updating WhatsApp About...');
             await sock.updateProfileStatus(bio);
             await reply(
-                `╭─❒ ◈ 𝙉𝙀𝙓𝙏𝙔 𝙈𝙄𝙉𝙄 ❒\n` +
+                `╭─❒ ◈ 𝙉𝙀𝙓𝙏𝙔 𝙈𝙄𝙉𝙄 👀 ❒\n` +
                 `│ ✅ *WhatsApp About updated!*\n` +
                 `│ 📝 ${bio}\n` +
                 `╰─⛧ nexty verified`

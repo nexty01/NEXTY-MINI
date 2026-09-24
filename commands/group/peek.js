@@ -1,5 +1,5 @@
 /**
- * Peek Command — NEXTY MINI
+ * Peek Command — NEXTY MINI 👀
  * Usage : .peek <invite link>
  *         .peek            (reply to a message containing the link)
  *
@@ -36,7 +36,7 @@ async function sendPreviewActions({ sock, msg, from, title, url, primaryLabel })
     try {
         const interactive = {
             body: { text: `${title}\n\nChoose an action below:` },
-            footer: { text: 'NEXTY MINI · PEEK' },
+            footer: { text: 'NEXTY MINI 👀 · PEEK' },
             header: { title: `✦ ${title} ✦`, hasMediaAttachment: false },
             nativeFlowMessage: { buttons, messageParamsJson: '' },
         };

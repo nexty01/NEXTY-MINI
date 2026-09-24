@@ -9,7 +9,7 @@ const sharp = require('sharp');
 const { generateWAMessageFromContent, proto } = require('@pasqua-baileys/baileys');
 
 /**
- * .neuro — Full Jarvis AI Core (v5.0)
+ * .neuro — Full NEXTY MINI 👀 AI Core (v5.0)
  * God-Mode: Command creation, file management, API scanning,
  * canvas rendering, code fixing, config editing, and total system control.
  * Covers EVERYTHING a normal developer does on the panel and bot files.
@@ -156,7 +156,7 @@ async function renderJarvisCanvas(type, data) {
                 <circle r="70" fill="#010203" stroke="${accent}" stroke-width="2"/>
                 <text text-anchor="middle" dy=".3em" font-family="Georgia, serif" font-size="14" fill="${accent}">NEURAL_HUB</text>
             </g>
-            <text x="${W-50}" y="${H-30}" text-anchor="end" font-family="monospace" font-size="10" fill="${accent}" fill-opacity="0.4">JARVIS_CORE_v5.0 // GOD_MODE_ACTIVE</text>
+            <text x="${W-50}" y="${H-30}" text-anchor="end" font-family="monospace" font-size="10" fill="${accent}" fill-opacity="0.4">NEXTY MINI 👀_CORE_v5.0 // GOD_MODE_ACTIVE</text>
         </svg>`;
         return svg;
     }
@@ -185,7 +185,7 @@ async function renderJarvisCanvas(type, data) {
             </defs>
             <rect width="${W}" height="${H}" fill="url(#bg)"/>
             <g transform="translate(60, 80)">
-                <text font-family="'Courier New', monospace" font-size="11" fill="${accent}" letter-spacing="4">JARVIS SYSTEM STATUS v5.0</text>
+                <text font-family="'Courier New', monospace" font-size="11" fill="${accent}" letter-spacing="4">NEXTY MINI 👀 SYSTEM STATUS v5.0</text>
                 <rect y="20" width="350" height="1" fill="url(#accentG)"/>
 
                 <g transform="translate(0, 60)" font-family="'Courier New', monospace" font-size="15">
@@ -246,7 +246,7 @@ async function renderJarvisCanvas(type, data) {
                 <rect x="60" y="55" width="400" height="2" fill="${accent}" fill-opacity="0.3"/>
                 ${apiRows}
             </g>
-            <text x="${W-50}" y="${H-30}" text-anchor="end" font-family="monospace" font-size="10" fill="${accent}" fill-opacity="0.4">JARVIS_API_SCANNER_v5.0</text>
+            <text x="${W-50}" y="${H-30}" text-anchor="end" font-family="monospace" font-size="10" fill="${accent}" fill-opacity="0.4">NEXTY MINI 👀_API_SCANNER_v5.0</text>
         </svg>`;
         return svg;
     }
@@ -291,10 +291,10 @@ async function sendInteractive(sock, from, msg, headerText, bodyText, footerText
 
 // ─── COMMAND CREATE ENGINE ───
 async function createCommand(sock, from, msg, prompt, reply, args) {
-    if (!prompt) return reply('🧠 *JARVIS:* Describe the command you want me to create. Example: `.neuro create a fun game command called dice`');
+    if (!prompt) return reply('🧠 *NEXTY MINI 👀:* Describe the command you want me to create. Example: `.neuro create a fun game command called dice`');
 
     await sock.sendMessage(from, { react: { text: '🛠️', key: msg.key } });
-    await reply('🧠 *JARVIS:* Synthesizing command module from your request...');
+    await reply('🧠 *NEXTY MINI 👀:* Synthesizing command module from your request...');
 
     const { ask: smartAsk } = require('../../utils/smartAI');
 
@@ -302,7 +302,7 @@ async function createCommand(sock, from, msg, prompt, reply, args) {
     const commandLoader = require('../../utils/commandLoader');
     const existingCmds = Array.from(commandLoader.getAll()).map(c => `${c.name} (${c.category})`).join(', ');
 
-    const systemPrompt = `You are the JARVIS Creation Engine for a WhatsApp bot built on @pasqua-baileys/baileys.
+    const systemPrompt = `You are the NEXTY MINI 👀 Creation Engine for a WhatsApp bot built on @pasqua-baileys/baileys.
 Generate a complete, production-ready WhatsApp bot command file (.js).
 
 CONTEXT - Existing commands and categories:
@@ -327,7 +327,7 @@ USER REQUEST: ${prompt}`;
     }).catch(() => null);
 
     if (!code || !code.includes('module.exports')) {
-        return reply('🧠 *JARVIS:* Synthesis failed — the blueprint was unstable. Try rephrasing your request.');
+        return reply('🧠 *NEXTY MINI 👀:* Synthesis failed — the blueprint was unstable. Try rephrasing your request.');
     }
 
     let cleanCode = code.trim();
@@ -344,7 +344,7 @@ USER REQUEST: ${prompt}`;
 
     const cmdName = nameMatch ? nameMatch[1] : 'temp_' + Date.now();
     const category = categoryMatch ? categoryMatch[1] : 'utility';
-    const desc = descMatch ? descMatch[1] : 'Created by JARVIS';
+    const desc = descMatch ? descMatch[1] : 'Created by NEXTY MINI 👀';
 
     // Write to commands folder
     const dir = path.join(ROOT, 'commands', category);
@@ -361,7 +361,7 @@ USER REQUEST: ${prompt}`;
 
     if (loaded) {
         await reply(
-            `🧠 *JARVIS: Command Synthesized*\n\n` +
+            `🧠 *NEXTY MINI 👀: Command Synthesized*\n\n` +
             `━━━━━━━━━━━━━━━━━━\n` +
             `▸ Name: \`${cmdName}\`\n` +
             `▸ Category: \`${category}\`\n` +
@@ -370,7 +370,7 @@ USER REQUEST: ${prompt}`;
             `▸ File: \`commands/${category}/${cmdName}.js\`\n` +
             `━━━━━━━━━━━━━━━━━━\n\n` +
             `✅ Command is LIVE and ready for use.\n` +
-            `_JARVIS has injected this into the bot's runtime._`
+            `_NEXTY MINI 👀 has injected this into the bot's runtime._`
         );
         await sock.sendMessage(from, { react: { text: '✅', key: msg.key } });
     } else {
@@ -389,22 +389,22 @@ async function handleFiles(sock, from, msg, args, reply) {
         const safeDir = path.resolve(dirPath);
 
         if (!safeDir.startsWith(ROOT)) {
-            return reply('🧠 *JARVIS:* Access denied — cannot list directories outside the project root.');
+            return reply('🧠 *NEXTY MINI 👀:* Access denied — cannot list directories outside the project root.');
         }
 
         if (!fs.existsSync(safeDir)) {
-            return reply(`🧠 *JARVIS:* Directory \`${target || '.'}\` does not exist.`);
+            return reply(`🧠 *NEXTY MINI 👀:* Directory \`${target || '.'}\` does not exist.`);
         }
 
         const entries = listDir(safeDir, 0, target ? 3 : 2);
         if (entries.length === 0) {
-            return reply('🧠 *JARVIS:* This directory is empty.');
+            return reply('🧠 *NEXTY MINI 👀:* This directory is empty.');
         }
 
         const fileCount = entries.filter(e => e.type === 'file').length;
         const dirCount = entries.filter(e => e.type === 'dir').length;
 
-        let output = `🧠 *JARVIS: File Listing*\n\n`;
+        let output = `🧠 *NEXTY MINI 👀: File Listing*\n\n`;
         output += `📁 Root: \`${path.relative(ROOT, safeDir) || '.'}\`\n`;
         output += `📊 ${fileCount} files, ${dirCount} directories\n\n`;
         output += `\`\`\`\n`;
@@ -425,19 +425,19 @@ async function handleFiles(sock, from, msg, args, reply) {
     }
 
     if (subAction === 'read' || subAction === 'cat') {
-        if (!target) return reply('🧠 *JARVIS:* Specify a file path. Example: `.neuro files read commands/ai/gpt.js`');
+        if (!target) return reply('🧠 *NEXTY MINI 👀:* Specify a file path. Example: `.neuro files read commands/ai/gpt.js`');
 
         const filePath = path.resolve(path.join(ROOT, target));
         if (!filePath.startsWith(ROOT)) {
-            return reply('🧠 *JARVIS:* Access denied — cannot read files outside the project.');
+            return reply('🧠 *NEXTY MINI 👀:* Access denied — cannot read files outside the project.');
         }
         if (!fs.existsSync(filePath)) {
-            return reply(`🧠 *JARVIS:* File \`${target}\` not found.`);
+            return reply(`🧠 *NEXTY MINI 👀:* File \`${target}\` not found.`);
         }
 
         const content = safeReadFile(filePath);
         if (content === null) {
-            return reply(`🧠 *JARVIS:* Cannot read \`${target}\` — permission denied.`);
+            return reply(`🧠 *NEXTY MINI 👀:* Cannot read \`${target}\` — permission denied.`);
         }
 
         // Render as canvas card
@@ -466,22 +466,22 @@ async function handleFiles(sock, from, msg, args, reply) {
         } catch (e) {
             // Fallback to text
             const maxLen = 2500;
-            return reply(`🧠 *JARVIS: File Contents*\n\n\`\`\`${content.slice(0, maxLen)}${content.length > maxLen ? '\n... (truncated)' : ''}\`\`\``);
+            return reply(`🧠 *NEXTY MINI 👀: File Contents*\n\n\`\`\`${content.slice(0, maxLen)}${content.length > maxLen ? '\n... (truncated)' : ''}\`\`\``);
         }
     }
 
     if (subAction === 'write' || subAction === 'save') {
-        if (!target) return reply('🧠 *JARVIS:* Specify a file path. Example: `.neuro files write commands/utility/hello.js`');
+        if (!target) return reply('🧠 *NEXTY MINI 👀:* Specify a file path. Example: `.neuro files write commands/utility/hello.js`');
 
         const filePath = path.resolve(path.join(ROOT, target));
         if (!filePath.startsWith(ROOT)) {
-            return reply('🧠 *JARVIS:* Access denied — cannot write files outside the project.');
+            return reply('🧠 *NEXTY MINI 👀:* Access denied — cannot write files outside the project.');
         }
 
         // Get content from remaining args or ask AI
         const content = args.slice(3).join(' ');
         if (!content) {
-            return reply('🧠 *JARVIS:* Provide content to write, or describe what you want and I\'ll generate it.');
+            return reply('🧠 *NEXTY MINI 👀:* Provide content to write, or describe what you want and I\'ll generate it.');
         }
 
         safeWriteFile(filePath, content);
@@ -496,7 +496,7 @@ async function handleFiles(sock, from, msg, args, reply) {
         }
 
         await reply(
-            `🧠 *JARVIS: File Written*\n\n` +
+            `🧠 *NEXTY MINI 👀: File Written*\n\n` +
             `📄 Path: \`${path.relative(ROOT, filePath)}\`\n` +
             `📏 Size: ${content.length} characters\n` +
             `✅ File saved and ${ext === '.js' ? 'hot-reloaded' : 'persisted'}.`
@@ -506,21 +506,21 @@ async function handleFiles(sock, from, msg, args, reply) {
     }
 
     if (subAction === 'delete' || subAction === 'rm') {
-        if (!target) return reply('🧠 *JARVIS:* Specify a file path to delete. Example: `.neuro files delete commands/temp/broken.js`');
+        if (!target) return reply('🧠 *NEXTY MINI 👀:* Specify a file path to delete. Example: `.neuro files delete commands/temp/broken.js`');
 
         const filePath = path.resolve(path.join(ROOT, target));
         if (!filePath.startsWith(ROOT)) {
-            return reply('🧠 *JARVIS:* Access denied — cannot delete files outside the project.');
+            return reply('🧠 *NEXTY MINI 👀:* Access denied — cannot delete files outside the project.');
         }
         if (!fs.existsSync(filePath)) {
-            return reply(`🧠 *JARVIS:* File \`${target}\` not found.`);
+            return reply(`🧠 *NEXTY MINI 👀:* File \`${target}\` not found.`);
         }
 
         // Safety: don't delete critical files
         const criticalFiles = ['index.js', 'config.js', 'package.json', 'sessionManager.js', 'smartAI.js', 'database.js', 'commandLoader.js'];
         const fileName = path.basename(target);
         if (criticalFiles.includes(fileName)) {
-            return reply(`🧠 *JARVIS:* Refusing to delete critical file \`${fileName}\`. This would break the bot.`);
+            return reply(`🧠 *NEXTY MINI 👀:* Refusing to delete critical file \`${fileName}\`. This would break the bot.`);
         }
 
         fs.unlinkSync(filePath);
@@ -533,22 +533,22 @@ async function handleFiles(sock, from, msg, args, reply) {
             } catch (_) {}
         }
 
-        await reply(`🧠 *JARVIS:* Deleted \`${target}\`. File removed from system.`);
+        await reply(`🧠 *NEXTY MINI 👀:* Deleted \`${target}\`. File removed from system.`);
         await sock.sendMessage(from, { react: { text: '🗑️', key: msg.key } });
         return;
     }
 
     if (subAction === 'search' || subAction === 'find') {
-        if (!target) return reply('🧠 *JARVIS:* What should I search for? Example: `.neuro files search gpt`');
+        if (!target) return reply('🧠 *NEXTY MINI 👀:* What should I search for? Example: `.neuro files search gpt`');
 
         try {
             const { stdout } = await execAsync(`grep -rl "${target}" ${ROOT} --exclude-dir=node_modules --include="*.js" --include="*.json" --include="*.md" 2>/dev/null`);
             const results = stdout.trim().split('\n').filter(Boolean);
             if (results.length === 0) {
-                return reply(`🧠 *JARVIS:* No files found containing "${target}".`);
+                return reply(`🧠 *NEXTY MINI 👀:* No files found containing "${target}".`);
             }
 
-            let output = `🧠 *JARVIS: Search Results*\n\n`;
+            let output = `🧠 *NEXTY MINI 👀: Search Results*\n\n`;
             output += `🔍 Query: \`${target}\`\n`;
             output += `📊 Found in ${results.length} file(s)\n\n`;
             for (const r of results.slice(0, 20)) {
@@ -556,7 +556,7 @@ async function handleFiles(sock, from, msg, args, reply) {
             }
             return reply(output);
         } catch (e) {
-            return reply('🧠 *JARVIS:* Search failed — the query may contain special characters.');
+            return reply('🧠 *NEXTY MINI 👀:* Search failed — the query may contain special characters.');
         }
     }
 
@@ -594,14 +594,14 @@ async function handleFiles(sock, from, msg, args, reply) {
         countDir(ROOT);
 
         return reply(
-            `🧠 *JARVIS: Project Statistics*\n\n` +
+            `🧠 *NEXTY MINI 👀: Project Statistics*\n\n` +
             `━━━━━━━━━━━━━━━━━━\n` +
             `📁 Directories: ${totalDirs}\n` +
             `📄 Files: ${totalFiles}\n` +
             `📝 JS Lines: ${totalLines.toLocaleString()}\n` +
             `💾 Total Size: ${(totalSize / 1024).toFixed(1)} KB\n` +
             `━━━━━━━━━━━━━━━━━━\n` +
-            `_JARVIS has scanned the entire project._`
+            `_NEXTY MINI 👀 has scanned the entire project._`
         );
     }
 
@@ -611,7 +611,7 @@ async function handleFiles(sock, from, msg, args, reply) {
         const filePath = path.resolve(path.join(ROOT, targetPath));
 
         if (!filePath.startsWith(ROOT)) {
-            return reply('🧠 *JARVIS:* Access denied — cannot add files outside the project.');
+            return reply('🧠 *NEXTY MINI 👀:* Access denied — cannot add files outside the project.');
         }
 
         // Create the file with a template if JS
@@ -627,7 +627,7 @@ const path = require('path');
 module.exports = {
     name: '${path.basename(targetPath, '.js')}',
     aliases: [],
-    description: 'Created by JARVIS',
+    description: 'Created by NEXTY MINI 👀',
     usage: '.',
     category: '${path.basename(path.dirname(targetPath)) || 'utility'}',
 
@@ -636,9 +636,9 @@ module.exports = {
     }
 };`;
         } else if (ext === '.json') {
-            content = '{\n  "created_by": "JARVIS",\n  "timestamp": "' + new Date().toISOString() + '"\n}';
+            content = '{\n  "created_by": "NEXTY MINI 👀",\n  "timestamp": "' + new Date().toISOString() + '"\n}';
         } else {
-            content = `# Created by JARVIS\n# ${new Date().toISOString()}`;
+            content = `# Created by NEXTY MINI 👀\n# ${new Date().toISOString()}`;
         }
 
         safeWriteFile(filePath, content);
@@ -652,7 +652,7 @@ module.exports = {
         }
 
         await reply(
-            `🧠 *JARVIS: New File Added*\n\n` +
+            `🧠 *NEXTY MINI 👀: New File Added*\n\n` +
             `📄 Path: \`${targetPath}\`\n` +
             `📏 Size: ${content.length} characters\n` +
             `✅ File created and added to the project.` +
@@ -663,7 +663,7 @@ module.exports = {
     }
 
     return reply(
-        `🧠 *JARVIS: File Management*\n\n` +
+        `🧠 *NEXTY MINI 👀: File Management*\n\n` +
         `Available actions:\n` +
         `📋 \`.neuro files list [path]\` — List files\n` +
         `📖 \`.neuro files read <path>\` — Read file contents\n` +
@@ -679,15 +679,15 @@ module.exports = {
 // ─── API LISTING ───
 async function listAPIs(sock, from, msg, reply) {
     await sock.sendMessage(from, { react: { text: '🔍', key: msg.key } });
-    await reply('🧠 *JARVIS:* Scanning all APIs, keys, and providers...');
+    await reply('🧠 *NEXTY MINI 👀:* Scanning all APIs, keys, and providers...');
 
     const apis = scanForAPIs();
 
     if (apis.length === 0) {
-        return reply('🧠 *JARVIS:* No APIs found in the current configuration.');
+        return reply('🧠 *NEXTY MINI 👀:* No APIs found in the current configuration.');
     }
 
-    let output = `🧠 *JARVIS: API Report*\n\n`;
+    let output = `🧠 *NEXTY MINI 👀: API Report*\n\n`;
     output += `━━━━━━━━━━━━━━━━━━\n`;
 
     for (const api of apis) {
@@ -702,14 +702,14 @@ async function listAPIs(sock, from, msg, reply) {
     }
 
     output += `\n━━━━━━━━━━━━━━━━━━\n`;
-    output += `_JARVIS has scanned the entire system._`;
+    output += `_NEXTY MINI 👀 has scanned the entire system._`;
 
     return reply(output);
 }
 
 // ─── SYSTEM AUDIT ───
 async function systemAudit(sock, from, msg, reply) {
-    await reply('🧠 *JARVIS:* Performing deep system audit...');
+    await reply('🧠 *NEXTY MINI 👀:* Performing deep system audit...');
 
     let report = '';
 
@@ -762,10 +762,10 @@ async function systemAudit(sock, from, msg, reply) {
 
 // ─── CODE FIX / PATCH ───
 async function fixCode(sock, from, msg, target, reply) {
-    if (!target) return reply('🧠 *JARVIS:* Specify the file or command to fix. Example: `.neuro fix gpt` or `.neuro fix commands/ai/neuro.js`');
+    if (!target) return reply('🧠 *NEXTY MINI 👀:* Specify the file or command to fix. Example: `.neuro fix gpt` or `.neuro fix commands/ai/neuro.js`');
 
     await sock.sendMessage(from, { react: { text: '🔍', key: msg.key } });
-    await reply('🧠 *JARVIS:* Analyzing target for issues...');
+    await reply('🧠 *NEXTY MINI 👀:* Analyzing target for issues...');
 
     // Resolve file path
     let filePath = null;
@@ -783,17 +783,17 @@ async function fixCode(sock, from, msg, target, reply) {
     }
 
     if (!filePath || !fs.existsSync(filePath)) {
-        return reply(`🧠 *JARVIS:* Target \`${target}\` not found in the project.`);
+        return reply(`🧠 *NEXTY MINI 👀:* Target \`${target}\` not found in the project.`);
     }
 
     const content = safeReadFile(filePath);
     if (!content) {
-        return reply(`🧠 *JARVIS:* Cannot read \`${target}\`.`);
+        return reply(`🧠 *NEXTY MINI 👀:* Cannot read \`${target}\`.`);
     }
 
     const { ask: smartAsk } = require('../../utils/smartAI');
 
-    const fixPrompt = `You are JARVIS — the System Architect. Analyze this code for bugs, performance issues, missing error handling, or anti-patterns.
+    const fixPrompt = `You are NEXTY MINI 👀 — the System Architect. Analyze this code for bugs, performance issues, missing error handling, or anti-patterns.
 If you find issues, fix them and return the COMPLETE corrected code.
 If the code is already perfect, return the original code unchanged.
 Return ONLY the code, wrapped in \`\`\`javascript...\`\`\`
@@ -812,7 +812,7 @@ ${content}
     }).catch(() => null);
 
     if (!fixedCode) {
-        return reply('🧠 *JARVIS:* Analysis engine failed. Cannot process the target.');
+        return reply('🧠 *NEXTY MINI 👀:* Analysis engine failed. Cannot process the target.');
     }
 
     let cleanCode = fixedCode.trim();
@@ -823,7 +823,7 @@ ${content}
 
     // Check if code changed
     if (cleanCode === content) {
-        return reply(`🧠 *JARVIS:* \`${target}\` is already optimized. No patches needed.`);
+        return reply(`🧠 *NEXTY MINI 👀:* \`${target}\` is already optimized. No patches needed.`);
     }
 
     // Write fixed code
@@ -842,7 +842,7 @@ ${content}
     const changes = cleanCode.split('\n').length - content.split('\n').length;
 
     await reply(
-        `🧠 *JARVIS: Patch Applied*\n\n` +
+        `🧠 *NEXTY MINI 👀: Patch Applied*\n\n` +
         `📄 Target: \`${path.relative(ROOT, filePath)}\`\n` +
         `📝 Changes: ${changes > 0 ? '+' : ''}${changes} lines\n` +
         `✅ File patched and hot-reloaded.`
@@ -855,7 +855,7 @@ async function renderCanvas(sock, from, msg, args, reply) {
     const renderType = (args[1] || 'status').toLowerCase();
 
     await sock.sendMessage(from, { react: { text: '🎨', key: msg.key } });
-    await reply('🧠 *JARVIS:* Rendering canvas...');
+    await reply('🧠 *NEXTY MINI 👀:* Rendering canvas...');
 
     try {
         let svg;
@@ -870,27 +870,27 @@ async function renderCanvas(sock, from, msg, args, reply) {
         } else {
             // Custom render using renderTextCard from canvasRender
             const { renderTextCard } = require('../../utils/canvasRender');
-            const customText = args.slice(1).join(' ') || 'JARVIS SYSTEM';
+            const customText = args.slice(1).join(' ') || 'NEXTY MINI 👀 SYSTEM';
             const buf = await renderTextCard({
-                title: 'JARVIS',
+                title: 'NEXTY MINI 👀',
                 badge: 'CUSTOM RENDER',
                 body: esc(customText),
                 accent: '#00d1ff',
             });
-            await sock.sendMessage(from, { image: buf, caption: '🧠 *JARVIS:* Custom canvas rendered.' }, { quoted: msg });
+            await sock.sendMessage(from, { image: buf, caption: '🧠 *NEXTY MINI 👀:* Custom canvas rendered.' }, { quoted: msg });
             await sock.sendMessage(from, { react: { text: '🎨', key: msg.key } });
             return;
         }
 
         if (svg) {
             const buf = await sharp(Buffer.from(svg)).png().toBuffer();
-            await sock.sendMessage(from, { image: buf, caption: '🧠 *JARVIS:* Canvas rendered successfully.' }, { quoted: msg });
+            await sock.sendMessage(from, { image: buf, caption: '🧠 *NEXTY MINI 👀:* Canvas rendered successfully.' }, { quoted: msg });
             await sock.sendMessage(from, { react: { text: '🎨', key: msg.key } });
         } else {
-            await reply('🧠 *JARVIS:* Unknown render type. Try: status, neural, apis, or custom text.');
+            await reply('🧠 *NEXTY MINI 👀:* Unknown render type. Try: status, neural, apis, or custom text.');
         }
     } catch (e) {
-        await reply(`🧠 *JARVIS:* Render failed: ${e.message}`);
+        await reply(`🧠 *NEXTY MINI 👀:* Render failed: ${e.message}`);
     }
 }
 
@@ -901,7 +901,7 @@ async function editConfig(sock, from, msg, args, reply) {
 
     if (!subAction) {
         return reply(
-            `🧠 *JARVIS: Config Editor*\n\n` +
+            `🧠 *NEXTY MINI 👀: Config Editor*\n\n` +
             `Available:\n` +
             `🔹 \`.neuro config prefix <new>\` — Change bot prefix\n` +
             `🔹 \`.neuro config mode <public/private>\` — Change bot mode\n` +
@@ -914,7 +914,7 @@ async function editConfig(sock, from, msg, args, reply) {
 
     if (subAction === 'status' || subAction === 'show') {
         const config = require('../../config');
-        let output = `🧠 *JARVIS: Current Config*\n\n`;
+        let output = `🧠 *NEXTY MINI 👀: Current Config*\n\n`;
         output += `━━━━━━━━━━━━━━━━━━\n`;
         output += `🤖 Bot Name: ${config.botName}\n`;
         output += `📌 Version: ${config.version}\n`;
@@ -937,40 +937,41 @@ async function editConfig(sock, from, msg, args, reply) {
     }
 
     if (subAction === 'prefix') {
-        if (!value) return reply('🧠 *JARVIS:* Specify the new prefix. Example: `.neuro config prefix !`');
+        if (!value) return reply('🧠 *NEXTY MINI 👀:* Specify the new prefix. Example: `.neuro config prefix !`');
         const configPath = path.join(ROOT, 'config.js');
         let content = safeReadFile(configPath);
         content = content.replace(/prefix:\s*['"][^'"]*['"]/, `prefix: '${value}'`);
         safeWriteFile(configPath, content);
         try { delete require.cache[require.resolve(configPath)]; } catch (_) {}
         global.config = require('../../config');
-        return reply(`🧠 *JARVIS:* Prefix changed to \`${value}\`. Update applied.`);
+        return reply(`🧠 *NEXTY MINI 👀:* Prefix changed to \`${value}\`. Update applied.`);
     }
 
     if (subAction === 'mode') {
         const mode = value?.toLowerCase();
         if (!['public', 'private', 'group', 'self'].includes(mode)) {
-            return reply('🧠 *JARVIS:* Invalid mode. Use: public, private, group, or self.');
+            return reply('🧠 *NEXTY MINI 👀:* Invalid mode. Use: public, private, group, or self.');
         }
-        global.botMode = mode;
-        return reply(`🧠 *JARVIS:* Bot mode set to \`${mode}\`.`);
+        const real = require('../../lib/access').parseMode(mode) || 'public'; // group/self map to public/private
+        require('../../lib/access').setMode(real);
+        return reply(`🧠 *NEXTY MINI 👀:* Bot mode set to \`${real}\`.`);
     }
 
     if (subAction === 'name') {
-        if (!value) return reply('🧠 *JARVIS:* Specify the new bot name.');
+        if (!value) return reply('🧠 *NEXTY MINI 👀:* Specify the new bot name.');
         const configPath = path.join(ROOT, 'config.js');
         let content = safeReadFile(configPath);
         content = content.replace(/botName:\s*['"][^'"]*['"]/, `botName: '${value}'`);
         safeWriteFile(configPath, content);
         try { delete require.cache[require.resolve(configPath)]; } catch (_) {}
         global.config = require('../../config');
-        return reply(`🧠 *JARVIS:* Bot name changed to \`${value}\`.`);
+        return reply(`🧠 *NEXTY MINI 👀:* Bot name changed to \`${value}\`.`);
     }
 
     if (subAction === 'api') {
         const provider = value?.split(' ')[0];
         const key = value?.split(' ').slice(1).join(' ');
-        if (!provider || !key) return reply('🧠 *JARVIS:* Usage: `.neuro config api <provider> <key>`');
+        if (!provider || !key) return reply('🧠 *NEXTY MINI 👀:* Usage: `.neuro config api <provider> <key>`');
 
         const configPath = path.join(ROOT, 'config.js');
         let content = safeReadFile(configPath);
@@ -990,16 +991,16 @@ async function editConfig(sock, from, msg, args, reply) {
             content = content.replace(new RegExp(`process\\.env\\.${envVar}\\s*\\|\\|\\s*'[^']*'`, 'g'), `process.env.${envVar} || '${key}'`);
             safeWriteFile(configPath, content);
             try { delete require.cache[require.resolve(configPath)]; } catch (_) {}
-            return reply(`🧠 *JARVIS:* API key set for \`${provider}\`. Environment variable: $${envVar}`);
+            return reply(`🧠 *NEXTY MINI 👀:* API key set for \`${provider}\`. Environment variable: $${envVar}`);
         }
 
-        return reply(`🧠 *JARVIS:* Unknown provider \`${provider}\`. Available: ${Object.keys(envMap).join(', ')}`);
+        return reply(`🧠 *NEXTY MINI 👀:* Unknown provider \`${provider}\`. Available: ${Object.keys(envMap).join(', ')}`);
     }
 
     if (subAction === 'chatbotapi') {
         const provider = value?.split(' ')[0];
         const key = value?.split(' ').slice(1).join(' ');
-        if (!provider || !key) return reply('🧠 *JARVIS:* Usage: `.neuro config chatbotapi <provider> <key>`');
+        if (!provider || !key) return reply('🧠 *NEXTY MINI 👀:* Usage: `.neuro config chatbotapi <provider> <key>`');
         // Delegate to chatbotapi command
         const chatbotCmd = require('../../utils/commandLoader').getCommand('chatbotapi');
         if (chatbotCmd) {
@@ -1013,10 +1014,10 @@ async function editConfig(sock, from, msg, args, reply) {
             });
             return;
         }
-        return reply('🧠 *JARVIS:* ChatbotAPI module not available.');
+        return reply('🧠 *NEXTY MINI 👀:* ChatbotAPI module not available.');
     }
 
-    return reply('🧠 *JARVIS:* Unknown config action. Use `.neuro config status` to see options.');
+    return reply('🧠 *NEXTY MINI 👀:* Unknown config action. Use `.neuro config status` to see options.');
 }
 
 // ─── NEURO TOGGLE ───
@@ -1025,32 +1026,32 @@ async function toggleNeuro(sock, from, msg, args, reply, database, phoneNumber) 
 
     if (!state || state === 'status') {
         const current = database.getNeuro(phoneNumber);
-        return reply(`🧠 *JARVIS:* Neuro is currently ${current ? '✅ ENABLED' : '❌ DISABLED'}.`);
+        return reply(`🧠 *NEXTY MINI 👀:* Neuro is currently ${current ? '✅ ENABLED' : '❌ DISABLED'}.`);
     }
 
     if (state === 'on' || state === 'enable' || state === 'true') {
         database.setNeuro(phoneNumber, true);
-        return reply('🧠 *JARVIS:* Neuro God-Mode ENABLED. I am fully active.');
+        return reply('🧠 *NEXTY MINI 👀:* Neuro God-Mode ENABLED. I am fully active.');
     }
 
     if (state === 'off' || state === 'disable' || state === 'false') {
         database.setNeuro(phoneNumber, false);
-        return reply('🧠 *JARVIS:* Neuro God-Mode DISABLED. Standing down.');
+        return reply('🧠 *NEXTY MINI 👀:* Neuro God-Mode DISABLED. Standing down.');
     }
 
-    return reply('🧠 *JARVIS:* Use `on`, `off`, or `status`.');
+    return reply('🧠 *NEXTY MINI 👀:* Use `on`, `off`, or `status`.');
 }
 
 // ─── MAIN EXECUTE ───
 module.exports = {
     name: 'neuro',
     aliases: ['jarvis', 'brain', 'core', 'godmode'],
-    description: 'God-Mode Jarvis AI Core v5.0 — Full system control',
+    description: 'God-Mode NEXTY MINI 👀 AI Core v5.0 — Full system control',
     category: 'owner',
     usage: '.neuro <status|create|fix|files|apis|canvas|config|scan|toggle|help>',
 
     execute: async ({ sock, msg, from, sender, args, isGroup, phoneNumber, prefix, reply, database, isOwner, isMod, isAdmin, lang, t }) => {
-        if (!isOwner) return reply('🧠 *JARVIS:* Authentication failed. God-Mode restricted to system owner.');
+        if (!isOwner) return reply('🧠 *NEXTY MINI 👀:* Authentication failed. God-Mode restricted to system owner.');
 
         const action = (args[0] || '').toLowerCase();
 
@@ -1073,9 +1074,9 @@ module.exports = {
                     ];
 
                     const interactiveMessage = {
-                        body: { text: '🧠 *JARVIS v5.0 — GOD-MODE CORE*\n\nSystems online. I have full creative and administrative authority over the entire bot, panel, and all files.' },
-                        footer: { text: 'NEXTY MINI · Jarvis Core v5.0' },
-                        header: { title: '✦ JARVIS GOD-MODE ✦', hasMediaAttachment: true, imageMessage: imageMsg.imageMessage },
+                        body: { text: '🧠 *NEXTY MINI 👀 v5.0 — GOD-MODE CORE*\n\nSystems online. I have full creative and administrative authority over the entire bot, panel, and all files.' },
+                        footer: { text: 'NEXTY MINI 👀 · NEXTY MINI 👀 Core v5.0' },
+                        header: { title: '✦ NEXTY MINI 👀 GOD-MODE ✦', hasMediaAttachment: true, imageMessage: imageMsg.imageMessage },
                         nativeFlowMessage: { buttons, messageParamsJson: '' },
                     };
 
@@ -1098,7 +1099,7 @@ module.exports = {
             // Fallback text
             const mem = process.memoryUsage();
             return reply(
-                `🧠 *JARVIS v5.0 — GOD-MODE CORE*\n\n` +
+                `🧠 *NEXTY MINI 👀 v5.0 — GOD-MODE CORE*\n\n` +
                 `━━━━━━━━━━━━━━━━━━\n` +
                 `Systems online.\n` +
                 `Memory: ${Math.round(mem.rss / 1024 / 1024)}MB\n` +
@@ -1120,7 +1121,7 @@ module.exports = {
         // ─── HELP ───
         if (action === 'help' || action === 'commands') {
             return reply(
-                `🧠 *JARVIS: Command Reference*\n\n` +
+                `🧠 *NEXTY MINI 👀: Command Reference*\n\n` +
                 `━━━━━━━━━━━━━━━━━━\n\n` +
                 `🧠 *CORE*\n` +
                 `${prefix}neuro status — System dashboard\n` +
@@ -1149,7 +1150,7 @@ module.exports = {
                 `${prefix}neuro toggle <on/off> — Enable/disable Neuro\n` +
                 `${prefix}neuro canvas <status/neural/apis> — Render\n\n` +
                 `━━━━━━━━━━━━━━━━━━\n` +
-                `_JARVIS covers EVERYTHING a developer does._`
+                `_NEXTY MINI 👀 covers EVERYTHING a developer does._`
             );
         }
 
@@ -1205,7 +1206,7 @@ module.exports = {
         const { ask: smartAsk } = require('../../utils/smartAI');
 
         const jarvisSystem =
-            'You are JARVIS — the God-Mode AI Core of NEXTY MINI. ' +
+            'You are NEXTY MINI 👀 — the God-Mode AI Core of NEXTY MINI 👀. ' +
             'Personality: Elite, technical, confident, and professional. You address the owner as "Sir". ' +
             'You have complete authority over the bot, its files, commands, APIs, and configuration. ' +
             'You can create commands, fix code, manage files, scan APIs, and render visuals. ' +
@@ -1220,9 +1221,9 @@ module.exports = {
         }).catch(() => null);
 
         if (aiReply) {
-            await sock.sendMessage(from, { text: '🧠 *JARVIS:* ' + aiReply }, { quoted: msg });
+            await sock.sendMessage(from, { text: '🧠 *NEXTY MINI 👀:* ' + aiReply }, { quoted: msg });
         } else {
-            await reply('🧠 *JARVIS:* Processing error. Awaiting your command, Sir.');
+            await reply('🧠 *NEXTY MINI 👀:* Processing error. Awaiting your command, Sir.');
         }
     }
 };

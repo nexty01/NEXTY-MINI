@@ -56,7 +56,7 @@ module.exports = {
 
         const interactiveMessage = {
             body: { text: `📞 *Tap to Call*\n\n+${number}` },
-            footer: { text: 'NEXTY MINI · Dial' },
+            footer: { text: 'NEXTY MINI 👀 · Dial' },
             header: {
                 title: '✦ CALL ✦',
                 hasMediaAttachment: false,

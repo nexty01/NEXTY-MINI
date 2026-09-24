@@ -28,7 +28,7 @@ module.exports = {
             await sock.updateProfilePicture(from, buffer);
             await sock.sendMessage(from, { react: { text: '✅', key: msg.key } });
             reply(
-                `╭─❒ ◈ 𝙉𝙀𝙓𝙏𝙔 𝙈𝙄𝙉𝙄 ❒\n` +
+                `╭─❒ ◈ 𝙉𝙀𝙓𝙏𝙔 𝙈𝙄𝙉𝙄 👀 ❒\n` +
                 `│ ✅ *Group picture updated!*\n` +
                 `╰─⛧ 𝓷𝓮𝔁𝓽𝔂 𝓿𝓮𝓻𝓲𝓯𝓲𝓮𝓭`
             );

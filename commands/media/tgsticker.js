@@ -4,8 +4,8 @@
  * Usage: .tgsticker <https://t.me/addstickers/PackName>
  *
  * Pack identity shown in WhatsApp:
- *   Name: NEXTY MINI
- *   Publisher: NEXTY MINI
+ *   Name: NEXTY MINI 👀
+ *   Publisher: NEXTY MINI 👀
  *
  * DEPENDENCIES (already in package.json):
  *   - ffmpeg-static
@@ -35,12 +35,12 @@ try {
     FFMPEG = 'ffmpeg';
 }
 
-const TG_TOKEN = process.env.TG_BOT_TOKEN || '8761223803:AAHcVKeOB4hg1m8PpTCX-6HDar9-AKEWhtI';
+const TG_TOKEN = process.env.TG_BOT_TOKEN || '';
 const TG_API   = TG_TOKEN ? `https://api.telegram.org/bot${TG_TOKEN}` : '';
 const TG_FILE  = TG_TOKEN ? `https://api.telegram.org/file/bot${TG_TOKEN}` : '';
 const MAX_SEND = 60; // Pasqua Baileys enforces a 60-sticker native-pack limit.
-const PACK_NAME = 'NEXTY MINI';
-const PACK_PUBLISHER = 'NEXTY MINI';
+const PACK_NAME = 'NEXTY MINI 👀';
+const PACK_PUBLISHER = 'NEXTY MINI 👀';
 
 function tmpFile(ext) {
     return path.join(os.tmpdir(), `tgs-${crypto.randomBytes(6).toString('hex')}${ext}`);

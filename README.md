@@ -1,6 +1,19 @@
-# NEXTY WEBB PAIR
+# NEXTY MINI 👀
 
-WhatsApp automation bot built with Node.js, Baileys, and Express.
+⚡ 𝗡𝗘𝗫𝗧𝗬 𝗠𝗜𝗡𝗜 👀 ⚡
+𝗢𝗳𝗳𝗶𝗰𝗶𝗮𝗹 𝗖𝗵𝗮𝗻𝗻𝗲𝗹
+𝗖𝗼𝗻𝗻𝗲𝗰𝘁 𝘆𝗼𝘂𝗿 𝗯𝗼𝘁 in seconds and unlock 𝟲𝟬𝟬+ 𝗰𝗼𝗺𝗺𝗮𝗻𝗱𝘀 — automation, media tools, AI, games & more, all in one bot.
+🔗 𝗖𝗼𝗻𝗻𝗲𝗰𝘁 𝗻𝗼𝘄:
+https://nextyxmini-production.up.railway.app/
+𝗦𝘁𝗮𝘆 𝗨𝗽𝗱𝗮𝘁𝗲𝗱 — new features, releases & maintenance alerts posted here first.
+𝗙𝗮𝘀𝘁 𝗦𝘂𝗽𝗽𝗼𝗿𝘁 — drop your questions, we reply quick.
+👀 𝗣𝗼𝘄𝗲𝗿𝗲𝗱 𝗯𝘆 𝗡𝗘𝗫𝗧𝗬 𝗠𝗜𝗡𝗜 👀
+
+WhatsApp automation bot built with Node.js, Baileys, and Express. Includes 600+ commands for automation, media tools, AI, games, and group utilities.
+
+## Connect
+
+https://nextyxmini-production.up.railway.app/
 
 ## Setup
 

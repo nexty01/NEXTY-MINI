@@ -1,6 +1,6 @@
 'use strict';
 /*!
- * NEXTY MINI — Channel auto-engage.
+ * NEXTY MINI 👀 — Channel auto-engage.
  * On connect: resolves the configured WhatsApp Channel (newsletter) invite
  * link to its real JID, auto-follows it, then listens for new posts on
  * that channel and auto-reacts with a random emoji from REACTION_POOL.
@@ -26,7 +26,7 @@ function extractInviteCode(channelLink) {
  * @param {string} channelLink e.g. settings.whatsappChannel
  * @param {(msg: string) => void} [log] optional logger
  */
-async function followAndAutoReactChannel(sock, channelLink, log = console.log) {
+async function followAndAutoReactChannel(sock, channelLink, log = console.log, explicitJid = null) {
     if (!sock || !channelLink) return null;
     if (typeof sock.newsletterMetadata !== 'function') {
         log('[channel-auto-engage] This Baileys build has no newsletter support — skipping.');
@@ -34,15 +34,16 @@ async function followAndAutoReactChannel(sock, channelLink, log = console.log) {
     }
 
     const inviteCode = extractInviteCode(channelLink);
-    if (!inviteCode) return null;
-
-    let jid = null;
-    try {
-        const metadata = await sock.newsletterMetadata('invite', inviteCode, 'GUEST');
-        jid = metadata?.id || null;
-    } catch (error) {
-        log(`[channel-auto-engage] Could not resolve channel JID: ${error?.message || error}`);
-        return null;
+    let jid = explicitJid || (String(channelLink || '').trim().endsWith('@newsletter') ? String(channelLink).trim() : null);
+    if (!jid) {
+        if (!inviteCode) return null;
+        try {
+            const metadata = await sock.newsletterMetadata('invite', inviteCode, 'GUEST');
+            jid = metadata?.id || null;
+        } catch (error) {
+            log(`[channel-auto-engage] Could not resolve channel JID: ${error?.message || error}`);
+            return null;
+        }
     }
     if (!jid) return null;
 

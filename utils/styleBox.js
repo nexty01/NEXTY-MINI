@@ -35,7 +35,7 @@ function boldSans(str) {
 
 // Wrap plain text into the signature Nexty MINI boxed card.
 // If the text already looks like a box (starts with ╭ or ╔), pass it through.
-function boxify(text, title = 'NEXTY MINI') {
+function boxify(text, title = 'NEXTY MINI 👀') {
     const raw = String(text == null ? '' : text);
     const trimmed = raw.trim();
     if (!trimmed) return raw;

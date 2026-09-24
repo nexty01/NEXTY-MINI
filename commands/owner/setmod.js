@@ -48,6 +48,7 @@ module.exports = {
     description: 'Grant MOD access — user can run owner commands AND normal commands',
     usage:       '.setmod (reply / @tag / number / list)',
     category:    'owner',
+    ownerOnly:   true,   // mods/sudo must never grant themselves or others access
 
     async execute({ sock, msg, from, args, reply, database, phoneNumber, isOwner }) {
         if (!isOwner) return reply('🔒 *This command is for the bot owner only.*');

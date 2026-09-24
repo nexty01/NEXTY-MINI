@@ -63,7 +63,7 @@ module.exports = {
                 );
 
             const lines = [
-                '📊 *ACTIVE USERS - NEXTY MINI*',
+                '📊 *ACTIVE USERS - NEXTY MINI 👀*',
                 '',
             ];
             const mentions = [];

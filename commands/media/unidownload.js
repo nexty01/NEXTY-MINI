@@ -63,7 +63,7 @@ module.exports = {
         }
 
         // Determine media type for sendMessage
-        let messageOptions = { caption: `🌐 *Download Complete*\n\n🔗 *Source:* ${url}\n🚀 *Engine:* ${usedApi}\n\n> Downloaded by NEXTY MINI` };
+        let messageOptions = { caption: `🌐 *Download Complete*\n\n🔗 *Source:* ${url}\n🚀 *Engine:* ${usedApi}\n\n> Downloaded by NEXTY MINI 👀` };
         if (mediaUrl.match(/\.(mp4|mov|avi|wmv|flv|webm)$/i)) {
             messageOptions.video = { url: mediaUrl };
             messageOptions.mimetype = "video/mp4";

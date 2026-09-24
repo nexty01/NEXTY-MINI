@@ -138,7 +138,7 @@ module.exports = {
 
             const interactiveMessage = {
                 body: { text: `👁️ *OMNISCIENCE REPORT: ${query.toUpperCase()}*\n\nDeep reality scan complete. All intercepted data has been compiled into the dashboard above.` },
-                footer: { text: 'NEXTY MINI · Omniscience Protocol' },
+                footer: { text: 'NEXTY MINI 👀 · Omniscience Protocol' },
                 header: {
                     title: '✦ OMNI REPORT ✦',
                     hasMediaAttachment: true,

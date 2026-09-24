@@ -7,7 +7,7 @@
  *   .update force    → discard local changes, hard reset to origin/main
  *   .update restart  → run .update then exit (panel/PM2 auto-restarts)
  *
- * Repo: https://github.com/pasquawisdom2007-beep/NEXTY_MINI.git
+ * Repo: set UPDATE_REPO_URL in the environment (no link is stored in the code)
  *
  * Safe by design:
  *   - Owner-only via category gate (sessionManager enforces).
@@ -30,9 +30,10 @@ const execAsync     = promisify(exec);
 
 const commandLoader = require('../../utils/commandLoader');
 
-const REPO_URL      = 'https://github.com/pasquawisdom2007-beep/NEXTY_MINI.git';
-const REPO_OWNER    = 'pasquawisdom2007-beep';
-const REPO_NAME     = 'NEXTY_MINI';
+const REPO_URL      = process.env.UPDATE_REPO_URL || '';
+const _repoMatch    = REPO_URL.match(/github\.com[/:]([^/]+)\/([^/.]+)/i) || [];
+const REPO_OWNER    = _repoMatch[1] || '';
+const REPO_NAME     = _repoMatch[2] || '';
 const REPO_BRANCH   = 'main';
 const TARBALL_URL   = `https://codeload.github.com/${REPO_OWNER}/${REPO_NAME}/tar.gz/refs/heads/${REPO_BRANCH}`;
 
@@ -403,6 +404,8 @@ module.exports = {
 
     async execute({ reply, args }) {
         const mode = (args[0] || '').toLowerCase();
+
+        if (!REPO_URL) return reply('ℹ️ No update source is configured (set UPDATE_REPO_URL to enable .update).');
 
         if (UPDATE_IN_PROGRESS) {
             return reply('⏳ An update is already in progress. Please wait for it to finish.');

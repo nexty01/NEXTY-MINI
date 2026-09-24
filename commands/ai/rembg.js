@@ -166,7 +166,7 @@ module.exports = {
             await sock.sendMessage(from, {
                 image: resultBuffer,
                 mimetype: 'image/png',
-                caption: '🖼️ *Background Removed*\n\n🚀 Engine: remove.bg\n\n> Processed by NEXTY MINI',
+                caption: '🖼️ *Background Removed*\n\n🚀 Engine: remove.bg\n\n> Processed by NEXTY MINI 👀',
             }, { quoted: msg });
 
             await sock.sendMessage(from, { react: { text: '✅', key: msg.key } }).catch(() => {});

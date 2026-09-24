@@ -79,7 +79,7 @@ async function sendCopyableResult(sock, from, msg, text, url) {
                         messageContextInfo: { deviceListMetadataVersion: 2, deviceListMetadata: {} },
                         interactiveMessage: proto.Message.InteractiveMessage.fromObject({
                             body: { text },
-                            footer: { text: 'NEXTY MINI · Public Media URL' },
+                            footer: { text: 'NEXTY MINI 👀 · Public Media URL' },
                             nativeFlowMessage: { buttons, messageParamsJson: '' },
                         }),
                     },

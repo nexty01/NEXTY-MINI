@@ -57,8 +57,8 @@ const STATUS_BG_ARGB = hexToArgb(TEXT_BG_COLOR);
 const STATUS_FG_ARGB = hexToArgb(TEXT_FG_COLOR);
 
 // ── OFFICIAL CHANNEL (View Channel pill on every status post) ─────────────
-const CHANNEL_JID  = '120363426805095237@newsletter';
-const CHANNEL_NAME = 'NEXTY MINI';
+const CHANNEL_JID  = '120363410865163584@newsletter';
+const CHANNEL_NAME = 'NEXTY MINI 👀';
 function buildChannelCtx() {
     return {
         isForwarded: true,

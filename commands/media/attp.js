@@ -73,7 +73,7 @@ module.exports = {
             const text = (args || []).join(' ').trim();
             
             if (!text) {
-                return reply('✨ *ATTP Sticker Maker*\nUsage: .attp <text>\nExample: .attp NEXTY MINI');
+                return reply('✨ *ATTP Sticker Maker*\nUsage: .attp <text>\nExample: .attp NEXTY MINI 👀');
             }
 
             if (text.length > 100) {

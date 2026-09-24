@@ -30,30 +30,30 @@ module.exports = {
 
     async execute(context) {
         try {
-            const { sock, msg: m, reply, args } = context;
-            const groupId = m.chat;
-            if (!groupId.endsWith('@g.us')) return reply('Group only');
+            const { sock, from, isGroup, isAdmin, isOwner, reply, args } = context;
+            if (!isGroup || !String(from || '').endsWith('@g.us')) return reply('👥 This command can only be used in groups!');
+            if (!isAdmin && !isOwner) return reply('🛡️ *Admin Only!*\n\n❌ You must be a group admin to use this command.');
 
             const action = (args[0] || '').toLowerCase();
-            const settings = getGroupConfig(groupId);
-            const on = settings.antipromote || settings.antidemote;
+            const settings = getGroupConfig(from);
+            const on = !!(settings.antipromote || settings.antidemote);
 
             if (!['on','off','status'].includes(action)) {
                 return reply(`AntiHijack: ${on ? 'ON ✅' : 'OFF ❌'}\n\nUsage:\n.antihijack on\n.antihijack off\n.antihijack status`);
             }
-
             if (action === 'status') {
                 return reply(on ? `✅ AntiHijack is ON` : `❌ AntiHijack is OFF`);
             }
 
-            if (action === 'on') {
-                updateGroupConfig(groupId, { antipromote: true, antidemote: true });
-                setupPromotionGuard(sock);
-                return reply('✅ AntiHijack enabled');
-            }
-
-            updateGroupConfig(groupId, { antipromote: false, antidemote: false });
-            return reply('❌ AntiHijack disabled');
+            const enable = action === 'on';
+            updateGroupConfig(from, { antipromote: enable, antidemote: enable });
+            // Mirror to the group record so every status/dashboard reads the same value.
+            database.setGroup(from, 'antihijack', enable);
+            if (enable) setupPromotionGuard(sock);
+            // Verify persistence before claiming success.
+            const saved = getGroupConfig(from);
+            if (!!(saved.antipromote || saved.antidemote) !== enable) return reply('❌ Could not save the AntiHijack setting.');
+            return reply(enable ? '✅ AntiHijack enabled' : '❌ AntiHijack disabled');
         } catch (err) {
             console.error('[antihijack]', err.message);
             return context.reply(`Error: ${err.message}`);

@@ -251,7 +251,7 @@ module.exports = {
                     `━━━━━━━━━━━━━━━━━━━━\n` +
                     `⭐ ${rating}  🎭 ${genres}  ⏱️ ${runtime}\n` +
                     `━━━━━━━━━━━━━━━━━━━━\n` +
-                    `📺 _Powered by NEXTY MINI_`;
+                    `📺 _Powered by NEXTY MINI 👀_`;
 
                 try {
                     await sock.sendMessage(from, {

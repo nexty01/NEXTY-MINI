@@ -4,7 +4,7 @@ const crypto = require('crypto');
 const { generateWAMessageFromContent, proto } = require('@pasqua-baileys/baileys');
 
 const MENU_IMAGE_URL = 'https://files.manuscdn.com/user_upload_by_module/session_file/310519663936678738/YSmNKRleqLdoBHTu.png';
-const CHANNEL_URL = 'https://whatsapp.com/channel/0029VbCJho147XeEEuR1LA3s';
+const CHANNEL_URL = 'https://whatsapp.com/channel/0029Vb9LtXLI7BeLmc4Xzv01';
 const CATEGORY_ORDER = ['owner', 'admin', 'moderation', 'economy', 'fun', 'media', 'ai', 'utility', 'group', 'general', 'unicode', 'textmaker', 'games', 'anime-nsfw', '18plus'];
 
 function commandCards(commands) {
