@@ -26,6 +26,29 @@ process.on('uncaughtException', (err) => {
 });
 
 
+// Local menu/start image bundled with the bot (assets/menu.png), so we never
+// depend on files.catbox.moe (which Heroku's network couldn't reach — that
+// was the original crash). Cached in memory after the first read.
+let _cachedStartImage = null;
+async function getStartImageBuffer() {
+    if (_cachedStartImage) return _cachedStartImage;
+    const localPath = path.join(__dirname, 'assets', 'menu.png');
+    try {
+        _cachedStartImage = await fs.readFile(localPath);
+        return _cachedStartImage;
+    } catch (e) {
+        console.log('local menu image missing, falling back to settings.startimage URL:', e.message);
+        try {
+            const res = await axios.get(settings.startimage, { responseType: 'arraybuffer', timeout: 8000 });
+            _cachedStartImage = Buffer.from(res.data);
+            return _cachedStartImage;
+        } catch (e2) {
+            console.log('startimage URL fetch also failed:', e2.message);
+            return null;
+        }
+    }
+}
+
 // =================== NEXTY MINI 👀 — DYNAMIC COMMAND LOADER ===================
 // Loads every command module from ./commands/<category>/*.js
 // Each module exports: { name, aliases?, category?, execute(ctx) }
@@ -925,18 +948,28 @@ class BotSession {
                                             const customName = botData.userNames[this.userId] || msg.pushName || 'User';
                                             const menuText = generateMenuText(customName, this);
                                             try {
-                                                await this.sock.sendMessage(from, { image: { url: settings.startimage }, caption: menuText }, { quoted: msg });
-                                                // Send the song.mp3 file if it exists in the root directory
+                                                const imgBuffer = await getStartImageBuffer();
                                                 const songPath = path.join(__dirname, 'song.mp3');
-                                                if (fs.existsSync(songPath)) {
-                                                    const audioBuffer = fs.readFileSync(songPath);
-                                                    await this.sock.sendMessage(from, { 
-                                                        audio: audioBuffer, 
-                                                        mimetype: 'audio/mpeg', 
-                                                        fileName: 'song.mp3',
-                                                        ptt: false 
-                                                    }, { quoted: msg });
+                                                const sendJobs = [
+                                                    this.sock.sendMessage(
+                                                        from,
+                                                        { image: imgBuffer || { url: settings.startimage }, caption: menuText },
+                                                        { quoted: msg }
+                                                    )
+                                                ];
+                                                if (await fs.pathExists(songPath)) {
+                                                    sendJobs.push(
+                                                        fs.readFile(songPath).then((audioBuffer) =>
+                                                            this.sock.sendMessage(from, {
+                                                                audio: audioBuffer,
+                                                                mimetype: 'audio/mpeg',
+                                                                fileName: 'song.mp3',
+                                                                ptt: false
+                                                            }, { quoted: msg })
+                                                        )
+                                                    );
                                                 }
+                                                await Promise.all(sendJobs);
                                             } catch (e) { 
                                                 await this.sock.sendMessage(from, { text: menuText }, { quoted: msg }); 
                                             }
@@ -1291,8 +1324,9 @@ break;
                             `> 👀 POWERED BY NEXTY MINI 👀 v3.0`;
 
                         try {
+                            const imgBuffer = await getStartImageBuffer();
                             await this.sock.sendMessage(botNumber, { 
-                                image: { url: settings.startimage },
+                                image: imgBuffer || { url: settings.startimage },
                                 caption: welcomeText 
                             });
                         } catch (imgErr) {
