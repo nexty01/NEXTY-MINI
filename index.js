@@ -519,6 +519,15 @@ app.get('/health', (req, res) => {
     res.status(200).send('OK');
 });
 
+// Real active-session count, used by the pairing site's server picker
+// to show live "active / limit" numbers instead of a static 0.
+app.get('/active', (req, res) => {
+    res.json({
+        count: getAllActiveSockets().length,
+        limit: typeof MAX_SESSIONS !== 'undefined' ? MAX_SESSIONS : 50
+    });
+});
+
 const AUTH_DIR = './auth_info';
 const DATA_FILE = './data/bot_data.json';
 fs.ensureDirSync(AUTH_DIR);
@@ -1625,6 +1634,16 @@ io.on('connection', (socket) => {
         }
     });
 });
+
+// Push live active-session counts to every connected pairing-page client
+// every 5s, so the "active / limit" panel on mini.html updates in real
+// time instead of staying stuck at 0.
+setInterval(() => {
+    io.emit('stats', {
+        activeSockets: getAllActiveSockets().length,
+        totalUsers: Object.keys(sessions).length
+    });
+}, 5000);
 
 // Start server
 const PORT = process.env.PORT || 3000;
